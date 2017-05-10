@@ -447,7 +447,7 @@ def move_sentence_data():
     try:
         t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         logger_9963.info('move_sentence_data--- {}'.format(t))
-        conn, cursor = get_postgredb_query()
+        conn, cursor = get_postgredb()
         cursor.execute(move_sentenct_sql, (t, ))
         cursor.execute(del_sentenct_sql, (t, ))
         conn.commit()
