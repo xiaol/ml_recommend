@@ -1,0 +1,106 @@
+2017-02-08 13:37:35,511 - __main__ - INFO - begin to calculate simhash of %d
+2017-02-08 13:37:37,013 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/a000/PycharmProjects/news_api_ml/sim_hash/sim_hash.py", line 135, in get_same_news
+    cursor.execute(hash_sql.format(check_interval))
+ProgrammingError: relation "news_hash" does not exist
+LINE 1: select nid, hash_val, ctime from news_hash where ctime > now...
+                                         ^
+
+
+2017-02-08 13:37:37,286 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/a000/PycharmProjects/news_api_ml/sim_hash/sim_hash.py", line 166, in cal_and_check_news_hash
+    if len(same_list) > 0: #已经存在相同的新闻
+TypeError: object of type 'NoneType' has no len()
+
+2017-02-08 13:38:54,776 - __main__ - INFO - begin to calculate simhash of %d
+2017-02-08 13:38:56,924 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/a000/PycharmProjects/news_api_ml/sim_hash/sim_hash.py", line 171, in cal_and_check_news_hash
+    cursor.execute(insert_news_simhash_sql.format(nid, h.__str__(), t))
+ProgrammingError: syntax error at end of input
+LINE 1: ...UES('11580728', '2525622474925922273', '2017-02-08 13:38:56'
+                                                                       ^
+
+
+2017-02-08 13:44:07,350 - __main__ - INFO - begin to calculate simhash of %d
+2017-02-08 13:44:11,566 - __main__ - INFO - finish to calculate simhash. it takes %d s
+2017-02-08 13:45:40,946 - __main__ - INFO - begin to calculate simhash of %d
+2017-02-08 13:45:43,620 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/a000/PycharmProjects/news_api_ml/sim_hash/sim_hash.py", line 140, in get_same_news
+    if news_simhash.similarity_with_val(hv) >= threshold:  #存在相同的新闻
+  File "/Users/a000/PycharmProjects/news_api_ml/sim_hash/sim_hash.py", line 103, in similarity_with_val
+    return float(b - self.hamming_distance(other_hash_val)) / b
+  File "/Users/a000/PycharmProjects/news_api_ml/sim_hash/sim_hash.py", line 75, in hamming_distance
+    x = (self.hash ^ other_hash.hash) & ((1 << self.hashbits) - 1)
+AttributeError: 'str' object has no attribute 'hash'
+
+2017-02-08 13:45:43,820 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/a000/PycharmProjects/news_api_ml/sim_hash/sim_hash.py", line 166, in cal_and_check_news_hash
+    if len(same_list) > 0: #已经存在相同的新闻
+TypeError: object of type 'NoneType' has no len()
+
+2017-02-08 13:49:31,837 - __main__ - INFO - begin to calculate simhash of %d
+2017-02-08 13:49:33,398 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/a000/PycharmProjects/news_api_ml/sim_hash/sim_hash.py", line 141, in get_same_news
+    if news_simhash.similarity_with_val(hv) >= threshold:  #存在相同的新闻
+  File "/Users/a000/PycharmProjects/news_api_ml/sim_hash/sim_hash.py", line 103, in similarity_with_val
+    return float(b - self.hamming_distance(other_hash_val)) / b
+  File "/Users/a000/PycharmProjects/news_api_ml/sim_hash/sim_hash.py", line 75, in hamming_distance
+    x = (self.hash ^ other_hash.hash) & ((1 << self.hashbits) - 1)
+AttributeError: 'str' object has no attribute 'hash'
+
+2017-02-08 13:49:33,641 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/a000/PycharmProjects/news_api_ml/sim_hash/sim_hash.py", line 167, in cal_and_check_news_hash
+    if len(same_list) > 0: #已经存在相同的新闻
+TypeError: object of type 'NoneType' has no len()
+
+2017-02-08 13:50:37,732 - __main__ - INFO - begin to calculate simhash of %d
+2017-02-08 13:50:39,872 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/a000/PycharmProjects/news_api_ml/sim_hash/sim_hash.py", line 140, in get_same_news
+    if news_simhash.similarity_with_val(hv) >= threshold:  #存在相同的新闻
+  File "/Users/a000/PycharmProjects/news_api_ml/sim_hash/sim_hash.py", line 103, in similarity_with_val
+    return float(b - self.hamming_distance_with_val(other_hash_val)) / b
+  File "/Users/a000/PycharmProjects/news_api_ml/sim_hash/sim_hash.py", line 84, in hamming_distance_with_val
+    x = (self.hash ^ other_hash_val) & ((1 << self.hashbits) - 1)
+TypeError: unsupported operand type(s) for ^: 'int' and 'str'
+
+2017-02-08 13:50:40,267 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/a000/PycharmProjects/news_api_ml/sim_hash/sim_hash.py", line 166, in cal_and_check_news_hash
+    if len(same_list) > 0: #已经存在相同的新闻
+TypeError: object of type 'NoneType' has no len()
+
+2017-02-08 13:53:13,444 - __main__ - INFO - begin to calculate simhash of %d
+2017-02-08 13:53:16,431 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/a000/PycharmProjects/news_api_ml/sim_hash/sim_hash.py", line 140, in get_same_news
+    if news_simhash.similarity_with_val(hv) >= threshold:  #存在相同的新闻
+  File "/Users/a000/PycharmProjects/news_api_ml/sim_hash/sim_hash.py", line 103, in similarity_with_val
+    return float(b - self.hamming_distance_with_val(other_hash_val)) / b
+  File "/Users/a000/PycharmProjects/news_api_ml/sim_hash/sim_hash.py", line 84, in hamming_distance_with_val
+    x = (self.hash ^ other_hash_val) & ((1 << self.hashbits) - 1)
+TypeError: unsupported operand type(s) for ^: 'int' and 'str'
+
+2017-02-08 13:53:16,657 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/a000/PycharmProjects/news_api_ml/sim_hash/sim_hash.py", line 166, in cal_and_check_news_hash
+    if len(same_list) > 0: #已经存在相同的新闻
+TypeError: object of type 'NoneType' has no len()
+
+2017-02-08 13:55:37,295 - __main__ - INFO - begin to calculate simhash of %d
+2017-02-08 13:55:40,475 - __main__ - INFO - finish to calculate simhash. it takes %d s
+2017-02-08 13:57:05,740 - __main__ - INFO - begin to calculate simhash of %d
+2017-02-08 13:57:08,775 - __main__ - INFO - finish to calculate simhash. it takes %d s
+2017-02-08 13:57:50,348 - __main__ - INFO - begin to calculate simhash of %d
+2017-02-08 13:57:53,618 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/a000/PycharmProjects/news_api_ml/sim_hash/sim_hash.py", line 169, in cal_and_check_news_hash
+    cursor.execute(insert_same_sql.format(nid, n))
+ProgrammingError: relation "news_hash_map" does not exist
+LINE 1: insert into news_hash_map (nid, same_nid) VALUES (11576416, ...
+                    ^
+
+
+2017-02-08 13:59:00,600 - __main__ - INFO - begin to calculate simhash of %d
+2017-02-08 13:59:03,674 - __main__ - INFO - finish to calculate simhash. it takes %d s
+2017-02-08 14:08:54,594 - __main__ - INFO - begin to calculate simhash of %d
+2017-02-08 14:08:57,533 - __main__ - INFO - finish to calculate simhash. it takes %d s
+2017-02-08 14:12:40,750 - __main__ - INFO - begin to calculate simhash of 11584438 11576416
+2017-02-08 14:12:44,415 - __main__ - INFO - finish to calculate simhash. it takes 3.66447 s
+2017-02-08 14:13:27,537 - __main__ - INFO - begin to calculate simhash of 11584438 11576416
+2017-02-08 14:13:30,516 - __main__ - INFO - finish to calculate simhash. it takes 2.978744 s

@@ -1,0 +1,29 @@
+一.GraphLab的问题
+1.内存占用大
+    所需内存是原始数据的10倍以上，需要过多结点计算，引入了不必要的通信和并行开销
+    50000篇文章训练50000个topic,model占用超过60G内存
+    90000        40000                   60
+    90782(413076词汇)        10000        20
+    90782(413076词汇)        5000        10
+
+    选择的频道:社会,科技,国际,体育,娱乐
+二。数据入库
+    建表:
+    topic_models:
+    news_topic:
+    usertopics:    {'1':(权重,创建时间,失效时间1), '2':(权重,创建时间,失效时间)}
+
+    用到的sql:
+    "delete from usertopics where uid = '{0}' and model_v = '{1}' and ch_name='{2}' and topic_id='{3}'"
+    "insert into usertopics (uid, model_v, ch_name, topic_id, probability, create_time, fail_time) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}')"
+    "update usertopics set probability='{0}', create_time='{1}', fail_time='{2}' where uid='{3}' and model_v='{4}' and ch_name='{5}' and topic_id='{6}'"
+    "select uid, nid, max(ctime) ctime from newsrecommendclick  where CURRENT_DATE - INTEGER '3' <= DATE(ctime) group by uid,nid"
+    'SELECT a.nid FROM newslist_v2 a RIGHT OUTER JOIN (select * from channellist_v2 where cname in ({0})) c ON a.chid=c.id ORDER BY nid DESC LIMIT {1}'
+
+
+三。接口说明:
+     1.对外提供的新闻nid入队列的接口
+     url形式: http://120.55.88.11:9986/topic_model/predict_news_topic
+     方法类型: GET方法
+     参数说明: nid-----新闻id, int类型
+

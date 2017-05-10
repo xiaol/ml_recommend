@@ -1,0 +1,10 @@
+使用simhash算法去除重复新闻
+建表: news_simhash, 字段: nid, hash_v, ctime
+建立test库: news_simhash_map   字段: nid1, same_nid
+
+
+
+
+
+
+

@@ -1,0 +1,5 @@
+建表:
+1. 句子hash表: news_sentence_hash
+2. 重复句子表:  news_same_sentence_map
+3. 同源的相同句子表: news_pname_same_sentence : pname, sentence, times, ctime
+4. 多放观点表: news_multi_vp : nid1, nid2, sentence

@@ -1,0 +1,5 @@
+2017-02-13 18:16:57,668 - multi_viewpoint.sentence_hash - INFO - there are 2 news to calulate
+2017-02-13 18:16:57,668 - multi_viewpoint.sentence_hash - INFO - 0 finished!
+2017-02-13 18:17:56,945 - multi_viewpoint.sentence_hash - INFO - there are 2 news to calulate
+2017-02-13 18:17:56,954 - multi_viewpoint.sentence_hash - INFO - 0 finished!
+2017-02-13 18:18:09,301 - multi_viewpoint.sentence_hash - INFO - 0 finished!

@@ -1,0 +1,374 @@
+词的分类
+
+实词：名词、动词、形容词、状态词、区别词、数词、量词、代词
+虚词：副词、介词、连词、助词、拟声词、叹词。
+ICTPOS3.0词性标记集
+
+n 名词
+	nr 人名
+		nr1 汉语姓氏
+		nr2 汉语名字
+		nrj 日语人名
+		nrf 音译人名
+	ns 地名
+	　nsf 音译地名
+	nt 机构团体名
+	nz 其它专名
+	nl 名词性惯用语
+	ng 名词性语素
+
+t 时间词
+　　tg 时间词性语素
+
+s 处所词
+
+f 方位词
+
+v 动词
+	vd 副动词
+	vn 名动词
+	vshi 动词“是”
+	vyou 动词“有”
+	vf 趋向动词
+	vx 形式动词
+	vi 不及物动词（内动词）
+	vl 动词性惯用语
+	vg 动词性语素
+a 形容词
+	ad 副形词
+	an 名形词
+	ag 形容词性语素
+	al 形容词性惯用语
+b 区别词
+	bl 区别词性惯用语
+z 状态词
+r 代词
+	rr 人称代词
+	rz 指示代词
+		rzt 时间指示代词
+		rzs 处所指示代词
+		rzv 谓词性指示代词
+	ry 疑问代词
+		ryt 时间疑问代词
+		rys 处所疑问代词
+		ryv 谓词性疑问代词
+	rg 代词性语素
+m 数词
+	mq 数量词
+q 量词
+	qv 动量词
+	qt 时量词
+虚词
+
+d 副词
+p 介词
+	pba 介词“把”
+	pbei 介词“被”
+c 连词
+	cc 并列连词
+u 助词
+	uzhe 着
+	ule 了 喽
+	uguo 过
+	ude1 的 底
+	ude2 地
+	ude3 得
+	usuo 所
+	udeng 等 等等 云云
+	uyy 一样 一般 似的 般
+	udh 的话
+	uls 来讲 来说 而言 说来
+
+	uzhi 之
+	ulian 连 （“连小学生都会”）
+
+e 叹词
+y 语气词(delete yg)
+o 拟声词
+h 前缀
+k 后缀
+x 字符串
+	xx 非语素字
+	xu 网址URL
+w 标点符号
+	wkz 左括号，全角：（ 〔  ［  ｛  《 【  〖 〈   半角：( [ { <
+	wky 右括号，全角：） 〕  ］ ｝ 》  】 〗 〉 半角： ) ] { >
+	wyz 左引号，全角：“ ‘ 『
+	wyy 右引号，全角：” ’ 』
+	wj 句号，全角：。
+	ww 问号，全角：？ 半角：?
+	wt 叹号，全角：！ 半角：!
+	wd 逗号，全角：， 半角：,
+	wf 分号，全角：； 半角： ;
+	wn 顿号，全角：、
+	wm 冒号，全角：： 半角： :
+	ws 省略号，全角：……  …
+	wp 破折号，全角：——   －－   ——－   半角：---  ----
+	wb 百分号千分号，全角：％ ‰   半角：%
+	wh 单位符号，全角：￥ ＄ ￡  °  ℃  半角：$
+ICTCLAS 汉语词性标注集
+
+代码	名称	帮助记忆的诠释
+Ag	形语素	形容词性语素。形容词代码为a，语素代码ｇ前面置以A。
+a	形容词	取英语形容词adjective的第1个字母。
+ad	副形词	直接作状语的形容词。形容词代码a和副词代码d并在一起。
+an	名形词	具有名词功能的形容词。形容词代码a和名词代码n并在一起。
+b	区别词	取汉字“别”的声母。
+c	连词	取英语连词conjunction的第1个字母。
+Dg	副语素	副词性语素。副词代码为d，语素代码ｇ前面置以D。
+d	副词	取adverb的第2个字母，因其第1个字母已用于形容词。
+e	叹词	取英语叹词exclamation的第1个字母。
+f	方位词	取汉字“方” 的声母。
+g	语素	绝大多数语素都能作为合成词的“词根”，取汉字“根”的声母。
+h	前接成分	取英语head的第1个字母。
+i	成语	取英语成语idiom的第1个字母。
+j	简称略语	取汉字“简”的声母。
+k	后接成分
+l	习用语	习用语尚未成为成语，有点“临时性”，取“临”的声母。
+m	数词	取英语numeral的第3个字母，n，u已有他用。
+Ng	名语素	名词性语素。名词代码为n，语素代码ｇ前面置以N。
+n	名词	取英语名词noun的第1个字母。
+nr	人名	名词代码n和“人(ren)”的声母并在一起。
+ns	地名	名词代码n和处所词代码s并在一起。
+nt	机构团体	“团”的声母为t，名词代码n和t并在一起。
+nz	其他专名	“专”的声母的第1个字母为z，名词代码n和z并在一起。
+o	拟声词	取英语拟声词onomatopoeia的第1个字母。
+p	介词	取英语介词prepositional的第1个字母。
+q	量词	取英语quantity的第1个字母。
+r	代词	取英语代词pronoun的第2个字母,因p已用于介词。
+s	处所词	取英语space的第1个字母。
+Tg	时语素	时间词性语素。时间词代码为t,在语素的代码g前面置以T。
+t	时间词	取英语time的第1个字母。
+u	助词	取英语助词auxiliary 的第2个字母,因a已用于形容词。
+Vg	动语素	动词性语素。动词代码为v。在语素的代码g前面置以V。
+v	动词	取英语动词verb的第一个字母。
+vd	副动词	直接作状语的动词。动词和副词的代码并在一起。
+vn	名动词	指具有名词功能的动词。动词和名词的代码并在一起。
+w	标点符号
+x	非语素字	非语素字只是一个符号，字母x通常用于代表未知数、符号。
+y	语气词	取汉字“语”的声母。
+z	状态词	取汉字“状”的声母的前一个字母。
+jieba 字典中出现的类型
+
+a
+	ad
+	ag
+	an
+b
+c
+d
+	df
+	dg
+e
+f
+g
+h
+i
+j
+k
+l
+m
+	mg
+	mq
+n
+	ng
+	nr
+	nrfg
+	nrt
+	ns
+	nt
+	nz
+o
+p
+q
+r
+	rg
+	rr
+	rz
+s
+t
+	tg
+u
+	ud
+	ug
+	uj
+	ul
+	uv
+	uz
+v
+	vd
+	vg
+	vi
+	vn
+	vq
+x
+y
+z
+	zg
+simhash 过滤的掉的词汇
+
+c
+e
+h
+k
+o
+p
+u
+	ud
+	ug
+	uj
+	ul
+	uv
+	uz
+x
+y
+
+哈工大词性列表:
+Tag Description Example
+a   adjective   美丽
+b   other noun-modifier 大型, 西式
+c   conjunction 和, 虽然
+d   adverb  很
+e   exclamation 哎
+g   morpheme    茨, 甥
+h   prefix  阿, 伪
+i   idiom   百花齐放
+j   abbreviation    公检法
+k   suffix  界, 率
+m   number  一, 第一
+n   general noun    苹果
+nd  direction noun  右侧
+nh  person name 杜甫, 汤姆
+ni  organization name   保险公司
+nl  location noun   城郊
+ns  geographical name   北京
+nt  temporal noun   近日, 明代
+nz  other proper noun   诺贝尔奖
+o   onomatopoeia    哗啦
+p   preposition 在, 把
+q   quantity    个
+r   pronoun 我们
+u   auxiliary   的, 地
+v   verb    跑, 学习
+wp  punctuation ，。！
+ws  foreign words   CPU
+x   non-lexeme  萄, 翱
+
+
+PyNLPIR 词性:
+POS_MAP = {
+    'n': ('名词', 'noun', {
+        'nr': ('人名', 'personal name', {
+            'nr1': ('汉语姓氏', 'Chinese surname'),
+            'nr2': ('汉语名字', 'Chinese given name'),
+            'nrj': ('日语人名', 'Japanese personal name'),
+            'nrf': ('音译人名', 'transcribed personal name')
+        }),
+        'ns': ('地名', 'toponym', {
+            'nsf': ('音译地名', 'transcribed toponym'),
+        }),
+        'nt': ('机构团体名', 'organization/group name'),
+        'nz': ('其它专名', 'other proper noun'),
+        'nl': ('名词性惯用语', 'noun phrase'),
+        'ng': ('名词性语素', 'noun morpheme'),
+    }),
+    't': ('时间词', 'time word', {
+        'tg': ('时间词性语素', 'time morpheme'),
+    }),
+    's': ('处所词', 'locative word'),
+    'f': ('方位词', 'noun of locality'),
+    'v': ('动词', 'verb', {
+        'vd': ('副动词', 'auxiliary verb'),
+        'vn': ('名动词', 'noun-verb'),
+        'vshi': ('动词"是"', 'verb 是'),
+        'vyou': ('动词"有"', 'verb 有'),
+        'vf': ('趋向动词', 'directional verb'),
+        'vx': ('行事动词', 'performative verb'),
+        'vi': ('不及物动词', 'intransitive verb'),
+        'vl': ('动词性惯用语', 'verb phrase'),
+        'vg': ('动词性语素', 'verb morpheme'),
+    }),
+    'a': ('形容词', 'adjective', {
+        'ad': ('副形词', 'auxiliary adjective'),
+        'an': ('名形词', 'noun-adjective'),
+        'ag': ('形容词性语素', 'adjective morpheme'),
+        'al': ('形容词性惯用语', 'adjective phrase'),
+    }),
+    'b': ('区别词', 'distinguishing word', {
+        'bl': ('区别词性惯用语', 'distinguishing phrase'),
+    }),
+    'z': ('状态词', 'status word'),
+    'r': ('代词', 'pronoun', {
+        'rr': ('人称代词', 'personal pronoun'),
+        'rz': ('指示代词', 'demonstrative pronoun', {
+            'rzt': ('时间指示代词', 'temporal demonstrative pronoun'),
+            'rzs': ('处所指示代词', 'locative demonstrative pronoun'),
+            'rzv': ('谓词性指示代词', 'predicate demonstrative pronoun'),
+        }),
+        'ry': ('疑问代词', 'interrogative pronoun', {
+            'ryt': ('时间疑问代词', 'temporal interrogative pronoun'),
+            'rys': ('处所疑问代词', 'locative interrogative pronoun'),
+            'ryv': ('谓词性疑问代词', 'predicate interrogative pronoun'),
+        }),
+        'rg': ('代词性语素', 'pronoun morpheme'),
+    }),
+    'm': ('数词', 'numeral', {
+        'mq': ('数量词', 'numeral-plus-classifier compound'),
+    }),
+    'q': ('量词', 'classifier', {
+        'qv': ('动量词', 'verbal classifier'),
+        'qt': ('时量词', 'temporal classifier'),
+    }),
+    'd': ('副词', 'adverb'),
+    'p': ('介词', 'preposition', {
+        'pba': ('介词“把”', 'preposition 把'),
+        'pbei': ('介词“被”', 'preposition 被'),
+    }),
+    'c': ('连词', 'conjunction', {
+        'cc': ('并列连词', 'coordinating conjunction'),
+    }),
+    'u': ('助词', 'particle', {
+        'uzhe': ('着', 'particle 着'),
+        'ule': ('了／喽', 'particle 了/喽'),
+        'uguo': ('过', 'particle 过'),
+        'ude1': ('的／底', 'particle 的/底'),
+        'ude2': ('地', 'particle 地'),
+        'ude3': ('得', 'particle 得'),
+        'usuo': ('所', 'particle 所'),
+        'udeng': ('等／等等／云云', 'particle 等/等等/云云'),
+        'uyy': ('一样／一般／似的／般', 'particle 一样/一般/似的/般'),
+        'udh': ('的话', 'particle 的话'),
+        'uls': ('来讲／来说／而言／说来', 'particle 来讲/来说/而言/说来'),
+        'uzhi': ('之', 'particle 之'),
+        'ulian': ('连', 'particle 连'),
+    }),
+    'e': ('叹词', 'interjection'),
+    'y': ('语气词', 'modal particle'),
+    'o': ('拟声词', 'onomatopoeia'),
+    'h': ('前缀', 'prefix'),
+    'k': ('后缀' 'suffix'),
+    'x': ('字符串', 'string', {
+        'xe': ('Email字符串', 'email address'),
+        'xs': ('微博会话分隔符', 'hashtag'),
+        'xm': ('表情符合', 'emoticon'),
+        'xu': ('网址URL', 'URL'),
+        'xx': ('非语素字', 'non-morpheme character'),
+    }),
+    'w': ('标点符号', 'punctuation mark', {
+        'wkz': ('左括号', 'left parenthesis/bracket'),
+        'wky': ('右括号', 'right parenthesis/bracket'),
+        'wyz': ('左引号', 'left quotation mark'),
+        'wyy': ('右引号', 'right quotation mark'),
+        'wj': ('句号', 'period'),
+        'ww': ('问号', 'question mark'),
+        'wt': ('叹号', 'exclamation mark'),
+        'wd': ('逗号', 'comma'),
+        'wf': ('分号', 'semicolon'),
+        'wn': ('顿号', 'enumeration comma'),
+        'wm': ('冒号', 'colon'),
+        'ws': ('省略号', 'ellipsis'),
+        'wp': ('破折号', 'dash'),
+        'wb': ('百分号千分号', 'percent/per mille sign'),
+        'wh': ('单位符号', 'unit of measure sign'),
+    }),
+}

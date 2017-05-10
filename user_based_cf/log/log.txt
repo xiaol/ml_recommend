@@ -1,0 +1,22 @@
+2017-04-05 14:20:23,690 - log_cf - ERROR - Traceback (most recent call last):
+  File "/Users/a000/PycharmProjects/news_api_ml/user_based_cf/data_process.py", line 21, in coll_click
+    conn, cursor = get_postgredb_query()
+  File "/Users/a000/PycharmProjects/news_api_ml/util/doc_process.py", line 223, in get_postgredb_query
+    connection = psycopg2.connect(database=POSTGRE_DBNAME_QUERY, user=POSTGRE_USER, password=POSTGRE_PWD, host=POSTGRE_HOST_QUERY,)
+  File "/Library/Python/2.7/site-packages/psycopg2/__init__.py", line 164, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, async=async)
+OperationalError: could not connect to server: Operation timed out
+	Is the server running on host "10.47.54.32" and accepting
+	TCP/IP connections on port 5432?
+
+Traceback (most recent call last):
+  File "/Users/a000/PycharmProjects/news_api_ml/user_based_cf/data_process.py", line 21, in coll_click
+    conn, cursor = get_postgredb_query()
+  File "/Users/a000/PycharmProjects/news_api_ml/util/doc_process.py", line 223, in get_postgredb_query
+    connection = psycopg2.connect(database=POSTGRE_DBNAME_QUERY, user=POSTGRE_USER, password=POSTGRE_PWD, host=POSTGRE_HOST_QUERY,)
+  File "/Library/Python/2.7/site-packages/psycopg2/__init__.py", line 164, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, async=async)
+OperationalError: could not connect to server: Operation timed out
+	Is the server running on host "10.47.54.32" and accepting
+	TCP/IP connections on port 5432?
+
