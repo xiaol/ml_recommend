@@ -1,0 +1,10 @@
+2017-05-10 16:23:15,410 - 9963 - INFO - move_sentence_data--- 2017-05-10 16:23:15
+2017-05-10 16:23:15,568 - 9963 - INFO - Traceback (most recent call last):
+  File "/root/workspace/news_api_ml/multi_viewpoint/sentence_hash.py", line 451, in move_sentence_data
+    cursor.execute(move_sentenct_sql, (t, ))
+InternalError: cannot execute INSERT in a read-only transaction
+
+
+2017-05-10 16:25:57,745 - 9963 - INFO - move_sentence_data--- 2017-05-10 16:25:57
+2017-05-10 16:28:07,772 - 9963 - INFO - move_sentence_data--- 2017-05-10 16:28:07
+2017-05-10 16:32:30,099 - 9963 - INFO - move_sentence_data--- 2017-05-10 16:32:30

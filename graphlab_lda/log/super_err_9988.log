@@ -1,0 +1,490 @@
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
+Traceback (most recent call last):
+  File "lda_service.py", line 293, in <module>
+    from redis_process import nid_queue
+  File "/root/workspace/news_api_ml/redis_process/nid_queue.py", line 23, in <module>
+    handler = logging.FileHandler(real_dir_path + '/../log/base_service/log.txt')
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 913, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/root/anaconda2/lib/python2.7/logging/__init__.py", line 943, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 2] No such file or directory: '/root/workspace/news_api_ml/log/base_service/log.txt'
