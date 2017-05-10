@@ -446,6 +446,7 @@ logger_9963 = logger.Logger('9963', os.path.join(real_dir_path,  'log/log_9963.t
 def move_sentence_data():
     try:
         t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        logger_9963.info('move_sentence_data--- {}'.format(t))
         conn, cursor = get_postgredb_query()
         cursor.execute(move_sentenct_sql, (t, ))
         cursor.execute(del_sentenct_sql, (t, ))
