@@ -154,9 +154,10 @@ def cal_process(nid_set, log=None, same_t=3, news_interval=3, same_dict = {}):
     log.info('there are {} news to calulate'.format(len(nid_set)))
     log.info('calcute: {}'.format(nid_set))
     ttt1 = datetime.datetime.now()
-    nid_sents_dict, nid_para_links_dict, nid_pname_dict = get_nids_sentences(nid_set)
-    kkkk = 0
     try:
+        nid_sents_dict, nid_para_links_dict, nid_pname_dict = get_nids_sentences(nid_set)
+        log.info('-- {}'.format(len(nid_sents_dict)))
+        kkkk = 0
         for item in nid_sents_dict.items(): #每条新闻
             #存放专题, 每个元素包含关键句和新闻id两个列表
             #例如[[['abc', 'aaa'], [123, 231]], [['bcd', 'bbb'], [542, 126]] ]
@@ -364,10 +365,6 @@ def cal_process(nid_set, log=None, same_t=3, news_interval=3, same_dict = {}):
                 conn.close()
                 cursor_query.close()
                 conn_query.close()
-            if kkkk % 100 == 0:
-                ttt2 = datetime.datetime.now()
-                #log.info('{0} finished! Last 100 takes {1} s'.format(kkkk, (ttt2-ttt).total_seconds()))
-                ttt = ttt2
             if len(subject_sentence_nids) > 0:
                 subs = merge_subs(subject_sentence_nids)
                 for sub in subs:
