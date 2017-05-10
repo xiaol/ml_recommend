@@ -27,7 +27,7 @@ if __name__ == '__main__':
         http_server.listen(port)
         #sentence_hash.coll_sentence_hash()
         from redis_process import nid_queue
-        nid_queue.clear_sentence_simhash_queue()
+        #nid_queue.clear_sentence_simhash_queue()
         nid_queue.consume_nid_sentence_simhash(200)
     elif port == 9966:  #手动收集以前的新闻
         http_server = tornado.httpserver.HTTPServer(Application())

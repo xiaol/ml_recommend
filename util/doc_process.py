@@ -694,9 +694,10 @@ def keep_nids_based_cnames(nids_tuple, cname_tuple):
 #      nid_para_links_dict      ---  nid : paragraph index : list of links
 #      nid_pname_dict           ---  nid : pname
 ################################################################################
-get_sent_sql = "select nl.nid, nl.title, nl.content, nl.state, nl.pname from info_news nl " \
+get_sent_sql = "select nl.nid, nl.title, ni.content, nl.state, nl.pname from info_news ni " \
+               "inner join newslist_v2 nl on ni.nid=nl.nid " \
                "inner join channellist_v2 cl on nl.chid=cl.id " \
-               "where nid in %s"
+               "where ni.nid in %s"
 def get_nids_sentences(nid_set):
     nid_tuple = tuple(nid_set)
     conn, cursor = get_postgredb_query()
