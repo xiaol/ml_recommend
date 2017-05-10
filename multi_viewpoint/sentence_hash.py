@@ -37,7 +37,7 @@ query_sen_sql = "select ns.nid, ns.hash_val from news_sentence_hash_copy ns inne
                 "where (first_16=%s or second_16=%s or third_16=%s or fourth_16=%s) and " \
                 "(first2_16=%s or second2_16=%s or third2_16=%s or fourth2_16=%s) and " \
                 "nl.state=0 group by ns.nid, ns.hash_val "
-query_sen_sql_interval = "select ns.nid, ns.hash_val from news_sentence_hash_copy ns inner join info_news nl on ns.nid=nl.nid " \
+query_sen_sql_interval = "select ns.nid, ns.hash_val from news_sentence_hash_copy ns inner join newslist_v2 nl on ns.nid=nl.nid " \
                          "where (first_16=%s or second_16=%s or third_16=%s or fourth_16=%s) and " \
                          "(first2_16=%s or second2_16=%s or third2_16=%s or fourth2_16=%s) and " \
                          "(nl.ctime > now() - interval '%s day') and nl.state=0 group by ns.nid, ns.hash_val "
