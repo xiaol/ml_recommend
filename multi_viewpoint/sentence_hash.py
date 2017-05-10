@@ -449,6 +449,7 @@ def move_sentence_data():
         logger_9963.info('move_sentence_data--- {}'.format(t))
         conn, cursor = get_postgredb()
         cursor.execute(move_sentenct_sql, (t, ))
+        logger_9963.info('move finished')
         cursor.execute(del_sentenct_sql, (t, ))
         conn.commit()
         conn.close()
