@@ -1,5 +1,8 @@
 
 *.py[cod]
+result/*
+NewsFileCut/*
+graphlab_kmeans/models/*
 
 # C extensions
 *.so
