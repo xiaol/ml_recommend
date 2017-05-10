@@ -27,15 +27,15 @@ if __name__ == '__main__':
         http_server.listen(port)
         #sentence_hash.coll_sentence_hash()
         from redis_process import nid_queue
-        #nid_queue.clear_sentence_simhash_queue()
+        nid_queue.clear_sentence_simhash_queue()
         nid_queue.consume_nid_sentence_simhash(200)
-    elif port == 9966:
+    elif port == 9966:  #手动收集以前的新闻
         http_server = tornado.httpserver.HTTPServer(Application())
         http_server.listen(port)
         #sentence_hash.coll_sentence_hash()
         from multi_viewpoint import sentence_hash
         sentence_hash.coll_sentence_hash()
-    elif port == 9964:  #生成专题
+    elif port == 9964:  #消费队列, 生成专题
         http_server = tornado.httpserver.HTTPServer(Application())
         http_server.listen(port)
         from multi_viewpoint import subject_queue
