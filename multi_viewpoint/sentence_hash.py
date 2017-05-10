@@ -452,6 +452,7 @@ def move_sentence_data():
         cursor.execute(del_sentenct_sql, (t, ))
         conn.commit()
         conn.close()
+        logger_9963.info('finished to move_sentence_data.')
     except:
         logger_9963.info(traceback.format_exc())
 
