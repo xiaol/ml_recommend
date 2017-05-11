@@ -11,7 +11,7 @@ from util.logger import Logger
 import os
 
 real_dir_path = os.path.split(os.path.realpath(__file__))[0]
-logger_sub = Logger('9966', os.path.join(real_dir_path,  'log/log_subject.txt'))
+logger_sub = Logger('subject', os.path.join(real_dir_path,  'log/log_subject.txt'))
 prefix = 'http://fez.deeporiginalx.com:9001'
 cookie = {'Authorization':'f76f3276c1ac832b935163c451f62a2abf5b253c'}
 ################################################################################
