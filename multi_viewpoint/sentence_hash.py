@@ -107,12 +107,13 @@ def is_sentence_ads(hash_val, fir_16, sec_16, thi_16, fou_16, fir2_16, sec2_16, 
 
 #判断两个专题是否需要合并
 def should_subject_merge(sub1, sub2):
-    if sub1[0] == sub2[0]: #关键句子一样
+    if sub1[0] == sub2[0] or sub1[1] == sub2[1]: #关键句子或新闻列表一样
         return True
     sub1_nids = set(sub1[1])
     sub2_nids = set(sub2[1])
     same_nids = sub1_nids & sub2_nids
-    if len(same_nids) >= 2:
+    if (float(len(same_nids)) >= 0.5 * len(sub1_nids)) and \
+       (float(len(same_nids)) >= 0.5 * len(sub2_nids)):
         return True
     else:
         return False
@@ -128,6 +129,7 @@ def merge_subject(sub1, sub2):
 
 
 #多个专题的合并
+'''
 def merge_subs(subs_list):
     new_subs = []
     for i in xrange(len(subs_list)):
@@ -140,6 +142,21 @@ def merge_subs(subs_list):
         if finished:
             break
         new_subs.append(subs_list[i])
+    return new_subs
+'''
+
+def merge_subs(subs_list):
+    new_subs = []
+    for i in xrange(len(subs_list)):
+        merg = False
+        for j in xrange(len(new_subs)):
+            if should_subject_merge(subs_list[i], new_subs[j]):
+                new_subs[j] = merge_subject(subs_list[i], new_subs[j])
+                merg = True
+        if not merg:
+            new_subs.append(subs_list[i])
+    print 'mmmmmmm -- '
+    print new_subs
     return new_subs
 
 
@@ -346,7 +363,7 @@ def cal_process(nid_set, log=None, same_t=3, news_interval=3, same_dict = {}):
                                         log.info('get multi viewpoint :{}'.format(str_no_html.encode('utf-8')))
                                         sub_nids_set.add(same[0])
                                         sub_nids_set.add(same[1])
-                                log.info("num of mvp is {}".format(sub_nids_set))
+                                #log.info("num of mvp is {}".format(sub_nids_set))
                                 if len(sub_nids_set) >= 5:  ## 专题新闻入队列
                                     log.info('generate subject for {}'.format(sub_nids_set))
                                     #for i in sub_nids_set:
