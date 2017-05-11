@@ -386,16 +386,19 @@ def cal_process(nid_set, log=None, same_t=3, news_interval=3, same_dict = {}):
 def coll_sentence_hash_time(nid_list):
     #nid_set = set(nid_list)
     # arr是被分割的list，n是每个chunk中含n元素。
-    from util.doc_process import keep_nids_based_cnames
-    nid_list = keep_nids_based_cnames(tuple(nid_list), channel_for_multi_vp)
-    small_list = [nid_list[i:i + 20] for i in range(0, len(nid_list), 20)]
-    pool = Pool(20)
-    same_dict = get_relate_same_news(set(nid_list))
-    for nid_set in small_list:
-        pool.apply_async(cal_process, args=(set(nid_set), None, 3, 2, same_dict))
+    try:
+        from util.doc_process import keep_nids_based_cnames
+        nid_list = keep_nids_based_cnames(tuple(nid_list), channel_for_multi_vp)
+        small_list = [nid_list[i:i + 20] for i in range(0, len(nid_list), 20)]
+        pool = Pool(20)
+        same_dict = get_relate_same_news(set(nid_list))
+        for nid_set in small_list:
+            pool.apply_async(cal_process, args=(set(nid_set), None, 3, 2, same_dict))
 
-    pool.close()
-    pool.join()
+        pool.close()
+        pool.join()
+    except:
+        logger_9965.exception(traceback.format_exc())
     logger_9965.info("Congratulations! Finish to collect sentences.")
 
 
