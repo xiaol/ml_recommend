@@ -94,7 +94,7 @@ def generate_subject(sub):
         cursor.execute(sql, (sub_nids[0],))
         row = cursor.fetchone()
         sub_name = row[0]
-        data = {'name': sub_name}
+        data = {'name': sub_name, 'type':1}
         logger_sub.info('create subject {}'.format(sub_name))
         response = requests.post(create_url, data=data, cookies=cookie)
         content = json.loads(response.content)
