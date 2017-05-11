@@ -21,6 +21,7 @@ def consume_subject():
     while True:
         try:
             sub = json.loads(sub_redis.brpop(sub_queue)[1])
+            print sub
             generate_subject(sub)
             break
 
