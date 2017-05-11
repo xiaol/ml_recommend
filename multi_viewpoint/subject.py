@@ -47,7 +47,10 @@ def update_sub(old_sub_id, sub):
     sent_sql = "select sentences from topic_sentences where topic_id=%s"
     cursor.execute(sent_sql, (old_sub_id, ))
     row = cursor.fetchone()  #返回的是关键句子的list
-    old_sents = row[0]
+    if len(row) > 0:
+        old_sents = row[0]
+    else:
+        old_sents = []
     added_sen = set(sub[0]) - set(old_sents)
     if len(added_sen) > 0:
         old_sents.extend(added_sen)
