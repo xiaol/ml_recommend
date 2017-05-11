@@ -23,12 +23,9 @@ def consume_subject():
     global sub_redis
     while True:
         try:
-            ddd = sub_redis.brpop(sub_queue)
-            print ddd
-            sub = json.loads(sub_redis.brpop(sub_queue)[1])
-            print sub
-            #generate_subject(sub)
+            sub = json.loads(sub_redis.brpop(sub_queue)[1]) # [0]是队列名称:"sub_queue"
+            generate_subject(sub)
 
         except :
             traceback.print_exc()
-            break
+            continue
