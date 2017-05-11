@@ -113,9 +113,11 @@ def generate_subject(sub):
             conn.close()
             return
 
-        data = {'name': sub_name, 'type':1}
+        data = {'name': sub_name, 'type': 1}
         logger_sub.info('create subject {}'.format(sub_name))
         response = requests.post(create_url, data=data, cookies=cookie)
+        print type(response.content)
+        print response.content
         content = json.loads(response.content)
         if 'id' not in content:
             logger_sub.info('error to create subject : {}'.format(content))
