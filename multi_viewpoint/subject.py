@@ -90,7 +90,7 @@ def generate_subject(sub):
         ##############需要新建专题#######################
         create_url = prefix + '/topics'
         #set subject name as one title of one piece of news
-        sql = "select title from newslist_v2 where nid=%s group by comment desc"
+        sql = "select title from newslist_v2 where nid=%s order by comment desc"
         cursor.execute(sql, (sub_nids[0],))
         rows = cursor.fetchall()
         sub_name = ''
