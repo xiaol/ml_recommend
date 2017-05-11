@@ -112,7 +112,7 @@ def should_subject_merge(sub1, sub2):
     sub1_nids = set(sub1[1])
     sub2_nids = set(sub2[1])
     same_nids = sub1_nids & sub2_nids
-    if (float(len(same_nids)) >= 0.5 * len(sub1_nids)) and \
+    if (float(len(same_nids)) >= 0.5 * len(sub1_nids)) or \
        (float(len(same_nids)) >= 0.5 * len(sub2_nids)):
         return True
     else:
@@ -155,8 +155,6 @@ def merge_subs(subs_list):
                 merg = True
         if not merg:
             new_subs.append(subs_list[i])
-    print 'mmmmmmm -- '
-    print new_subs
     return new_subs
 
 
@@ -385,7 +383,7 @@ def cal_process(nid_set, log=None, same_t=3, news_interval=3, same_dict = {}):
             if len(subject_sentence_nids) > 0:
                 log.info("before merge : {}".format(subject_sentence_nids))
                 subs = merge_subs(subject_sentence_nids)
-                log.info("after merge : ".format(subs))
+                log.info("after merge : {}".format(subs))
                 for sub in subs:
                     subject_queue.product_subject(sub)
                 #log.info('generate subject for {} ------ {}'.format(nid, subject_nids))
