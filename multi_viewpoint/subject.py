@@ -6,7 +6,7 @@
 # @Software: PyCharm Community Edition
 import requests
 import json
-from util.doc_process import get_postgredb_query
+from util.doc_process import get_postgredb
 from util.logger import Logger
 import os
 import traceback
@@ -24,7 +24,7 @@ def update_sub(old_sub_id, sub):
     #先获取old_sub_id的class id
     logger_sub.info('update_sub : {}'.format(sub))
     sub_class = "select id from topicclasslist where topic=%s"
-    conn, cursor = get_postgredb_query()
+    conn, cursor = get_postgredb()
     cursor.execute(sub_class, (old_sub_id, ))
     rows = cursor.fetchall()
     if len(rows) == 0:
@@ -67,7 +67,7 @@ def generate_subject(sub):
         sub_sents = sub[0]
         sub_nids = sub[1]
         ##############检查是否需要新建专题还是更新到旧专题###
-        conn, cursor = get_postgredb_query()
+        conn, cursor = get_postgredb()
         oldsub_nid_dict = dict()  #记录旧topic--与本sub相同的nid
         nid_old_sub_sql = "select topic, news from topicnews where news in %s"
         cursor.execute(nid_old_sub_sql, (tuple(sub_nids), ))
@@ -90,17 +90,32 @@ def generate_subject(sub):
         ##############需要新建专题#######################
         create_url = prefix + '/topics'
         #set subject name as one title of one piece of news
-        sql = "select title from newslist_v2 where nid=%s"
+        sql = "select title from newslist_v2 where nid=%s group by comment desc"
         cursor.execute(sql, (sub_nids[0],))
-        row = cursor.fetchone()
-        sub_name = row[0]
+        rows = cursor.fetchall()
+        sub_name = ''
+        get_name = False
+        for r in rows:
+            check_name_sql = "select name from topiclist where name=%s"
+            cursor.execute(check_name_sql, (r[0], ))
+            r2 = cursor.fetchall()
+            if len(r2) != 0:
+                continue
+            sub_name = r[0]
+            get_name = True
+            break
+
+        if not get_name:
+            logger_sub.info('can not find a unexist name.')
+            conn.close()
+            return
+
         data = {'name': sub_name, 'type':1}
         logger_sub.info('create subject {}'.format(sub_name))
         response = requests.post(create_url, data=data, cookies=cookie)
         content = json.loads(response.content)
         if 'id' not in content:
-            print 'error: ******  id not in content'
-            print content
+            logger_sub.info('error to create subject : {}'.format(content))
             return
         sub_id = content['id']
 
