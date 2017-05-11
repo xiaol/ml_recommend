@@ -60,6 +60,8 @@ def get_exist_nids():
 ################################################################################
 same_sql = "select nid, same_nid from news_simhash_map where (nid in %s) or (same_nid in %s) "
 def get_relate_same_news(nid_set):
+    if len(nid_set) == 0:
+        return dict()
     conn, cursor = get_postgredb_query()
     nid_tuple = tuple(nid_set)
     cursor.execute(same_sql, (nid_tuple, nid_tuple))
