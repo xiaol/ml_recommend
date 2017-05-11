@@ -23,7 +23,9 @@ def consume_subject():
     global sub_redis
     while True:
         try:
-            sub = json.loads(sub_redis.brpop(sub_queue))
+            ddd = sub_redis.brpop(sub_queue)
+            print ddd
+            sub = json.loads(sub_redis.brpop(sub_queue)[1])
             print sub
             generate_subject(sub)
             break
