@@ -22,22 +22,27 @@ cookie = {'Authorization':'f76f3276c1ac832b935163c451f62a2abf5b253c'}
 
 #创建专题, 获得专题id
 def create_subject(nids):
-    create_url = prefix + '/topics'
-    conn, cursor = get_postgredb()
-    sql = "select title from newslist_v2 where nid=%s"
-    cursor.execute(sql, (nids[0],))
-    rows = cursor.fetchall()
-    sub_name = choose_subject_name([r[0] for r in rows])
-    conn.close()
+    try:
+        logger_sub.info('create subject for {}'.format(nids))
+        create_url = prefix + '/topics'
+        conn, cursor = get_postgredb()
+        sql = "select title from newslist_v2 where nid=%s"
+        cursor.execute(sql, (nids[0],))
+        rows = cursor.fetchall()
+        sub_name = choose_subject_name([r[0] for r in rows])
+        conn.close()
 
-    data = {'name': sub_name, 'type': 1}
-    logger_sub.info('create subject {}'.format(sub_name))
-    response = requests.post(create_url, data=data, cookies=cookie)
-    content = json.loads(response.content)
-    if 'id' not in content:
-        logger_sub.info('error to create subject : {}'.format(content))
+        data = {'name': sub_name, 'type': 1}
+        logger_sub.info('create subject {}'.format(sub_name))
+        response = requests.post(create_url, data=data, cookies=cookie)
+        content = json.loads(response.content)
+        if 'id' not in content:
+            logger_sub.info('error to create subject : {}'.format(content))
+            return
+        return content['id']
+    except:
+        logger_sub.exception(traceback.format_exc())
         return
-    return content['id']
 
 
 #创建class,返回class_id
@@ -205,6 +210,8 @@ def generate_subject(sub):
         sub_id = content['id']
         '''
         sub_id = create_subject(sub_nids)
+        if not sub_id:
+            return
 
         '''
         topic_class_url = prefix + '/topic_classes'
