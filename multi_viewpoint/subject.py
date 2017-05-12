@@ -6,15 +6,67 @@
 # @Software: PyCharm Community Edition
 import requests
 import json
-from util.doc_process import get_postgredb
+from util.doc_process import get_postgredb, get_postgredb_query
 from util.logger import Logger
 import os
 import traceback
+from util.doc_process import cut_pos_ltp
+import operator
+import datetime
 
 real_dir_path = os.path.split(os.path.realpath(__file__))[0]
 logger_sub = Logger('subject', os.path.join(real_dir_path,  'log/log_subject.txt'))
 prefix = 'http://fez.deeporiginalx.com:9001'
 cookie = {'Authorization':'f76f3276c1ac832b935163c451f62a2abf5b253c'}
+
+
+#创建专题, 获得专题id
+def create_subject(nids):
+    create_url = prefix + '/topics'
+    conn, cursor = get_postgredb()
+    sql = "select title from newslist_v2 where nid=%s"
+    cursor.execute(sql, (nids[0],))
+    rows = cursor.fetchall()
+    sub_name = choose_subject_name([r[0] for r in rows])
+    conn.close()
+
+    data = {'name': sub_name, 'type': 1}
+    logger_sub.info('create subject {}'.format(sub_name))
+    response = requests.post(create_url, data=data, cookies=cookie)
+    content = json.loads(response.content)
+    if 'id' not in content:
+        logger_sub.info('error to create subject : {}'.format(content))
+        return
+    return content['id']
+
+
+#创建class,返回class_id
+def create_subject_class(sub_id):
+    topic_class_url = prefix + '/topic_classes'
+    time = datetime.datetime.now()
+    class_name = str(time.month) + '.' + str(time.day)
+    data = {'topic': sub_id, 'name': class_name, 'order': 0}
+    response = requests.post(topic_class_url, data=data, cookies=cookie)
+    return json.loads(response.content)['id']
+
+
+#专题添加新闻
+def add_news_to_subject(sub_id, class_id, nids):
+    add_nid_url = prefix + '/topic_news'
+    for nid in nids:
+        data = {'topic_id':sub_id, 'news_id':nid, 'topic_class_id':class_id}
+        requests.post(add_nid_url, data=data, cookies=cookie)
+
+
+#专题添加关键句子
+def save_subject_sentences(sub_id, sents):
+    #记录专题key_sentence
+    conn, cursor = get_postgredb()
+    sub_sents_sql = "insert into topic_sentences (topic_id, sentences) values (%s, %s)"
+    cursor.execute(sub_sents_sql, (sub_id, json.dumps(sents)))
+    conn.close()
+
+
 ################################################################################
 #@brief: 更新旧专题
 #@input: old_sub_id --- 旧专题id
@@ -22,14 +74,16 @@ cookie = {'Authorization':'f76f3276c1ac832b935163c451f62a2abf5b253c'}
 ################################################################################
 def update_sub(old_sub_id, sub):
     #先获取old_sub_id的class id
-    logger_sub.info('update_sub : {}'.format(sub))
-    sub_class = "select id from topicclasslist where topic=%s"
+    logger_sub.info('update_sub {}: {}'.format(old_sub_id, sub))
     conn, cursor = get_postgredb()
+    '''
+    sub_class = "select id from topicclasslist where topic=%s"
     cursor.execute(sub_class, (old_sub_id, ))
     rows = cursor.fetchall()
     if len(rows) == 0:
         raise ValueError('do not find class id for {}'.format(old_sub_id))
     class_id = rows[0]
+    '''
     add_nid_url = prefix + '/topic_news'
     sub_nids_sql = "select news from topicnews where topic=%s"
     cursor.execute(sub_nids_sql, (old_sub_id, ))
@@ -39,6 +93,8 @@ def update_sub(old_sub_id, sub):
         old_sub_nids_set.add(r[0])
     sub_nids_set = set(sub[1])
 
+    #创建新的class_id
+    class_id = create_subject_class(old_sub_id)
     #topic中添加nid
     for nid in (sub_nids_set - old_sub_nids_set):
         data = {'topic_id':old_sub_id, 'news_id':nid, 'topic_class_id':class_id}
@@ -60,6 +116,46 @@ def update_sub(old_sub_id, sub):
     conn.close()
 
 
+################################################################################
+#@brief: 生成专题名称
+#@input: 新闻的title列表
+################################################################################
+def choose_subject_name(name_list):
+    #首先去除已经存在的专题名
+    check_exist_sql = "select id from topiclist where " \
+                      "create_time > now() - interval '7 day' and " \
+                      "type = 1 and name=%s"
+    conn, cursor = get_postgredb_query()
+    for name in name_list:
+        cursor.execute(check_exist_sql, (name, ))
+        if len(cursor.fetchall()) != 0:
+            name_list.remove(name)
+    conn.close()
+
+    if len(name_list) == 0:
+        raise ValueError('all subject names have existed!')
+
+    word_doc_freq = dict()  #词的
+    name_ws = []
+    name_num = len(name_list)
+    for name in name_list:
+        ws = set(cut_pos_ltp(name, return_str=False))
+        name_ws.append(ws)
+        for w in ws:
+            if w in word_doc_freq:
+                word_doc_freq[w] += 1
+            else:
+                word_doc_freq[w] = 1
+    words_matter = []
+    for item in word_doc_freq.items():
+        if item[1] > name_num / 2:
+            words_matter.append(item[0])
+    words_matter_ratio = []
+    for name in name_ws:
+        name_matter = name & set(words_matter)
+        words_matter_ratio.append(len(name_matter) / float(len(name)))
+    index, value = max(enumerate(words_matter_ratio), key=operator.itemgetter(1))
+    return name_list[index]
 
 ################################################################################
 #@brief: 生成专题
@@ -91,27 +187,13 @@ def generate_subject(sub):
 
 
         ##############需要新建专题#######################
+        '''
         create_url = prefix + '/topics'
         #set subject name as one title of one piece of news
-        sql = "select title from newslist_v2 where nid=%s order by comment desc"
+        sql = "select title from newslist_v2 where nid=%s"
         cursor.execute(sql, (sub_nids[0],))
         rows = cursor.fetchall()
-        sub_name = ''
-        get_name = False
-        for r in rows:
-            check_name_sql = "select name from topiclist where name=%s"
-            cursor.execute(check_name_sql, (r[0], ))
-            r2 = cursor.fetchall()
-            if len(r2) != 0:
-                continue
-            sub_name = r[0]
-            get_name = True
-            break
-
-        if not get_name:
-            logger_sub.info('can not find a unexist name.')
-            conn.close()
-            return
+        sub_name = choose_subject_name([r[0] for r in rows])
 
         data = {'name': sub_name, 'type': 1}
         logger_sub.info('create subject {}'.format(sub_name))
@@ -121,20 +203,33 @@ def generate_subject(sub):
             logger_sub.info('error to create subject : {}'.format(content))
             return
         sub_id = content['id']
+        '''
+        sub_id = create_subject(sub_nids)
 
+        '''
         topic_class_url = prefix + '/topic_classes'
-        data = {'topic': sub_id, 'name': 'random'}
+        time = datetime.datetime.now()
+        class_name = str(time.month) + '.' + str(time.day)
+        data = {'topic': sub_id, 'name': class_name}
         response = requests.post(topic_class_url, data=data, cookies=cookie)
         class_id = json.loads(response.content)['id']
+        '''
+        class_id = create_subject_class(sub_id)
 
+        '''
         add_nid_url = prefix + '/topic_news'
         for nid in sub_nids:
             data = {'topic_id':sub_id, 'news_id':nid, 'topic_class_id':class_id}
             requests.post(add_nid_url, data=data, cookies=cookie)
+        '''
+        add_news_to_subject(sub_id, class_id, sub_nids)
 
+        '''
         #记录专题key_sentence
         sub_sents_sql = "insert into topic_sentences (topic_id, sentences) values (%s, %s)"
         cursor.execute(sub_sents_sql, (sub_id, json.dumps(sub_sents)))
+        '''
+        save_subject_sentences(sub_id, sub_sents)
         conn.commit()
         conn.close()
     except:

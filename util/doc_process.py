@@ -389,7 +389,7 @@ poser.load('/root/git/ltp_data/pos.model')
 
 allow_pos_ltp = ('a', 'i', 'j', 'n', 'nh', 'ni', 'nl', 'ns', 'nt', 'nz', 'v', 'ws')
 #使用哈工大pyltp分词, 过滤词性
-def cut_pos_ltp(doc, filter_pos = True, allow_pos = allow_pos_ltp, remove_tags=True):
+def cut_pos_ltp(doc, filter_pos = True, allow_pos = allow_pos_ltp, remove_tags=True, return_str=True):
     s = ''.join(doc.split())  #去除空白符
     if remove_tags:
         s = filter_tags(s)  #去除html标签
@@ -407,7 +407,10 @@ def cut_pos_ltp(doc, filter_pos = True, allow_pos = allow_pos_ltp, remove_tags=T
     for i, pos in enumerate(poses):
         if pos in allow_pos:
             ss.append(words2[i])
-    return ' '.join(ss)
+    if return_str:
+        return ' '.join(ss)
+    else:
+        return ss
 
 
 #获取idf
