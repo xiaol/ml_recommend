@@ -49,7 +49,7 @@ def create_subject(nids):
 def create_subject_class(sub_id):
     topic_class_url = prefix + '/topic_classes'
     time = datetime.datetime.now()
-    class_name = str(time.month) + '.' + str(time.day)
+    class_name = str(time.month) + '.' + str(time.day) + '.' + str(time.hour) + '.' + str(time.minute)
     #检测是否已经存在
     check_class_ex = "select * from topicclasslist where topic=%s and name=%s"
     conn, cursor = get_postgredb_query()
