@@ -64,13 +64,63 @@ def create_subject_class(sub_id):
     return json.loads(response.content)['id']
 
 
-#专题添加新闻
+#专题添加新闻, 并记录专题-topic
 def add_news_to_subject(sub_id, class_id, nids):
     add_nid_url = prefix + '/topic_news'
-    for nid in nids:
+    conn, cursor = get_postgredb()
+    sub_nids_sql = "select news from topicnews where topic=%s"
+    cursor.execute(sub_nids_sql, (sub_id, ))
+    rows = cursor.fetchall()
+    old_sub_nids_set = set()
+    for r in rows:
+        old_sub_nids_set.add(r[0])
+    sub_nids_set = set(nids)
+    #专题插入新闻
+    for nid in (sub_nids_set - old_sub_nids_set):
         data = {'topic_id':sub_id, 'news_id':nid, 'topic_class_id':class_id}
         requests.post(add_nid_url, data=data, cookies=cookie)
 
+    #查询专题-topic
+    sub_topic_sql = "select model_v, topic_id, probability from subject_topic where subject_id=%s"
+    cursor.execute(sub_topic_sql, (sub_id, ))
+    sub_topic_dict = dict()
+    topic_model_v = ''
+    rows = cursor.fetchall()
+    for r in rows:
+        topic_model_v = r[0]
+        sub_topic_dict[r[1]] = r[2]
+    old_topics = sub_topic_dict.keys()
+    #计算新闻topic
+    news_topic_sql = "select topic_id, probability from news_topic_v2 where nid=%s and model_v=%s"
+    news_topics_dict = dict()
+    for nid in nids:
+        cursor.execute(news_topic_sql, (nid, topic_model_v))
+        rows2 = cursor.fetchall()
+        for r in rows2:
+            if r[0] in news_topics_dict:
+                news_topics_dict[r[0]] += r[1]
+            else:
+                news_topics_dict[r[0]] = r[1]
+    #更新专题
+    for item in news_topics_dict.items():
+        if item[0] in sub_topic_dict:
+            sub_topic_dict[item[0]] += item[1]/len(nids)
+        else:
+            sub_topic_dict[item[0]] = item[1]/len(nids)
+    sub_topic_sort = sorted(sub_topic_dict.items(), key=lambda d:d[1], reverse=True)
+    time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    update_sub_topic = "update subject_topic set probability=%s and ctime=%s where subject_id=%s and model_v=%s and topic_id=%s"
+    insert_sub_topic = "insert into subject_topic (subject_id, model_v, topic_id, probability, ctime) values (%s, %s, %s, %s, %s)"
+    for i in range(0, max(len(sub_topic_sort, 10))):
+        tid = sub_topic_sort[i][0]
+        tp = sub_topic_sort[i][1]
+        if tid in old_topics:
+            cursor.execute(update_sub_topic, (tp, time, sub_id, topic_model_v, tid))
+        else:
+            cursor.execute(insert_sub_topic, (sub_id, topic_model_v, tid, tp, time))
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 #专题添加关键句子
 def save_subject_sentences(sub_id, sents):
@@ -98,6 +148,7 @@ def update_sub(old_sub_id, sub):
         raise ValueError('do not find class id for {}'.format(old_sub_id))
     class_id = rows[0]
     '''
+    '''
     add_nid_url = prefix + '/topic_news'
     sub_nids_sql = "select news from topicnews where topic=%s"
     cursor.execute(sub_nids_sql, (old_sub_id, ))
@@ -113,6 +164,8 @@ def update_sub(old_sub_id, sub):
     for nid in (sub_nids_set - old_sub_nids_set):
         data = {'topic_id':old_sub_id, 'news_id':nid, 'topic_class_id':class_id}
         requests.post(add_nid_url, data=data, cookies=cookie)
+    '''
+    add_news_to_subject(old_sub_id, sub[1])
     #topic中添加key_sentence
     sent_sql = "select sentences from topic_sentences where topic_id=%s"
     cursor.execute(sent_sql, (old_sub_id, ))
