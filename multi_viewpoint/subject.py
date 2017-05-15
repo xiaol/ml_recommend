@@ -166,7 +166,9 @@ def update_sub(old_sub_id, sub):
         data = {'topic_id':old_sub_id, 'news_id':nid, 'topic_class_id':class_id}
         requests.post(add_nid_url, data=data, cookies=cookie)
     '''
-    add_news_to_subject(old_sub_id, sub[1])
+    #创建新的class_id
+    class_id = create_subject_class(old_sub_id)
+    add_news_to_subject(old_sub_id, class_id, sub[1])
     #topic中添加key_sentence
     sent_sql = "select sentences from topic_sentences where topic_id=%s"
     cursor.execute(sent_sql, (old_sub_id, ))
