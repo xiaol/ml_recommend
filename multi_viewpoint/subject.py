@@ -26,9 +26,9 @@ def create_subject(nids):
         logger_sub.info('create subject for {}'.format(nids))
         create_url = prefix + '/topics'
         conn, cursor = get_postgredb()
-        sql = "select title from newslist_v2 where nid in (%s)"
+        sql = "select title from newslist_v2 where nid in ({})"
         nid_str = ', '.join(str(i) for i in nids)
-        cursor.execute(sql, (nid_str,))
+        cursor.execute(sql.format(nid_str))
         rows = cursor.fetchall()
         sub_name = choose_subject_name([r[0] for r in rows])
         conn.close()
