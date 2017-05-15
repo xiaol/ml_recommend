@@ -103,7 +103,7 @@ def consume_nid_simhash(num=1):
         nid_list.append(nid)
         n += 1
         t1 = datetime.datetime.now()
-        if n >=num or (t1 - t0).total_seconds() > 10:
+        if n >=num or (t1 - t0).total_seconds() > 0.1:
             sim_hash.cal_and_check_news_hash(nid_list)
             for i in nid_list:
                 redis_inst.lpush(sentence_simhash_queue, i)
