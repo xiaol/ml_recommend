@@ -77,6 +77,7 @@ def add_news_to_subject(sub_id, class_id, nids):
         old_sub_nids_set.add(r[0])
     sub_nids_set = set(nids)
     #专题插入新闻
+    logger_sub.info('add {} to {}'.format(sub_nids_set - old_sub_nids_set, sub_id))
     for nid in (sub_nids_set - old_sub_nids_set):
         data = {'topic_id':sub_id, 'news_id':nid, 'topic_class_id':class_id}
         requests.post(add_nid_url, data=data, cookies=cookie)
@@ -122,6 +123,7 @@ def add_news_to_subject(sub_id, class_id, nids):
     conn.commit()
     cursor.close()
     conn.close()
+
 
 #专题添加关键句子
 def save_subject_sentences(sub_id, sents):
