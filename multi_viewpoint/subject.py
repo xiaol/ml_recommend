@@ -26,8 +26,9 @@ def create_subject(nids):
         logger_sub.info('create subject for {}'.format(nids))
         create_url = prefix + '/topics'
         conn, cursor = get_postgredb()
-        sql = "select title from newslist_v2 where nid=%s"
-        cursor.execute(sql, (nids[0],))
+        sql = "select title from newslist_v2 where nid in (%s)"
+        nid_str = ', '.join(str(i) for i in nids)
+        cursor.execute(sql, (nid_str,))
         rows = cursor.fetchall()
         sub_name = choose_subject_name([r[0] for r in rows])
         conn.close()
@@ -111,7 +112,7 @@ def add_news_to_subject(sub_id, class_id, nids):
     time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     update_sub_topic = "update subject_topic set probability=%s and ctime=%s where subject_id=%s and model_v=%s and topic_id=%s"
     insert_sub_topic = "insert into subject_topic (subject_id, model_v, topic_id, probability, ctime) values (%s, %s, %s, %s, %s)"
-    for i in range(0, max(len(sub_topic_sort, 10))):
+    for i in range(0, max(len(sub_topic_sort), 10)):
         tid = sub_topic_sort[i][0]
         tp = sub_topic_sort[i][1]
         if tid in old_topics:
@@ -169,8 +170,8 @@ def update_sub(old_sub_id, sub):
     #topic中添加key_sentence
     sent_sql = "select sentences from topic_sentences where topic_id=%s"
     cursor.execute(sent_sql, (old_sub_id, ))
-    row = cursor.fetchone()  #返回的是关键句子的list
-    if len(row) > 0:
+    row = cursor.fetchone()
+    if row:
         old_sents = row[0]
     else:
         old_sents = []
