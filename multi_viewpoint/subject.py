@@ -94,18 +94,26 @@ def add_news_to_subject(sub_id, class_id, nids):
         sub_topic_dict[r[1]] = r[2]
     old_topics = sub_topic_dict.keys()
     #计算新闻topic
-    news_topic_sql = "select topic_id, probability from news_topic_v2 where nid=%s and model_v=%s"
+    news_topic_sql = "select topic_id, probability, model_v from news_topic_v2 where nid=%s"
+    topic_model_set = set()
     news_topics_dict = dict()
     for nid in added_nids:
-        logger_sub.info(cursor.mogrify(news_topic_sql, (nid, topic_model_v)))
-        cursor.execute(news_topic_sql, (nid, topic_model_v))
+        logger_sub.info(cursor.mogrify(news_topic_sql, (nid, )))
+        cursor.execute(news_topic_sql, (nid, ))
         rows2 = cursor.fetchall()
         logger_sub.info('news topics len :{}'.format(rows2))
         for r in rows2:
+            topic_model_set.add(r[2])
             if r[0] in news_topics_dict:
                 news_topics_dict[r[0]] += r[1]
             else:
                 news_topics_dict[r[0]] = r[1]
+    if len(topic_model_set) == 0 or len(topic_model_set) != 1 or \
+       (topic_model_v != '' and topic_model_v != list(topic_model_set)[0]):  #包含多个版本的topic信息
+        conn.close()
+        return
+    if topic_model_v == '':
+        topic_model_v = list(topic_model_set)[0]
     #更新专题
     for item in news_topics_dict.items():
         if item[0] in sub_topic_dict:
