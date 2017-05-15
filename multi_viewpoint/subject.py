@@ -98,10 +98,8 @@ def add_news_to_subject(sub_id, class_id, nids):
     topic_model_set = set()
     news_topics_dict = dict()
     for nid in added_nids:
-        logger_sub.info(cursor.mogrify(news_topic_sql, (nid, )))
         cursor.execute(news_topic_sql, (nid, ))
         rows2 = cursor.fetchall()
-        logger_sub.info('news topics len :{}'.format(rows2))
         for r in rows2:
             topic_model_set.add(r[2])
             if r[0] in news_topics_dict:
@@ -115,15 +113,12 @@ def add_news_to_subject(sub_id, class_id, nids):
     if topic_model_v == '':
         topic_model_v = list(topic_model_set)[0]
     #更新专题
-    logger_sub.info('sub_topic_dict : {}'.format(sub_topic_dict))
-    logger_sub.info('news_topic_dict: {}'.format(news_topics_dict))
     for item in news_topics_dict.items():
         if item[0] in sub_topic_dict:
             sub_topic_dict[item[0]] += item[1]/len(added_nids)
         else:
             sub_topic_dict[item[0]] = item[1]/len(added_nids)
     sub_topic_sort = sorted(sub_topic_dict.items(), key=lambda d:d[1], reverse=True)
-    logger_sub.info('sub_topic_sort len = {}'.format(len(sub_topic_sort)))
     time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     update_sub_topic = "update subject_topic set probability=%s and ctime=%s where subject_id=%s and model_v=%s and topic_id=%s"
     insert_sub_topic = "insert into subject_topic (subject_id, model_v, topic_id, probability, ctime) values (%s, %s, %s, %s, %s)"
