@@ -112,7 +112,7 @@ def add_news_to_subject(sub_id, class_id, nids):
     time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     update_sub_topic = "update subject_topic set probability=%s and ctime=%s where subject_id=%s and model_v=%s and topic_id=%s"
     insert_sub_topic = "insert into subject_topic (subject_id, model_v, topic_id, probability, ctime) values (%s, %s, %s, %s, %s)"
-    for i in range(0, max(len(sub_topic_sort), 10)):
+    for i in range(0, min(len(sub_topic_sort), 10)):
         tid = sub_topic_sort[i][0]
         tp = sub_topic_sort[i][1]
         if tid in old_topics:
