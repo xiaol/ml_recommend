@@ -78,7 +78,8 @@ def add_news_to_subject(sub_id, class_id, nids):
     sub_nids_set = set(nids)
     #专题插入新闻
     logger_sub.info('add {} to {}'.format(sub_nids_set - old_sub_nids_set, sub_id))
-    for nid in (sub_nids_set - old_sub_nids_set):
+    added_nids = sub_nids_set - old_sub_nids_set
+    for nid in added_nids:
         data = {'topic_id':sub_id, 'news_id':nid, 'topic_class_id':class_id}
         requests.post(add_nid_url, data=data, cookies=cookie)
 
@@ -95,9 +96,11 @@ def add_news_to_subject(sub_id, class_id, nids):
     #计算新闻topic
     news_topic_sql = "select topic_id, probability from news_topic_v2 where nid=%s and model_v=%s"
     news_topics_dict = dict()
-    for nid in nids:
+    for nid in added_nids:
+        logger_sub.info(cursor.mogrify(news_topic_sql, (nid, topic_model_v)))
         cursor.execute(news_topic_sql, (nid, topic_model_v))
         rows2 = cursor.fetchall()
+        logger_sub.info('news topics len :{}'.format(rows2))
         for r in rows2:
             if r[0] in news_topics_dict:
                 news_topics_dict[r[0]] += r[1]
@@ -110,6 +113,7 @@ def add_news_to_subject(sub_id, class_id, nids):
         else:
             sub_topic_dict[item[0]] = item[1]/len(nids)
     sub_topic_sort = sorted(sub_topic_dict.items(), key=lambda d:d[1], reverse=True)
+    logger_sub.info('sub_topic_sort len = '.format(len(sub_topic_sort)))
     time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     update_sub_topic = "update subject_topic set probability=%s and ctime=%s where subject_id=%s and model_v=%s and topic_id=%s"
     insert_sub_topic = "insert into subject_topic (subject_id, model_v, topic_id, probability, ctime) values (%s, %s, %s, %s, %s)"
