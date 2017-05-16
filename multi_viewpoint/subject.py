@@ -34,7 +34,7 @@ def create_subject(nids):
         sub_name = choose_subject_name([r[0] for r in rows])
         conn.close()
 
-        data = {'name': sub_name, 'type': 1, 'cover':subject_cover}
+        data = {'name': sub_name, 'type': 1, 'cover': subject_cover}
         logger_sub.info('create subject {}'.format(sub_name))
         response = requests.post(create_url, data=data, cookies=cookie)
         content = json.loads(response.content)
@@ -62,8 +62,12 @@ def create_subject_class(sub_id):
         return row[0]
 
     data = {'topic': sub_id, 'name': class_name, 'order': 0}
-    response = requests.post(topic_class_url, data=data, cookies=cookie)
-    return json.loads(response.content)['id']
+    try:
+        response = requests.post(topic_class_url, data=data, cookies=cookie)
+        return json.loads(response.content)['id']
+    except:
+        logger_sub.exception(response.content)
+        raise
 
 
 #专题添加新闻, 并记录专题-topic
