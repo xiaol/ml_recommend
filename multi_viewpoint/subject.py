@@ -18,6 +18,7 @@ real_dir_path = os.path.split(os.path.realpath(__file__))[0]
 logger_sub = Logger('subject', os.path.join(real_dir_path,  'log/log_subject.txt'))
 prefix = 'http://fez.deeporiginalx.com:9001'
 cookie = {'Authorization':'f76f3276c1ac832b935163c451f62a2abf5b253c'}
+subject_cover='http://pro-pic.deeporiginalx.com/dcc37b1de772f38776e3a8d945b410ed057832c7e1046859dbe030a642155811.jpg'
 
 
 #创建专题, 获得专题id
@@ -33,7 +34,7 @@ def create_subject(nids):
         sub_name = choose_subject_name([r[0] for r in rows])
         conn.close()
 
-        data = {'name': sub_name, 'type': 1}
+        data = {'name': sub_name, 'type': 1, 'cover':subject_cover}
         logger_sub.info('create subject {}'.format(sub_name))
         response = requests.post(create_url, data=data, cookies=cookie)
         content = json.loads(response.content)
