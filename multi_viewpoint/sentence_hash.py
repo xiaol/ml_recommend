@@ -462,7 +462,8 @@ del_sentenct_sql = "delete from news_sentence_hash_copy " \
 logger_9963 = logger.Logger('9963', os.path.join(real_dir_path,  'log/log_9963.txt'))
 def move_sentence_data():
     try:
-        t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        nt = datetime.datetime.now()
+        t = nt.strftime('%Y-%m-%d %H:%M:%S')
         logger_9963.info('move_sentence_data--- {}'.format(t))
         conn, cursor = get_postgredb()
         cursor.execute(move_sentenct_sql, (t, ))
@@ -470,7 +471,8 @@ def move_sentence_data():
         cursor.execute(del_sentenct_sql, (t, ))
         conn.commit()
         conn.close()
-        logger_9963.info('finished to move_sentence_data.')
+        nt2 = datetime.datetime.now()
+        logger_9963.info('finished to move_sentence_data. it takes {} s'.format((nt2 - nt).total_seconds()))
     except:
         logger_9963.info(traceback.format_exc())
 
