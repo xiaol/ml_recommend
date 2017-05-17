@@ -40,18 +40,14 @@ if __name__ == '__main__':
         http_server.listen(port)
         from multi_viewpoint import subject_queue
         subject_queue.consume_subject()
-    elif port == 9963:  #每隔3天, move一次sentence_hash
+    elif port == 9963:  #每隔1天, move一次sentence_hash
         from tornado import ioloop
         http_server = tornado.httpserver.HTTPServer(Application())
         http_server.listen(port)
         from multi_viewpoint.sentence_hash import move_sentence_data
-        #每三天执行依次数据迁移
+        #每一天执行一次数据迁移
         ioloop.PeriodicCallback(move_sentence_data, 24 * 3600 * 1000).start() #定时从点击表中取
         #move_sentence_data()
-
-
-
-
 
     tornado.ioloop.IOLoop.instance().start()
 
