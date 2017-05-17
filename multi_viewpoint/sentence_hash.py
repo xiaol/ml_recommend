@@ -381,9 +381,9 @@ def cal_process(nid_set, log=None, same_t=3, news_interval=3, same_dict = {}):
                 cursor_query.close()
                 conn_query.close()
             if len(subject_sentence_nids) > 0:
-                log.info("before merge : {}".format(subject_sentence_nids))
+                #log.info("before merge : {}".format(subject_sentence_nids))
                 subs = merge_subs(subject_sentence_nids)
-                log.info("after merge : {}".format(subs))
+                #log.info("after merge : {}".format(subs))
                 for sub in subs:
                     subject_queue.product_subject(sub)
                 #log.info('generate subject for {} ------ {}'.format(nid, subject_nids))
@@ -404,7 +404,7 @@ def coll_sentence_hash_time(nid_list):
     try:
         from util.doc_process import keep_nids_based_cnames
         nid_list = keep_nids_based_cnames(tuple(nid_list), channel_for_multi_vp)
-        small_list = [nid_list[i:i + 20] for i in range(0, len(nid_list), 20)]
+        small_list = [nid_list[i:i + 5] for i in range(0, len(nid_list), 5)]
         pool = Pool(20)
         same_dict = get_relate_same_news(set(nid_list))
         for nid_set in small_list:
