@@ -362,7 +362,7 @@ def cal_process(nid_set, log=None, same_t=3, news_interval=3, same_dict = {}):
                                         sub_nids_set.add(same[0])
                                         sub_nids_set.add(same[1])
                                 #log.info("num of mvp is {}".format(sub_nids_set))
-                                if len(sub_nids_set) >= 5:  ## 专题新闻入队列
+                                if len(sub_nids_set) >= 2:  ## 专题新闻入队列
                                     log.info('generate subject for {}'.format(sub_nids_set))
                                     #for i in sub_nids_set:
                                     #    subject_nids.add(i)
