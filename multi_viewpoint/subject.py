@@ -162,6 +162,7 @@ def save_subject_sentences(sub_id, sents):
     conn, cursor = get_postgredb()
     sub_sents_sql = "insert into topic_sentences (topic_id, sentences) values (%s, %s)"
     cursor.execute(sub_sents_sql, (sub_id, json.dumps(sents)))
+    conn.commit()
     conn.close()
 
 
