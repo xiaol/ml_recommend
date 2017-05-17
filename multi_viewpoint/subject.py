@@ -137,12 +137,12 @@ def add_news_to_subject(sub_id, class_id, nids):
 
     #专题的新闻总数大于5就自动上线
     all_nids = old_sub_nids_set | sub_nids_set
-    #logger_sub.info('{} -- {}. all nids len is {}'.format(old_sub_nids_set, sub_nids_set, len(all_nids)))
+    logger_sub.info('{} -- {}. all nids len is {}'.format(old_sub_nids_set, sub_nids_set, len(all_nids)))
     if len(all_nids) >= 5:
         online_url = prefix + '/topics/online'
         data = {'zt_id': sub_id, 'online': 0}
         respond = requests.get(online_url, data=data, cookies=cookie)
-        #logger_sub.info('online response : {}'.format(respond.content))
+        logger_sub.info('online response : {}'.format(respond.content))
 
     conn.commit()
     cursor.close()
