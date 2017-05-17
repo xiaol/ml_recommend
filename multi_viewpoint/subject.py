@@ -134,6 +134,14 @@ def add_news_to_subject(sub_id, class_id, nids):
             cursor.execute(update_sub_topic, (tp, time, sub_id, topic_model_v, tid))
         else:
             cursor.execute(insert_sub_topic, (sub_id, topic_model_v, tid, tp, time))
+
+    #专题的新闻总数大于5就自动上线
+    all_nids = old_sub_nids_set | sub_nids_set
+    if len(all_nids) >= 5:
+        online_url = prefix + '/topics/online'
+        data = {'zt_id': sub_id, 'online': 0}
+        requests.post(online_url, data=data, cookies=cookie)
+
     conn.commit()
     cursor.close()
     conn.close()
