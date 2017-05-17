@@ -54,15 +54,19 @@ def create_subject_class(sub_id):
     #class_name = str(time.month) + '.' + str(time.day) + '.' + str(time.hour) + '.' + str(time.minute)
     class_name = str(time.month) + '.' + str(time.day)
     #检测是否已经存在
-    check_class_ex = "select * from topicclasslist where topic=%s and name=%s"
+    #check_class_ex = "select id, name, order from topicclasslist where topic=%s and name=%s"
+    check_class_ex = "select id, name, order from topicclasslist where topic=%s"
     conn, cursor = get_postgredb_query()
-    cursor.execute(check_class_ex, (sub_id, class_name))
-    row = cursor.fetchone()
+    cursor.execute(check_class_ex, (sub_id, ))
+    rows = cursor.fetchall()
     conn.close()
-    if row:
-        return row[0]
+    new_order = -1
+    for row in rows:
+        if row[1] == class_name:
+            return row[0]
+        new_order = max(new_order, row[2])
 
-    data = {'topic': sub_id, 'name': class_name, 'order': 0}
+    data = {'topic': sub_id, 'name': class_name, 'order': new_order + 1}
     try:
         response = requests.post(topic_class_url, data=data, cookies=cookie)
         return json.loads(response.content)['id']
