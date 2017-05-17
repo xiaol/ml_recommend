@@ -55,7 +55,7 @@ def create_subject_class(sub_id):
     class_name = str(time.month) + '.' + str(time.day)
     #检测是否已经存在
     #check_class_ex = "select id, name, order from topicclasslist where topic=%s and name=%s"
-    check_class_ex = "select id, name, order from topicclasslist where topic=%s"
+    check_class_ex = "select id, name, \"order\" from topicclasslist where topic=%s"
     conn, cursor = get_postgredb_query()
     cursor.execute(check_class_ex, (sub_id, ))
     rows = cursor.fetchall()
