@@ -141,7 +141,9 @@ def add_news_to_subject(sub_id, class_id, nids):
     if len(all_nids) >= 5:
         online_url = prefix + '/topics/online'
         data = {'zt_id': sub_id, 'online': 0}
-        respond = requests.get(online_url, data=data, cookies=cookie)
+        logger_sub.info('url is {}'.format(online_url))
+        logger_sub.info(('data is {}'.format(data)))
+        respond = requests.get(online_url, params=data, cookies=cookie)
         logger_sub.info('online response : {}'.format(respond.content))
 
     conn.commit()
