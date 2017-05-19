@@ -170,7 +170,7 @@ def update_sub_name_on_nids(sub_id, nids):
     cursor.execute(sql.format(nid_str))
     rows = cursor.fetchall()
     mod_name = choose_subject_name([r[0] for r in rows])
-    modify_url = prefix + '/topics_modify'
+    modify_url = prefix + '/topics/modify'
     data = {'id': sub_id, 'name': mod_name}
     respond = requests.post(modify_url, data=data, cookies=cookie)
     logger_sub.info('response:  {}'.format(respond.content))
