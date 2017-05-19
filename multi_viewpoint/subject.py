@@ -272,7 +272,9 @@ def generate_subject(sub):
         ##############检查是否需要新建专题还是更新到旧专题###
         conn, cursor = get_postgredb()
         oldsub_nid_dict = dict()  #记录旧topic--与本sub相同的nid
-        nid_old_sub_sql = "select topic, news from topicnews where news in %s"
+        nid_old_sub_sql = "select tn.topic, tn.news from topicnews tn " \
+                          "inner join topiclist tl on tn.topic=tl.id " \
+                          "where news in %s and tl.type=1"
         cursor.execute(nid_old_sub_sql, (tuple(sub_nids), ))
         rows = cursor.fetchall()
         for r in rows:
