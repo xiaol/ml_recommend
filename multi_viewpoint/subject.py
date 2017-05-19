@@ -166,6 +166,21 @@ def save_subject_sentences(sub_id, sents):
     conn.close()
 
 
+def update_sub_name_on_nids(sub_id, nids):
+    conn, cursor = get_postgredb_query()
+    sql = "select title from newslist_v2 where nid in ({})"
+    nid_str = ', '.join(str(i) for i in nids)
+    cursor.execute(sql.format(nid_str))
+    rows = cursor.fetchall()
+    mod_name = choose_subject_name([r[0] for r in rows])
+    modify_url = prefix + '/topics_modify'
+    data = {'id': sub_id, 'name': mod_name}
+    requests.post(modify_url, data=data, cookies=cookie)
+    logger_sub.info('update sub name to {}'.format(mod_name))
+    cursor.close()
+    conn.close()
+
+
 ################################################################################
 #@brief: 更新旧专题
 #@input: old_sub_id --- 旧专题id
@@ -175,34 +190,13 @@ def update_sub(old_sub_id, sub):
     #先获取old_sub_id的class id
     logger_sub.info('update_sub {}: {}'.format(old_sub_id, sub))
     conn, cursor = get_postgredb()
-    '''
-    sub_class = "select id from topicclasslist where topic=%s"
-    cursor.execute(sub_class, (old_sub_id, ))
-    rows = cursor.fetchall()
-    if len(rows) == 0:
-        raise ValueError('do not find class id for {}'.format(old_sub_id))
-    class_id = rows[0]
-    '''
-    '''
-    add_nid_url = prefix + '/topic_news'
-    sub_nids_sql = "select news from topicnews where topic=%s"
-    cursor.execute(sub_nids_sql, (old_sub_id, ))
-    rows = cursor.fetchall()
-    old_sub_nids_set = set()
-    for r in rows:
-        old_sub_nids_set.add(r[0])
-    sub_nids_set = set(sub[1])
-
-    #创建新的class_id
-    class_id = create_subject_class(old_sub_id)
-    #topic中添加nid
-    for nid in (sub_nids_set - old_sub_nids_set):
-        data = {'topic_id':old_sub_id, 'news_id':nid, 'topic_class_id':class_id}
-        requests.post(add_nid_url, data=data, cookies=cookie)
-    '''
     #创建新的class_id
     class_id = create_subject_class(old_sub_id)
     add_news_to_subject(old_sub_id, class_id, sub[1])
+
+    #更新专题名称
+    update_sub_name_on_nids(old_sub_id, sub[1])
+
     #topic中添加key_sentence
     sent_sql = "select sentences from topic_sentences where topic_id=%s"
     cursor.execute(sent_sql, (old_sub_id, ))
