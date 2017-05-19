@@ -146,10 +146,7 @@ def add_news_to_subject(sub_id, class_id, nids):
     if len(all_nids) >= 5:
         online_url = prefix + '/topics/online'
         data = {'zt_id': sub_id, 'online': 0}
-        logger_sub.info('url is {}'.format(online_url))
-        logger_sub.info(('data is {}'.format(data)))
-        respond = requests.get(online_url, params=data, cookies=cookie)
-        logger_sub.info('online response : {}'.format(respond.content))
+        requests.get(online_url, params=data, cookies=cookie)
 
     conn.commit()
     cursor.close()
@@ -175,8 +172,9 @@ def update_sub_name_on_nids(sub_id, nids):
     mod_name = choose_subject_name([r[0] for r in rows])
     modify_url = prefix + '/topics_modify'
     data = {'id': sub_id, 'name': mod_name}
-    requests.post(modify_url, data=data, cookies=cookie)
-    logger_sub.info('update sub name to {}'.format(mod_name))
+    respond = requests.post(modify_url, data=data, cookies=cookie)
+    logger_sub.info('response:  {}'.format(respond.content))
+    logger_sub.info('update {} sub name to {}'.format(sub_id, mod_name))
     cursor.close()
     conn.close()
 
