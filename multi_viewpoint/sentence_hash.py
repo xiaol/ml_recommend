@@ -148,8 +148,13 @@ def merge_subs(subs_list):
 def merge_subs(subs_list):
     new_subs = []
     for i in xrange(len(subs_list)):
+        if len(subs_list[i][1]) <= 4:  #新闻个数小于4个不合并
+            new_subs.append(subs_list[i])
+            continue
         merg = False
         for j in xrange(len(new_subs)):
+            if len(new_subs[j][1]) <= 4:  #不能和新闻数小于4的专题合并
+                continue
             if should_subject_merge(subs_list[i], new_subs[j]):
                 new_subs[j] = merge_subject(subs_list[i], new_subs[j])
                 merg = True

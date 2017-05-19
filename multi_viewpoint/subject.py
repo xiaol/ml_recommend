@@ -262,26 +262,27 @@ def generate_subject(sub):
         sub_sents = sub[0]
         sub_nids = sub[1]
         ##############检查是否需要新建专题还是更新到旧专题###
-        conn, cursor = get_postgredb()
-        oldsub_nid_dict = dict()  #记录旧topic--与本sub相同的nid
-        nid_old_sub_sql = "select tn.topic, tn.news from topicnews tn " \
-                          "inner join topiclist tl on tn.topic=tl.id " \
-                          "where news in %s and tl.type=1"
-        cursor.execute(nid_old_sub_sql, (tuple(sub_nids), ))
-        rows = cursor.fetchall()
-        for r in rows:
-             if r[0] in oldsub_nid_dict:
-                 oldsub_nid_dict[r[0]].append(r[1])
-             else:
-                 oldsub_nid_dict[r[0]] = [r[1], ]
-        update = False
-        for item in oldsub_nid_dict.items():
-            if float(len(item[1])) >= 0.5 * len(sub_nids):  #sub一半以上的nid包含在旧subject内,则把sub合并进旧subject
-                update_sub(item[0], sub)
-                update = True
-        if update:
-            conn.close()
-            return
+        if len(sub_nids) > 4:  #含4条以上新闻才可以合并到其他专题
+            conn, cursor = get_postgredb()
+            oldsub_nid_dict = dict()  #记录旧topic--与本sub相同的nid
+            nid_old_sub_sql = "select tn.topic, tn.news from topicnews tn " \
+                              "inner join topiclist tl on tn.topic=tl.id " \
+                              "where news in %s and tl.type=1"
+            cursor.execute(nid_old_sub_sql, (tuple(sub_nids), ))
+            rows = cursor.fetchall()
+            for r in rows:
+                 if r[0] in oldsub_nid_dict:
+                     oldsub_nid_dict[r[0]].append(r[1])
+                 else:
+                     oldsub_nid_dict[r[0]] = [r[1], ]
+            update = False
+            for item in oldsub_nid_dict.items():
+                if float(len(item[1])) >= 0.5 * len(sub_nids):  #sub一半以上的nid包含在旧subject内,则把sub合并进旧subject
+                    update_sub(item[0], sub)
+                    update = True
+            if update:
+                conn.close()
+                return
 
 
         ##############需要新建专题#######################
