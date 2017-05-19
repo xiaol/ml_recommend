@@ -87,7 +87,6 @@ def add_news_to_subject(sub_id, class_id, nids):
         old_sub_nids_set.add(r[0])
     sub_nids_set = set(nids)
     #专题插入新闻
-    logger_sub.info('add {} to {}'.format(sub_nids_set - old_sub_nids_set, sub_id))
     added_nids = sub_nids_set - old_sub_nids_set
     for nid in added_nids:
         data = {'topic_id':sub_id, 'news_id':nid, 'topic_class_id':class_id}
@@ -142,7 +141,7 @@ def add_news_to_subject(sub_id, class_id, nids):
 
     #专题的新闻总数大于5就自动上线
     all_nids = old_sub_nids_set | sub_nids_set
-    logger_sub.info('{} -- {}. all nids len is {}'.format(old_sub_nids_set, sub_nids_set, len(all_nids)))
+    logger_sub.info('    sub {} :{} -change to - {}'.format(sub_id, old_sub_nids_set, all_nids))
     if len(all_nids) >= 5:
         online_url = prefix + '/topics/online'
         data = {'zt_id': sub_id, 'online': 0}
@@ -186,7 +185,7 @@ def update_sub_name_on_nids(sub_id, nids):
 ################################################################################
 def update_sub(old_sub_id, sub):
     #先获取old_sub_id的class id
-    logger_sub.info('update_sub {}: {}'.format(old_sub_id, sub))
+    logger_sub.info('    update_sub {}: {}'.format(old_sub_id, sub))
     conn, cursor = get_postgredb()
     #创建新的class_id
     class_id = create_subject_class(old_sub_id)
@@ -261,6 +260,7 @@ def generate_subject(sub):
     try:
         sub_sents = sub[0]
         sub_nids = sub[1]
+        logger_sub.info('prepare to create subject for {}'.format(sub_nids))
         ##############检查是否需要新建专题还是更新到旧专题###
         if len(sub_nids) > 4:  #含4条以上新闻才可以合并到其他专题
             conn, cursor = get_postgredb()
