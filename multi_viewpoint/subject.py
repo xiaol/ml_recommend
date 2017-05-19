@@ -17,6 +17,11 @@ import datetime
 real_dir_path = os.path.split(os.path.realpath(__file__))[0]
 logger_sub = Logger('subject', os.path.join(real_dir_path,  'log/log_subject.txt'))
 prefix = 'http://fez.deeporiginalx.com:9001'
+create_url = prefix + '/topics'
+topic_class_url = prefix + '/topic_classes'
+add_nid_url = prefix + '/topic_news'
+online_url = prefix + '/topics/online'
+modify_url = prefix + '/topics/modify'
 cookie = {'Authorization':'f76f3276c1ac832b935163c451f62a2abf5b253c'}
 subject_cover='http://pro-pic.deeporiginalx.com/dcc37b1de772f38776e3a8d945b410ed057832c7e1046859dbe030a642155811.jpg'
 
@@ -25,7 +30,6 @@ subject_cover='http://pro-pic.deeporiginalx.com/dcc37b1de772f38776e3a8d945b410ed
 def create_subject(nids):
     try:
         logger_sub.info('create subject for {}'.format(nids))
-        create_url = prefix + '/topics'
         conn, cursor = get_postgredb()
         sql = "select title from newslist_v2 where nid in ({})"
         nid_str = ', '.join(str(i) for i in nids)
@@ -49,7 +53,6 @@ def create_subject(nids):
 
 #创建class,返回class_id
 def create_subject_class(sub_id):
-    topic_class_url = prefix + '/topic_classes'
     time = datetime.datetime.now()
     #class_name = str(time.month) + '.' + str(time.day) + '.' + str(time.hour) + '.' + str(time.minute)
     class_name = str(time.month) + '.' + str(time.day)
@@ -77,7 +80,6 @@ def create_subject_class(sub_id):
 
 #专题添加新闻, 并记录专题-topic
 def add_news_to_subject(sub_id, class_id, nids):
-    add_nid_url = prefix + '/topic_news'
     conn, cursor = get_postgredb()
     sub_nids_sql = "select news from topicnews where topic=%s"
     cursor.execute(sub_nids_sql, (sub_id, ))
@@ -143,7 +145,6 @@ def add_news_to_subject(sub_id, class_id, nids):
     all_nids = old_sub_nids_set | sub_nids_set
     logger_sub.info('    sub {} :{} -change to - {}'.format(sub_id, old_sub_nids_set, all_nids))
     if len(all_nids) >= 5:
-        online_url = prefix + '/topics/online'
         data = {'zt_id': sub_id, 'online': 0}
         requests.get(online_url, params=data, cookies=cookie)
 
@@ -169,7 +170,6 @@ def update_sub_name_on_nids(sub_id, nids):
     cursor.execute(sql.format(nid_str))
     rows = cursor.fetchall()
     mod_name = choose_subject_name([r[0] for r in rows])
-    modify_url = prefix + '/topics/modify'
     data = {'id': sub_id, 'name': mod_name}
     respond = requests.put(modify_url, data=data, cookies=cookie)
     logger_sub.info('response:  {}'.format(respond.content))
@@ -335,3 +335,16 @@ def generate_subject(sub):
         conn.close()
     except:
         logger_sub.exception(traceback.format_exc())
+
+
+#为没有封面的专题添加封面
+def add_cover_to_sub():
+    conn, cursor = get_postgredb_query()
+    cover_sql = "select id from topiclist where type=1 and cover=''"
+    cursor.execute(cover_sql)
+    rows = cursor.fetchall()
+    for r in rows:
+        data = {'id': r[0], 'cover': subject_cover}
+        requests.put(modify_url, data=data, cookies=cookie)
+    cursor.close()
+    conn.close()
