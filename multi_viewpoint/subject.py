@@ -22,6 +22,7 @@ topic_class_url = prefix + '/topic_classes'
 add_nid_url = prefix + '/topic_news'
 online_url = prefix + '/topics/online'
 modify_url = prefix + '/topics/modify'
+delete_sub_url = prefix + '/topics/delete'
 cookie = {'Authorization':'f76f3276c1ac832b935163c451f62a2abf5b253c'}
 subject_cover='http://pro-pic.deeporiginalx.com/dcc37b1de772f38776e3a8d945b410ed057832c7e1046859dbe030a642155811.jpg'
 
@@ -88,6 +89,16 @@ def add_news_to_subject(sub_id, class_id, nids):
     for r in rows:
         old_sub_nids_set.add(r[0])
     sub_nids_set = set(nids)
+    #2017.05.22. 检查新的专题的新闻是否与已经存在的新闻有重复,如果有,删除一个小的专题
+    potential_same_sub_sql = "select topic from topicnews where news in ({}) and topic != {} group by topic"
+    nid_str = ', '.join(str(i) for i in (sub_nids_set | old_sub_nids_set))
+    cursor.execute(potential_same_sub_sql.format(nid_str, sub_id))
+    rows = cursor.fetchall()
+    for r in rows:
+        del_id = check_del_sub_subject(sub_id, r[0])
+        if del_id and del_id == sub_id: #有已经存在的专题包含sub_id, 删除sub_id后返回
+            return
+
     #专题插入新闻
     added_nids = sub_nids_set - old_sub_nids_set
     for nid in added_nids:
@@ -181,6 +192,35 @@ def update_sub_name_on_nids(sub_id, nids):
     conn.close()
 
 
+#检查专题是否是包含关系; 如果存在包含关系,删除一个被包含的专题
+check_sql = "select news from topicnews where topic = %s"
+def check_del_sub_subject(sub_id1, sub_id2):
+    nids1 = set()
+    nids2 = set()
+    conn, cursor = get_postgredb_query()
+    cursor.execute(check_sql, (sub_id1, ))
+    rows = cursor.fetchall()
+    for r in rows:
+        nids1.add(r[0])
+
+    cursor.execute(check_sql, (sub_id2, ))
+    rows = cursor.fetchall()
+    for r in rows:
+        nids2.add(r[0])
+
+    cursor.close()
+    conn.close()
+    if (nids1 | nids2 == nids1) or (nids1 | nids2 == nids2):  #nids存在包含关系
+        delete_id = sub_id1 if len(nids1) < len(nids2) else sub_id2
+        logger_sub.info('delete subject {}.'.format(delete_id))
+        logger_sub.info('    {} :{}'.format(sub_id1, nids1))
+        logger_sub.info('    {} :{}'.format(sub_id2, nids2))
+        data = {'id':delete_id}
+        requests.post(delete_sub_url, data=data, cookies=cookie)
+        return delete_id
+    return None
+
+
 ################################################################################
 #@brief: 更新旧专题
 #@input: old_sub_id --- 旧专题id
@@ -271,7 +311,7 @@ def generate_subject(sub):
     try:
         sub_sents = sub[0]
         sub_nids = sub[1]
-        logger_sub.info('prepare to create subject for {}'.format(sub_nids))
+        logger_sub.info('******prepare to create subject for {}'.format(sub_nids))
         conn, cursor = get_postgredb()
         ##############检查是否需要新建专题还是更新到旧专题###
         if len(sub_nids) > 4:  #含4条以上新闻才可以合并到其他专题
