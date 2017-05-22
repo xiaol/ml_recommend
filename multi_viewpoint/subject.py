@@ -39,7 +39,7 @@ def create_subject(nids):
         conn.close()
 
         data = {'name': sub_name, 'type': 1, 'cover': subject_cover}
-        logger_sub.info('create subject {}'.format(sub_name))
+        logger_sub.info('create subject "{}"'.format(sub_name))
         response = requests.post(create_url, data=data, cookies=cookie)
         content = json.loads(response.content)
         if 'id' not in content:
