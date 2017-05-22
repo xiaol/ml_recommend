@@ -145,9 +145,24 @@ def merge_subs(subs_list):
     return new_subs
 '''
 
+
+################################################################################
+#@brief : 合并专题
+#@ step: 1.合并nids完全相同的专题  2.nid不同的专题, nid数<=4的不与其他的专题合并
+################################################################################
 def merge_subs(subs_list):
     new_subs = []
     for i in xrange(len(subs_list)):
+        #检查nid完全相同的专题
+        same_nids = False
+        for k in xrange(len(new_subs)):
+            if len(set(subs_list[i][1]) ^ set(new_subs[k][1])) == 0:
+                new_subs[k] = merge_subject(subs_list[i], new_subs[k])
+                same_nids = True
+        if same_nids:
+            continue
+
+
         if len(subs_list[i][1]) <= 4:  #新闻个数小于4个不合并
             new_subs.append(subs_list[i])
             continue
