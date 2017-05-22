@@ -169,6 +169,8 @@ def update_sub_name_on_nids(sub_id, nids):
     nid_str = ', '.join(str(i) for i in nids)
     cursor.execute(sql.format(nid_str))
     rows = cursor.fetchall()
+    for r in rows:
+        logger_sub.info('    choose from {}'.format(r[0]))
     mod_name = choose_subject_name([r[0] for r in rows])
     data = {'id': sub_id, 'name': mod_name}
     respond = requests.put(modify_url, data=data, cookies=cookie)
