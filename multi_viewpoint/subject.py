@@ -261,9 +261,9 @@ def generate_subject(sub):
         sub_sents = sub[0]
         sub_nids = sub[1]
         logger_sub.info('prepare to create subject for {}'.format(sub_nids))
+        conn, cursor = get_postgredb()
         ##############检查是否需要新建专题还是更新到旧专题###
         if len(sub_nids) > 4:  #含4条以上新闻才可以合并到其他专题
-            conn, cursor = get_postgredb()
             oldsub_nid_dict = dict()  #记录旧topic--与本sub相同的nid
             nid_old_sub_sql = "select tn.topic, tn.news from topicnews tn " \
                               "inner join topiclist tl on tn.topic=tl.id " \
