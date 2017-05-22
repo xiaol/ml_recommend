@@ -178,9 +178,9 @@ def save_subject_sentences(sub_id, sents):
 
 def update_sub_name_on_nids(sub_id, nids):
     conn, cursor = get_postgredb_query()
-    sql = "select title from newslist_v2 where nid in ({})"
+    sql = "select title from newslist_v2 where nid in ({}) and nid not in (select news from topicnews where topic={})"
     nid_str = ', '.join(str(i) for i in nids)
-    cursor.execute(sql.format(nid_str))
+    cursor.execute(sql.format(nid_str, sub_id))
     rows = cursor.fetchall()
     logger_sub.info('    choose from {}'.format(nids))
     for r in rows:
