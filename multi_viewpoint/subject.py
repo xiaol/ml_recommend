@@ -169,6 +169,7 @@ def update_sub_name_on_nids(sub_id, nids):
     nid_str = ', '.join(str(i) for i in nids)
     cursor.execute(sql.format(nid_str))
     rows = cursor.fetchall()
+    logger_sub.info('    choose from {}'.format(nids))
     for r in rows:
         logger_sub.info('    choose from {}'.format(r[0]))
     mod_name = choose_subject_name([r[0] for r in rows])
@@ -227,8 +228,9 @@ def choose_subject_name(name_list):
     i = 0
     while i < len(name_list):
         cursor.execute(check_exist_sql, (name_list[i], ))
-        if len(cursor.fetchall()) != 0:
-            #logger_sub.info('    remove {}'.format(name_list[i]))
+        row = cursor.fetchone()
+        if row:
+            logger_sub.info('    {} remove {}'.format(row[0], name_list[i]))
             name_list.remove(name_list[i])
             continue
         i += 1
