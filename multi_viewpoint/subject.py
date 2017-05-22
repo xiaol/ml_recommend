@@ -89,6 +89,13 @@ def add_news_to_subject(sub_id, class_id, nids):
     for r in rows:
         old_sub_nids_set.add(r[0])
     sub_nids_set = set(nids)
+
+    #专题插入新闻
+    added_nids = sub_nids_set - old_sub_nids_set
+    for nid in added_nids:
+        data = {'topic_id':sub_id, 'news_id':nid, 'topic_class_id':class_id}
+        requests.post(add_nid_url, data=data, cookies=cookie)
+
     #2017.05.22. 检查新的专题的新闻是否与已经存在的新闻有重复,如果有,删除一个小的专题
     potential_same_sub_sql = "select topic from topicnews tn inner join topiclist tl on tn.topic=tl.id where news in ({}) and topic != {} group by topic"
     nid_str = ', '.join(str(i) for i in (sub_nids_set | old_sub_nids_set))
@@ -99,11 +106,6 @@ def add_news_to_subject(sub_id, class_id, nids):
         if del_id and del_id == sub_id: #有已经存在的专题包含sub_id, 删除sub_id后返回
             return
 
-    #专题插入新闻
-    added_nids = sub_nids_set - old_sub_nids_set
-    for nid in added_nids:
-        data = {'topic_id':sub_id, 'news_id':nid, 'topic_class_id':class_id}
-        requests.post(add_nid_url, data=data, cookies=cookie)
 
     #查询专题-topic
     sub_topic_sql = "select model_v, topic_id, probability from subject_topic where subject_id=%s"
