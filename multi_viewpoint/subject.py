@@ -90,7 +90,7 @@ def add_news_to_subject(sub_id, class_id, nids):
         old_sub_nids_set.add(r[0])
     sub_nids_set = set(nids)
     #2017.05.22. 检查新的专题的新闻是否与已经存在的新闻有重复,如果有,删除一个小的专题
-    potential_same_sub_sql = "select topic from topicnews where news in ({}) and topic != {} group by topic"
+    potential_same_sub_sql = "select topic from topicnews tn inner join topiclist tl on tn.topic=tl.id where news in ({}) and topic != {} group by topic"
     nid_str = ', '.join(str(i) for i in (sub_nids_set | old_sub_nids_set))
     cursor.execute(potential_same_sub_sql.format(nid_str, sub_id))
     rows = cursor.fetchall()
