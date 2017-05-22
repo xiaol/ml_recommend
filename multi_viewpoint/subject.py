@@ -221,16 +221,20 @@ def choose_subject_name(name_list):
                       "create_time > now() - interval '7 day' and " \
                       "type = 1 and name=%s"
     conn, cursor = get_postgredb_query()
-    logger_sub.info('before name_list: {}'.format(name_list))
+    logger_sub.info('before name_list: ')
+    for n in name_list:
+        logger_sub.info('    {}'.format(n))
     for name in name_list:
+        logger_sub.info('check :: {}'.format(name))
         cursor.execute(check_exist_sql, (name, ))
         if len(cursor.fetchall()) != 0:
             logger_sub.info('    remove {}'.format(name))
             name_list.remove(name)
     conn.close()
 
-    logger_sub.info('after name_list: {}'.format(name_list))
+    #logger_sub.info('after name_list: {}'.format(name_list))
     if len(name_list) == 0:
+        logger_sub.info('all invalid!!!!')
         raise ValueError('all subject names have existed!')
 
     word_doc_freq = dict()  #词的
