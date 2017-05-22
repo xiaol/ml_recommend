@@ -267,6 +267,8 @@ def choose_subject_name(name_list):
                       "type = 1 and name=%s"
     conn, cursor = get_postgredb_query()
     #for name in name_list:
+    for n in name_list:
+        logger_sub.info('    before name_list {}'.format(n))
     i = 0
     while i < len(name_list):
         cursor.execute(check_exist_sql, (name_list[i], ))
@@ -282,6 +284,8 @@ def choose_subject_name(name_list):
     if len(name_list) == 0:
         logger_sub.info('all invalid!!!!')
         raise ValueError('all subject names have existed!')
+    for n in name_list:
+        logger_sub.info('    after name_list {}'.format(n))
 
     word_doc_freq = dict()  #词的
     name_ws = []
