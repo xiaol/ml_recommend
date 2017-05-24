@@ -32,5 +32,6 @@ def hamming(h1, h2):
 if __name__ == "__main__":
     h1 = avhash('6afc41d15956690f0f762c93abbc20cfb626c72f8c526f8fafa9ccbe91aa4eac.jpg')
     h2 = avhash('e13d12e83c228db342cc3dc7c35d2c21803d457bc9ab16d654b67b314c80dd3f.jpg')
-    print hamming(h1, h2)
+    h3 = avhash('352fe88553d5729c3fb09128da6a09cf06ddacfc43f45b077c62bf3e11cf021c.jpg')
+    print hamming(h1, h3)
 
