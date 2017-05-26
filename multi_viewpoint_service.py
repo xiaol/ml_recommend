@@ -46,6 +46,7 @@ if __name__ == '__main__':
         http_server.listen(port)
         from multi_viewpoint.sentence_hash import move_sentence_data
         #每一天执行一次数据迁移
+        move_sentence_data()
         ioloop.PeriodicCallback(move_sentence_data, 24 * 3600 * 1000).start() #定时从点击表中取
         #move_sentence_data()
     elif port == 9962:  #手工工作
