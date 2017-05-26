@@ -234,10 +234,11 @@ def update_sub(old_sub_id, sub):
     conn, cursor = get_postgredb()
     #创建新的class_id
     class_id = create_subject_class(old_sub_id)
-    add_news_to_subject(old_sub_id, class_id, sub[1])
-
     #更新专题名称
     update_sub_name_on_nids(old_sub_id, sub[1])
+    #添加新闻
+    add_news_to_subject(old_sub_id, class_id, sub[1])
+
 
     #topic中添加key_sentence
     sent_sql = "select sentences from topic_sentences where topic_id=%s"
