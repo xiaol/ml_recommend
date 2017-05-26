@@ -63,7 +63,7 @@ def get_same_news(news_simhash, check_list, threshold = 3):
             hv = r[1]
             dis = news_simhash.hamming_distance_with_val(int(hv))
             if dis <= threshold:  #存在相同的新闻
-                same_list.append(r[0])
+                same_list.append((r[0], dis))
                 break
         return same_list
     except:
@@ -137,7 +137,7 @@ def del_nid_of_fewer_comment(nid, n):
 ################################################################################
 #@brief : 计算新闻hash值,并且检测是否是重复新闻。如果重复,则删除该新闻
 ################################################################################
-insert_same_sql = 'insert into news_simhash_map (nid, same_nid) VALUES ({0}, {1})'
+insert_same_sql = 'insert into news_simhash_map (nid, same_nid, diff_bit, ctime) VALUES ({0}, {1}, {2}, {3})'
 insert_news_simhash_sql = "insert into news_simhash (nid, hash_val, ctime, first_16, second_16, third_16, fourth_16, first2_16, second2_16, third2_16, fourth2_16) " \
                           "VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}')"
 def cal_and_check_news_hash(nid_list):
@@ -149,11 +149,13 @@ def cal_and_check_news_hash(nid_list):
             words_list = doc_process.get_words_on_nid(nid)
             h = simhash(words_list)
             check_list = get_news_interval(h, 2)
-            same_list = get_same_news(h, check_list)
+            same_list = get_same_news(h, check_list, threshold=6)
             if len(same_list) > 0: #已经存在相同的新闻
-                for n in same_list:
+                for n_dis in same_list:
+                    n = n_dis[0]
+                    diff_bit = n_dis[1]
                     if n != nid:
-                        cursor.execute(insert_same_sql.format(nid, n))
+                        cursor.execute(insert_same_sql.format(nid, n, diff_bit, t0))
                         del_nid_of_fewer_comment(nid, n)
             #else: #没有相同的新闻,将nid添加到news_hash
             t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
