@@ -32,17 +32,17 @@ exclude_chnl = ['搞笑', '趣图', '美女', '萌宠', '时尚', '美食', '美
                 '旅游', '汽车', '游戏', '科学', '故事', '探索']
 
 
-insert_sentence_hash = "insert into news_sentence_hash_copy (nid, sentence, sentence_id, hash_val, first_16, second_16, third_16, fourth_16, ctime, first2_16, second2_16, third2_16, fourth2_16) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-query_sen_sql = "select ns.nid, ns.hash_val from news_sentence_hash_copy ns inner join newslist_v2 nl on ns.nid=nl.nid " \
+insert_sentence_hash = "insert into news_sentence_hash_cache (nid, sentence, sentence_id, hash_val, first_16, second_16, third_16, fourth_16, ctime, first2_16, second2_16, third2_16, fourth2_16) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+query_sen_sql = "select ns.nid, ns.hash_val from news_sentence_hash_cache ns inner join newslist_v2 nl on ns.nid=nl.nid " \
                 "where (first_16=%s or second_16=%s or third_16=%s or fourth_16=%s) and " \
                 "(first2_16=%s or second2_16=%s or third2_16=%s or fourth2_16=%s) and " \
                 "nl.state=0 group by ns.nid, ns.hash_val "
-query_sen_sql_interval = "select ns.nid, ns.hash_val from news_sentence_hash_copy ns inner join newslist_v2 nl on ns.nid=nl.nid " \
+query_sen_sql_interval = "select ns.nid, ns.hash_val from news_sentence_hash_cache ns inner join newslist_v2 nl on ns.nid=nl.nid " \
                          "where (first_16=%s or second_16=%s or third_16=%s or fourth_16=%s) and " \
                          "(first2_16=%s or second2_16=%s or third2_16=%s or fourth2_16=%s) and " \
                          "(nl.ctime > now() - interval '%s day') and nl.state=0 group by ns.nid, ns.hash_val "
 insert_same_sentence = "insert into news_same_sentence_map (nid1, nid2, sentence1, sentence2, ctime) VALUES (%s, %s, %s, %s, %s)"
-s_nid_sql = "select distinct nid from news_sentence_hash_copy "
+s_nid_sql = "select distinct nid from news_sentence_hash_cache "
 def get_exist_nids():
     conn, cursor = get_postgredb_query()
     cursor.execute(s_nid_sql)
@@ -179,7 +179,7 @@ def merge_subs(subs_list):
 
 
 get_pname = "select pname, chid, ctime, nid from info_news where nid in %s"
-same_sql2 = "select sentence from news_sentence_hash_copy where nid=%s and hash_val=%s"
+same_sql2 = "select sentence from news_sentence_hash_cache where nid=%s and hash_val=%s"
 ads_insert = "insert into news_ads_sentence (ads_sentence, hash_val, ctime, first_16, second_16, third_16, four_16, first2_16, second2_16, third2_16, four2_16, nids, state, special_pname) " \
              "values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 multo_vp_insert_sql = "insert into news_multi_vp (nid1, sentence1, nid2, sentence2, ctime, ctime1, ctime2) values (%s, %s, %s, %s, %s, %s, %s)"
@@ -227,7 +227,7 @@ def cal_process(nid_set, log=None, same_t=3, news_interval=3, same_dict = {}):
                     #print '-------2'
                     #print ts2
                     h = simhash.simhash(wl)
-                    check_exist_sql = "select nid from news_sentence_hash_copy where nid=%s and hash_val=%s" #该新闻中已经有这个句子,即有重复句子存在
+                    check_exist_sql = "select nid from news_sentence_hash_cache where nid=%s and hash_val=%s" #该新闻中已经有这个句子,即有重复句子存在
                     cursor_query.execute(check_exist_sql, (nid, h.__str__()))
                     #ts3 = datetime.datetime.now()
                     #print '-------3'
@@ -474,10 +474,10 @@ def coll_sentence_hash():
     logger_9965.info("Congratulations! Finish to collect sentences.")
 
 
-#将3天前的数据从news_sentence_hash_copy 移动到news_sentenct_hash
-move_sentenct_sql = "insert into news_sentence_hash select * from news_sentence_hash_copy " \
+#将3天前的数据从news_sentence_hash_cache 移动到news_sentenct_hash
+move_sentenct_sql = "insert into news_sentence_hash select * from news_sentence_hash_cache " \
                     "where ctime <  to_timestamp(%s, 'yyyy-mm-dd hh24:mi:ss') - interval '3 day' "
-del_sentenct_sql = "delete from news_sentence_hash_copy " \
+del_sentenct_sql = "delete from news_sentence_hash_cache " \
                    "where ctime < to_timestamp(%s, 'yyyy-mm-dd hh24:mi:ss') - interval '3 day'"
 logger_9963 = logger.Logger('9963', os.path.join(real_dir_path,  'log/log_9963.txt'))
 def move_sentence_data():
