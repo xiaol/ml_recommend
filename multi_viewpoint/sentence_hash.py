@@ -476,9 +476,9 @@ def coll_sentence_hash():
 
 #将3天前的数据从news_sentence_hash_copy 移动到news_sentenct_hash
 move_sentenct_sql = "insert into news_sentence_hash select * from news_sentence_hash_copy " \
-                    "where ctime <  to_timestamp(%s, 'yyyy-mm--dd hh24:mi:ss') - interval '3 day' "
+                    "where ctime <  to_timestamp(%s, 'yyyy-mm-dd hh24:mi:ss') - interval '3 day' "
 del_sentenct_sql = "delete from news_sentence_hash_copy " \
-                   "where ctime < to_timestamp(%s, 'yyyy-mm--dd hh24:mi:ss') - interval '3 day'"
+                   "where ctime < to_timestamp(%s, 'yyyy-mm-dd hh24:mi:ss') - interval '3 day'"
 logger_9963 = logger.Logger('9963', os.path.join(real_dir_path,  'log/log_9963.txt'))
 def move_sentence_data():
     try:
