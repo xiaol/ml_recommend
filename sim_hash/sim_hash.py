@@ -155,7 +155,7 @@ def cal_and_check_news_hash(nid_list):
                     n = n_dis[0]
                     diff_bit = n_dis[1]
                     if n != nid:
-                        cursor.execute(insert_same_sql.format(nid, n, diff_bit, t0))
+                        cursor.execute(insert_same_sql.format(nid, n, diff_bit, t0.strftime('%Y-%m-%d %H:%M:%S')))
                         del_nid_of_fewer_comment(nid, n)
             #else: #没有相同的新闻,将nid添加到news_hash
             t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
