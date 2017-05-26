@@ -147,6 +147,8 @@ def cal_and_check_news_hash(nid_list):
         conn, cursor = doc_process.get_postgredb()
         for nid in nid_list:
             words_list = doc_process.get_words_on_nid(nid)
+            if len(words_list) < 10:
+                continue
             h = simhash(words_list)
             check_list = get_news_interval(h, 2)
             same_list = get_same_news(h, check_list, threshold=6)
