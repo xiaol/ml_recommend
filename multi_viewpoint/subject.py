@@ -36,8 +36,10 @@ def create_subject(nids):
         nid_str = ', '.join(str(i) for i in nids)
         cursor.execute(sql.format(nid_str))
         rows = cursor.fetchall()
-        sub_name = choose_subject_name([r[0] for r in rows])
         conn.close()
+        sub_name = choose_subject_name([r[0] for r in rows])
+        if not sub_name:
+            return
 
         data = {'name': sub_name, 'type': 1, 'cover': subject_cover}
         logger_sub.info('create subject "{}"'.format(sub_name))
@@ -182,16 +184,18 @@ def update_sub_name_on_nids(sub_id, nids):
     nid_str = ', '.join(str(i) for i in nids)
     cursor.execute(sql.format(nid_str, sub_id))
     rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
     logger_sub.info('    choose from {}'.format(nids))
     for r in rows:
         logger_sub.info('    choose from {}'.format(r[0]))
     mod_name = choose_subject_name([r[0] for r in rows])
+    if not mod_name:
+        return
     data = {'id': sub_id, 'name': mod_name}
     respond = requests.put(modify_url, data=data, cookies=cookie)
     logger_sub.info('response:  {}'.format(respond.content))
     logger_sub.info('update {} sub name to {}'.format(sub_id, mod_name))
-    cursor.close()
-    conn.close()
 
 
 #检查专题是否是包含关系; 如果存在包含关系,删除一个被包含的专题
@@ -230,7 +234,7 @@ def check_del_sub_subject(sub_id1, sub_id2):
 ################################################################################
 def update_sub(old_sub_id, sub):
     #先获取old_sub_id的class id
-    logger_sub.info('    update_sub {}: {}'.format(old_sub_id, sub))
+    logger_sub.info('    update_sub {} to: {}'.format(old_sub_id, sub))
     conn, cursor = get_postgredb()
     #创建新的class_id
     class_id = create_subject_class(old_sub_id)
@@ -284,7 +288,8 @@ def choose_subject_name(name_list):
     #logger_sub.info('after name_list: {}'.format(name_list))
     if len(name_list) == 0:
         logger_sub.info('all invalid!!!!')
-        raise ValueError('all subject names have existed!')
+        #raise ValueError('all subject names have existed!')
+        return None
     for n in name_list:
         logger_sub.info('    after name_list {}'.format(n))
 
