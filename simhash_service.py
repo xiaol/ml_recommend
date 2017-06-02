@@ -18,6 +18,19 @@ if __name__ == '__main__':
         http_server.listen(port) #同时提供手工处理端口
         from redis_process import nid_queue
         nid_queue.consume_nid_simhash(200)
+    elif port == 9968: #添加手工处理旧数据
+        from sim_hash import tmp_sim_hash
+        nids = tmp_sim_hash.find_old_news()
+        from redis_process import nid_queue
+        nid_queue.tmp_simhash_queue_produce(nids)
+    elif port == 9967: #添加手工处理旧数据
+        from redis_process import nid_queue
+        nid_queue.tmp_consume_nid_simhash()
+    elif port == 9966: #计算hash
+        from sim_hash import tmp_sim_hash
+        tmp_sim_hash.cal_simhash_old()
+
+
 
     tornado.ioloop.IOLoop.instance().start()
 
