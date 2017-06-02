@@ -113,6 +113,7 @@ def cal_simhash_old():
         fir, sec, thi, fou, fir2, sec2, thi2, fou2 = get_4_segments(h.__long__())
         cursor.execute(insert_news_simhash_sql2.format(nid, h.__str__(), t, fir, sec, thi, fou, fir2, sec2, thi2, fou2))
         conn.commit()
+        print '   cal {} finished'.format(nid)
         n += 1
         if n % 1000 == 0:
             print '{} finished!'.format(n)
