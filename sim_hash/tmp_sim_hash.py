@@ -93,6 +93,25 @@ def cal_and_check_news_hash(nid_list):
 '''
 
 
+nid_sql = "select title, content from newslist_v2 where nid=%s "
+def get_words_on_nid(nid):
+    conn, cursor = doc_process.get_postgredb_query()
+    cursor.execute(nid_sql, [nid])
+    rows = cursor.fetchall()
+    word_list = []
+    for row in rows:
+        title = row[0]  #str类型
+        content_list = row[1]
+        txt = ''
+        for content in content_list:
+            if 'txt' in content.keys():
+                txt += content['txt']
+        total_txt = title + txt.encode('utf-8')
+        word_list = doc_process.filter_html_stopwords_pos(total_txt, remove_num=True, remove_single_word=True)
+    cursor.close()
+    conn.close()
+    return word_list
+
 insert_news_simhash_sql2 = "insert into news_simhash_olddata (nid, hash_val, ctime, first_16, second_16, third_16, fourth_16, first2_16, second2_16, third2_16, fourth2_16) " \
                           "VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}')"
 def cal_simhash_old():
@@ -104,8 +123,7 @@ def cal_simhash_old():
     print 'len of nids is {}'.format(len(nids))
     n = 0
     for nid in nids:
-        words_list = doc_process.get_words_on_nid(nid)
-        print '   cal {}: {}'.format(nid, len(words_list))
+        words_list = get_words_on_nid(nid)
         if len(words_list) < 10:
             continue
         h = simhash(words_list)
@@ -113,7 +131,6 @@ def cal_simhash_old():
         fir, sec, thi, fou, fir2, sec2, thi2, fou2 = get_4_segments(h.__long__())
         cursor.execute(insert_news_simhash_sql2.format(nid, h.__str__(), t, fir, sec, thi, fou, fir2, sec2, thi2, fou2))
         conn.commit()
-        print '   cal {} finished'.format(nid)
         n += 1
         if n % 1000 == 0:
             print '{} finished!'.format(n)
