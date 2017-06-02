@@ -97,13 +97,14 @@ insert_news_simhash_sql2 = "insert into news_simhash_olddata (nid, hash_val, cti
                           "VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}')"
 def cal_simhash_old():
     conn, cursor = doc_process.get_postgredb()
-    nids_sql = "select nid from newslist_v2 where nid < 13821715 order by nid"
+    nids_sql = "select nid from newslist_v2 where nid < 13821715 order by nid limit 10"
     cursor.execute(nids_sql)
     rows = cursor.fetchall()
     nids = [r[0] for r in rows]
-    print 'len of nids is {}'.format(nids)
+    print 'len of nids is {}'.format(len(nids))
     n = 0
     for nid in nids:
+        print '   cal {}'.format(nid)
         words_list = doc_process.get_words_on_nid(nid)
         if len(words_list) < 10:
             continue
