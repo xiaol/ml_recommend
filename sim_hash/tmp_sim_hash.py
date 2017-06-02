@@ -104,8 +104,8 @@ def cal_simhash_old():
     print 'len of nids is {}'.format(len(nids))
     n = 0
     for nid in nids:
-        print '   cal {}'.format(nid)
         words_list = doc_process.get_words_on_nid(nid)
+        print '   cal {}: {}'.format(nid, len(words_list))
         if len(words_list) < 10:
             continue
         h = simhash(words_list)
