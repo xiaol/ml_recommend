@@ -47,7 +47,7 @@ def get_active_user_info(min_interval=1, min_click=1):
     user_time_sql = "select nid, ctime from newsrecommendclick " \
                     "where uid={} and " \
                     "ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{} day' "
-    for u in active_users:
+    for u in user_raw_info.keys():
         hour_dict = dict()  #记录每个小时的点击数
         cursor.execute(user_time_sql.format(u, t, min_interval))
         rows = cursor.fetchall()
