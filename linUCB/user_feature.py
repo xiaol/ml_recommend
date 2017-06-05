@@ -53,7 +53,7 @@ def get_active_user_info(min_interval=1, min_click=1):
         rows = cursor.fetchall()
         for r in rows:
             h = r[1].hour
-            hour_dict[h] = 1 if h in hour_dict else hour_dict[h]+1
+            hour_dict[h] = 1 if h not in hour_dict else hour_dict[h]+1
         user_raw_info[u].append(hour_dict[h].keys())
 
     user_csv = pd.Series(user_raw_info).to_csv('user_feature.csv')
