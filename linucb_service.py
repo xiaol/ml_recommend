@@ -6,8 +6,9 @@
 # @Software: PyCharm Community Edition
 import sys
 
-port = sys.argv[1]
 
-if port == 9959:
-    from linUCB import user_feature
-    user_feature.get_active_user_info(3, 20)
+if __name__ == '__main__':
+    port = sys.argv[1]
+    if port == 9959:
+        from linUCB import user_feature
+        user_feature.get_active_user_info(3, 20)
