@@ -26,7 +26,7 @@ def get_active_user_info(min_interval=1, min_click=1):
     t = nt.strftime('%Y-%m-%d %H:%M:%S')
     #获取活跃用户
     user_sql = "select uid from newsrecommendclick " \
-               "where ctime > to_timestamp({}, 'yyyy-mm-dd hh24:mi:ss') - interval '{} day' " \
+               "where ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{} day' " \
                "group by uid HAVING \"count\"(*)>={}"
     conn, cursor = get_postgredb_query()
     cursor.execute(user_sql.format(t, min_interval, min_click))
