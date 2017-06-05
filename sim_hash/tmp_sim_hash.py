@@ -112,15 +112,11 @@ def get_words_on_nid(nid):
     conn.close()
     return word_list
 
+
 insert_news_simhash_sql2 = "insert into news_simhash_olddata (nid, hash_val, ctime, first_16, second_16, third_16, fourth_16, first2_16, second2_16, third2_16, fourth2_16) " \
-                          "VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}')"
-def cal_simhash_old():
+                           "VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}')"
+def cal_simhash_proc(nids):
     conn, cursor = doc_process.get_postgredb()
-    nids_sql = "select nid from newslist_v2 where nid < 13821715 order by nid"
-    cursor.execute(nids_sql)
-    rows = cursor.fetchall()
-    nids = [r[0] for r in rows]
-    print 'len of nids is {}'.format(len(nids))
     n = 0
     for nid in nids:
         words_list = get_words_on_nid(nid)
@@ -134,6 +130,27 @@ def cal_simhash_old():
         n += 1
         if n % 1000 == 0:
             print '{} finished!'.format(n)
+    cursor.close()
+    conn.close()
+
+
+
+
+def cal_simhash_old():
+    conn, cursor = doc_process.get_postgredb_query()
+    nids_sql = "select nid from newslist_v2 where nid < 13821715 and nid >4976433 order by nid"
+    cursor.execute(nids_sql)
+    rows = cursor.fetchall()
+    nid_list = [r[0] for r in rows]
+    print 'len of nids is {}'.format(len(nid_list))
+    small_list = [nid_list[i:i + 10000] for i in range(0, len(nid_list), 10000)]
+    from multiprocessing import Pool
+    pool = Pool(30)
+    for nids in small_list:
+        pool.apply_async(cal_simhash_proc,
+                         args=(nids, ))
+    pool.close()
+    pool.join()
 
     print '*****  all finished *****'
     cursor.close()
