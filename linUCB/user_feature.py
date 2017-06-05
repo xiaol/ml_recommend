@@ -50,7 +50,7 @@ def get_active_user_info(min_interval=1, min_click=1):
     user_active_hour = dict()
     for u in active_users:
         hour_dict = dict()
-        cursor.execute(user_time_sql, u)
+        cursor.execute(user_time_sql.format(u, min_interval))
         rows = cursor.fetchall()
         for r in rows:
             h = r[1].hour
