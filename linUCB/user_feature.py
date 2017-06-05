@@ -57,6 +57,7 @@ def get_active_user_info(min_interval=1, min_click=1):
         user_raw_info[u].append(hour_dict.keys())
 
     user_csv = pd.Series(user_raw_info).to_csv('user_feature.csv')
+    print 'finished!!'
 
 
 
