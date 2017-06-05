@@ -38,7 +38,7 @@ def get_active_user_info(min_interval=1, min_click=1):
                       "from user_device " \
                       "where uid in ({})"
     user_raw_info = dict()
-    cursor.execute(user_device_sql.format(','.join(u for u in active_users)))
+    cursor.execute(user_device_sql.format(','.join(str(u) for u in active_users)))
     user_raw = cursor.fetchall()
     for u in user_raw:
         user_raw_info[u[0]] = [u[1], u[2], u[3], u[4], u[5], u[6], u[7]]
