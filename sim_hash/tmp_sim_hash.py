@@ -161,7 +161,7 @@ def cal_simhash_old():
 from util import simhash
 from sim_hash import del_nid_of_fewer_comment
 def check_and_remove_proc(nids_info, pos, offset):
-    hash_sql = "select ns.nid, hash_val from news_simhash ns where ns.nid < {0} and ns.nid > {0} - 100000 " \
+    hash_sql = "select ns.nid, hash_val from news_simhash_olddata ns where ns.nid < {0} and ns.nid > {0} - 100000 " \
                "and (first_16='{1}' or second_16='{2}' or third_16='{3}' or fourth_16='{4}') and (first2_16='{5}' or second2_16='{6}' or third2_16='{7}' or fourth2_16='{8}') "
     k = pos
     leng = len(nids_info)
@@ -171,12 +171,13 @@ def check_and_remove_proc(nids_info, pos, offset):
     while k < check_up:
         info = nids_info[k]
         tmp_logger.info("check {}".format(info[0]))
-        if doc_process.get_news_online_state(info[0]): #已经下线
+        if doc_process.get_news_online_state(info[0]) != 0: #已经下线
             continue
         hash_v = long(info[1])
         cursor.execute(hash_sql.format(info[0], info[2], info[3], info[4], info[5], info[6], info[7], info[8], info[9]))
         rows = cursor.fetchall()
         for r in rows:
+            tmp_logger.info('    potential {}'.format(r[0]))
             if doc_process.get_news_online_state(r[0]): #已经下线
                 continue
             dis = simhash.dif_bit(hash_v, long(r[1]))
