@@ -114,7 +114,7 @@ def del_nid_of_fewer_comment(nid, n, log=logger):
             cursor.close()
             conn.close()
             log.info('{0} has been recommended, so offline {1}'.format(stay_nid, del_nid))
-            return
+            return del_nid
 
         cursor.execute(get_comment_num_sql.format(nid, n))
         rows = cursor.fetchall()
@@ -130,6 +130,7 @@ def del_nid_of_fewer_comment(nid, n, log=logger):
         cursor.close()
         conn.close()
         log.info('{0} vs {1},  offline {2}'.format(nid, n, del_nid))
+        return del_nid
     except Exception as e:
         log.error(traceback.format_exc())
 
@@ -137,7 +138,7 @@ def del_nid_of_fewer_comment(nid, n, log=logger):
 ################################################################################
 #@brief : 计算新闻hash值,并且检测是否是重复新闻。如果重复,则删除该新闻
 ################################################################################
-insert_same_sql = "insert into news_simhash_map (nid, same_nid, diff_bit, ctime) VALUES ({0}, {1}, {2}, '{3}')"
+insert_same_sql = "insert into news_simhash_map (nid, same_nid, diff_bit, ctime, offline_nid) VALUES ({0}, {1}, {2}, '{3}', {4})"
 insert_news_simhash_sql = "insert into news_simhash (nid, hash_val, ctime, first_16, second_16, third_16, fourth_16, first2_16, second2_16, third2_16, fourth2_16) " \
                           "VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}')"
 def cal_and_check_news_hash(nid_list):
@@ -157,8 +158,8 @@ def cal_and_check_news_hash(nid_list):
                     n = n_dis[0]
                     diff_bit = n_dis[1]
                     if n != nid:
-                        cursor.execute(insert_same_sql.format(nid, n, diff_bit, t0.strftime('%Y-%m-%d %H:%M:%S')))
-                        del_nid_of_fewer_comment(nid, n)
+                        off_nid = del_nid_of_fewer_comment(nid, n)
+                        cursor.execute(insert_same_sql.format(nid, n, diff_bit, t0.strftime('%Y-%m-%d %H:%M:%S'), off_nid))
             #else: #没有相同的新闻,将nid添加到news_hash
             t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             fir, sec, thi, fou, fir2, sec2, thi2, fou2 = get_4_segments(h.__long__())
