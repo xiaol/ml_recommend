@@ -207,6 +207,9 @@ def check_and_remove_news():
     pool.join()
     cursor.close()
     conn.close()
+    print 'all finished*************'
+
+
 
 
 
