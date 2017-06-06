@@ -176,7 +176,7 @@ def check_and_remove_proc(nids_info, pos, offset):
             k += 1
             continue
         hash_v = long(info[1])
-        tmp_logger.info(cursor.mogrify(hash_sql.format(info[0], info[2], info[3], info[4], info[5], info[6], info[7], info[8], info[9])))
+        #tmp_logger.info(cursor.mogrify(hash_sql.format(info[0], info[2], info[3], info[4], info[5], info[6], info[7], info[8], info[9])))
         cursor.execute(hash_sql.format(info[0], info[2], info[3], info[4], info[5], info[6], info[7], info[8], info[9]))
         rows = cursor.fetchall()
         for r in rows:
@@ -202,8 +202,8 @@ def check_and_remove_news():
     #t = datetime.datetime.now().strf
     #nids_sql = "select nid, hash_val, first_16, second_16, third_16, fourth_16, first2_16, second2_16, third2_16, fourth2_16 from news_simhash_olddata ns " \
     #           "inner join newslist_v2 nl on ns.nid=nl.nid where nl.ctime>now() - interval '30 day' "
-    nids_sql = "select nid, hash_val, first_16, second_16, third_16, fourth_16, first2_16, second2_16, third2_16, fourth2_16 from news_simhash " \
-               "where nid < 13821715" \
+    nids_sql = "select nid, hash_val, first_16, second_16, third_16, fourth_16, first2_16, second2_16, third2_16, fourth2_16 from news_simhash_olddata " \
+               "where nid < 13821715 and nid > 10000000" \
                #"ns " \
                #"inner join newslist_v2 nl on ns.nid=nl.nid where nl.ctime>now() - interval '30 day' "
     cursor.execute(nids_sql)
