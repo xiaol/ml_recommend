@@ -31,6 +31,7 @@ nid_queue = 'nid_queue'
 lda_queue = 'lda_queue'
 kmeans_queue = 'kmeans_queue'
 simhash_queue = 'simhash_queue'
+tmp_simhash_queue = 'tmp_simhash_queue'
 sentence_simhash_queue = 'sentence_simhash_queue'
 ads_queue = 'ads_queue'
 
@@ -238,3 +239,33 @@ def clear_sentence_simhash_queue():
         click = redis_inst.rpop(sentence_simhash_queue)
         if not click:
             break
+
+
+def tmp_simhash_queue_produce(nids):
+    global redis_inst
+    #redis_inst.lpush(nid_queue, nid)
+    for nid in nids:
+        redis_inst.lpush(tmp_simhash_queue, nid)
+
+def tmp_consume_nid_simhash(num=200):
+    try:
+        global redis_inst
+        n = 0
+        nid_list = []
+        while True:
+            nid = redis_inst.brpop(tmp_simhash_queue)[1]
+            nid_list.append(nid)
+            n += 1
+            if n >= num:
+                sim_hash.cal_and_check_news_hash(nid_list)
+                n = 0
+                del nid_list[:]
+        print 'tmp_consume_nid_simhash finished!'
+    except:
+        traceback.print_exc()
+
+
+def push_to_simhash(nids):
+    global redis_inst
+    for nid in nids:
+        redis_inst.lpush(simhash_queue, nid)
