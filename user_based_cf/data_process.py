@@ -269,6 +269,7 @@ def get_potential_topic(user_topic_prop_dict, user_neighbours, model_v, time):
 #整体流程
 ################################################################################
 def get_user_topic_cf():
+    log_cf.info('begin to calculate user_topic_cf...')
     time = datetime.datetime.now()
     time_str = time.strftime('%Y-%m-%d-%H-%M-%S')
     model_v = get_newest_topic_v()
@@ -278,7 +279,7 @@ def get_user_topic_cf():
     user_neighbours = cal_neignbours(user_ids, topic_ids, props, time_str)
     #计算neighbour推荐的topic
     get_potential_topic(user_topic_prop_dict, user_neighbours, model_v, time)
-    print '~~~~~~~~~~~~~~~ all finished~~~~~~~~~~~~~~~~~~~~~'
+    log_cf.info("!!! calculate finished!")
 
 
 if __name__ == '__main__':

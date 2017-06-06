@@ -10,4 +10,5 @@
 
 if __name__ == '__main__':
     from user_based_cf import data_process
-    data_process.get_user_topic_cf()
+    while True:
+        data_process.get_user_topic_cf()
