@@ -30,6 +30,7 @@ if __name__ == '__main__':
         nids = tmp2.coll_news()
         print 'coll finished!'
         nid_queue.push_to_simhash(nids)
+        print '--------finished'
     elif port == 9966: #计算hash
         from sim_hash import tmp_sim_hash
         #tmp_sim_hash.cal_simhash_old()
