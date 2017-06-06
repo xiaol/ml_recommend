@@ -172,9 +172,11 @@ def check_and_remove_proc(nids_info, pos, offset):
         info = nids_info[k]
         tmp_logger.info("check {}".format(info[0]))
         if doc_process.get_news_online_state(info[0]) != 0: #已经下线
+            tmp_logger.info('    this news has been offline!')
             k += 1
             continue
         hash_v = long(info[1])
+        tmp_logger.info(cursor.mogrify(hash_sql.format(info[0], info[2], info[3], info[4], info[5], info[6], info[7], info[8], info[9])))
         cursor.execute(hash_sql.format(info[0], info[2], info[3], info[4], info[5], info[6], info[7], info[8], info[9]))
         rows = cursor.fetchall()
         for r in rows:
