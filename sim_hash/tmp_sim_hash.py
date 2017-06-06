@@ -161,7 +161,7 @@ def cal_simhash_old():
 from util import simhash
 from sim_hash import del_nid_of_fewer_comment
 def check_and_remove_proc(nids_info, pos, offset):
-    hash_sql = "select ns.nid, hash_val from news_simhash  where ns.nid < {0} and ns.nid > {0} - 100000 " \
+    hash_sql = "select ns.nid, hash_val from news_simhash ns where ns.nid < {0} and ns.nid > {0} - 100000 " \
                "and (first_16='{1}' or second_16='{2}' or third_16='{3}' or fourth_16='{4}') and (first2_16='{5}' or second2_16='{6}' or third2_16='{7}' or fourth2_16='{8}') "
     k = pos
     leng = len(nids_info)
