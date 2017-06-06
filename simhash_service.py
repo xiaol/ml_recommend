@@ -28,7 +28,8 @@ if __name__ == '__main__':
         nid_queue.tmp_consume_nid_simhash()
     elif port == 9966: #计算hash
         from sim_hash import tmp_sim_hash
-        tmp_sim_hash.cal_simhash_old()
+        #tmp_sim_hash.cal_simhash_old()
+        tmp_sim_hash.check_and_remove_news()
 
 
 
