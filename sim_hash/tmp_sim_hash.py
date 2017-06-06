@@ -170,6 +170,7 @@ def check_and_remove_proc(nids_info, pos, offset):
     t0 = datetime.datetime.now()
     while k < check_up:
         info = nids_info[k]
+        tmp_logger.info("check {}".format(info[0]))
         if doc_process.get_news_online_state(info[0]): #已经下线
             continue
         hash_v = long(info[1])
@@ -181,7 +182,8 @@ def check_and_remove_proc(nids_info, pos, offset):
             dis = simhash.dif_bit(hash_v, long(r[1]))
             if dis <= 6:
                 cursor.execute(insert_same_sql.format(info[0], r[0], dis, t0.strftime('%Y-%m-%d %H:%M:%S')))
-                del_nid_of_fewer_comment(info[0], r[0], log=tmp_logger)
+                off = del_nid_of_fewer_comment(info[0], r[0], log=tmp_logger)
+                tmp_logger.info('{} vs {} , offline {}'.format(info[0], r[0], off))
         k += 1
 
     conn.commit()
