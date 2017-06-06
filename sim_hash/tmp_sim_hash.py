@@ -161,7 +161,7 @@ def cal_simhash_old():
 from util import simhash
 from sim_hash import del_nid_of_fewer_comment
 def check_and_remove_proc(nids_info, pos, offset):
-    hash_sql = "select ns.nid, hash_val from news_simhash_olddata  where ns.nid < {0} and ns.nid > {0} - 100000 " \
+    hash_sql = "select ns.nid, hash_val from news_simhash  where ns.nid < {0} and ns.nid > {0} - 100000 " \
                "and (first_16='{1}' or second_16='{2}' or third_16='{3}' or fourth_16='{4}') and (first2_16='{5}' or second2_16='{6}' or third2_16='{7}' or fourth2_16='{8}') "
     k = pos
     leng = len(nids_info)
@@ -192,11 +192,19 @@ def check_and_remove_proc(nids_info, pos, offset):
 def check_and_remove_news():
     conn, cursor = doc_process.get_postgredb_query()
     print 'begin to check...'
-    nids_sql = "select nid, hash_val, first_16, second_16, third_16, fourth_16, first2_16, second2_16, third2_16, fourth2_16 from news_simhash_olddata "
+    #t = datetime.datetime.now().strf
+    #nids_sql = "select nid, hash_val, first_16, second_16, third_16, fourth_16, first2_16, second2_16, third2_16, fourth2_16 from news_simhash_olddata ns " \
+    #           "inner join newslist_v2 nl on ns.nid=nl.nid where nl.ctime>now() - interval '30 day' "
+    nids_sql = "select nid, hash_val, first_16, second_16, third_16, fourth_16, first2_16, second2_16, third2_16, fourth2_16 from news_simhash " \
+               "where nid < 13821715" \
+               #"ns " \
+               #"inner join newslist_v2 nl on ns.nid=nl.nid where nl.ctime>now() - interval '30 day' "
     cursor.execute(nids_sql)
-    print 'nids_sql finished!'
     rows = cursor.fetchall()
     nids_info = list(rows)
+    print 'nids_sql finished! {} news find.'.format(len(nids_info))
+    check_and_remove_proc(nids_info, 0, len(nids_info))
+    '''
     pool = Pool(30)
     pos = 0
     while pos < len(nids_info):
@@ -205,6 +213,7 @@ def check_and_remove_news():
 
     pool.close()
     pool.join()
+    '''
     cursor.close()
     conn.close()
     print 'all finished*************'
