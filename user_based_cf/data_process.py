@@ -70,14 +70,14 @@ def coll_click():
 user_topic_prop_sql = "select uid, topic_id, probability from user_topics_v2 where model_v = '{}' and uid != 0 and create_time > now() - interval '20 day'"
 def coll_user_topics(model_v, time_str):
     try:
-        log_cf.info('coll_user_topics begin ...')
+        log_cf.info('    coll_user_topics begin ...')
         conn, cursor = get_postgredb_query()
         cursor.execute(user_topic_prop_sql.format(model_v))
         rows = cursor.fetchall()
         user_ids = []
         topic_ids = []
         props = []
-        log_cf.info('query user topic finished. {} item found.'.format(len(rows)))
+        log_cf.info('    query user topic finished. {} item found.'.format(len(rows)))
         user_topic_prop_dict = {}
         for r in rows:
             user_ids.append(r[0])
@@ -91,7 +91,7 @@ def coll_user_topics(model_v, time_str):
         #time_str = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
         topic_file = os.path.join(real_dir_path, 'data', 'user_topic_data_'+time_str + '.txt')
         df.to_csv(topic_file, index=False)
-        log_cf.info('uid-topic-property are save to {}'.format(topic_file))
+        log_cf.info('    uid-topic-property are save to {}'.format(topic_file))
         return user_topic_prop_dict, user_ids, topic_ids, props
     except:
         traceback.print_exc()
@@ -126,7 +126,7 @@ def cal_neignbours(user_ids, topic_ids, props, time):
                 similarity.append(i2[1])
         df2 = pd.DataFrame({'uid1':master_user, 'uid2':slave_user, 'similarity':similarity}, columns=('uid1', 'uid2', 'similarity'))
         df2.to_csv(user_user_file, index=False)
-        log_cf.info('uid1-uid2-similarity are save to {}'.format(user_user_file))
+        log_cf.info('    uid1-uid2-similarity are save to {}'.format(user_user_file))
         #'''
         conn.commit()
         conn.close()
@@ -176,7 +176,7 @@ def get_user_click_similarity(users, nids, times):
 
 #获取topic-user倒排表, 格式  {topic1:[uid1, uid2...], topic2:...}
 def get_user_topic_similarity(users, topics, props):
-    log_cf.info('begin to get_user_topic_similarity...')
+    log_cf.info('    begin to get_user_topic_similarity...')
     user_set = set(users)
     #记录用户id的索引id
     user_dict = {}
@@ -225,7 +225,7 @@ def get_user_topic_similarity(users, topics, props):
             #if sim != 1 and sim > 0.05:
             W[user_invert_dict[u]][user_invert_dict[v]] = cuv / math.sqrt(N[u] * N[v])
 
-    log_cf.info('finished get_user_topic_similarity...')
+    log_cf.info('    finished get_user_topic_similarity...')
     return W
 
 
@@ -234,7 +234,7 @@ def get_user_topic_similarity(users, topics, props):
 #@input: user_topic_prop_dict ----{u1: {t1:0.1, t2:0.3, t4:0.1.. }, ...}
 #        user_neighbours ----{u1:[(u2, 0.2), (u4, 0.05), ...], ...}
 def get_potential_topic(user_topic_prop_dict, user_neighbours, model_v, time):
-    log_cf.info('begin to get_potential_topic...')
+    log_cf.info('    begin to get_potential_topic...')
     potential_utp_dict = dict() #存储每个邻居推荐的topic及对应的概率
     for it in user_neighbours.items():
         u = it[0]
@@ -261,7 +261,7 @@ def get_potential_topic(user_topic_prop_dict, user_neighbours, model_v, time):
                 cursor.execute(user_potential_topic_sql.format(u, model_v, it[0], it[1], time))
     conn.commit()
     conn.close()
-    log_cf.info('finished get_potential_topic...')
+    log_cf.info('    finished get_potential_topic...')
 
 
 
