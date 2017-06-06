@@ -24,8 +24,10 @@ if __name__ == '__main__':
         from redis_process import nid_queue
         nid_queue.tmp_simhash_queue_produce(nids)
     elif port == 9967: #添加手工处理旧数据
-        from redis_process import nid_queue
-        nid_queue.tmp_consume_nid_simhash()
+        #from redis_process import nid_queue
+        #nid_queue.tmp_consume_nid_simhash()
+        from sim_hash import tmp2
+        tmp2.delete_interval()
     elif port == 9966: #计算hash
         from sim_hash import tmp_sim_hash
         #tmp_sim_hash.cal_simhash_old()
