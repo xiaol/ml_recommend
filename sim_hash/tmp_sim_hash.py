@@ -172,6 +172,7 @@ def check_and_remove_proc(nids_info, pos, offset):
         info = nids_info[k]
         tmp_logger.info("check {}".format(info[0]))
         if doc_process.get_news_online_state(info[0]) != 0: #已经下线
+            k += 1
             continue
         hash_v = long(info[1])
         cursor.execute(hash_sql.format(info[0], info[2], info[3], info[4], info[5], info[6], info[7], info[8], info[9]))
@@ -179,6 +180,7 @@ def check_and_remove_proc(nids_info, pos, offset):
         for r in rows:
             tmp_logger.info('    potential {}'.format(r[0]))
             if doc_process.get_news_online_state(r[0]): #已经下线
+                k += 1
                 continue
             dis = simhash.dif_bit(hash_v, long(r[1]))
             if dis <= 6:
