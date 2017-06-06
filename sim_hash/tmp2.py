@@ -23,3 +23,13 @@ def delete_interval():
     cursor.close()
     conn.close()
 
+
+def coll_news():
+    sql = "select nid from newslist_v2 where ctime > now() - interval '6 day' and " \
+          "nid not in (select nid from news_simhash ns where ns.ctime > now() - interval '6.1 day')"
+    conn, cursor = doc_process.get_postgredb_query()
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return [r[0] for r in rows]
