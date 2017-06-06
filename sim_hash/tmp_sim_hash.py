@@ -116,7 +116,7 @@ def get_words_on_nid(nid):
 
 insert_news_simhash_sql2 = "insert into news_simhash_olddata (nid, hash_val, ctime, first_16, second_16, third_16, fourth_16, first2_16, second2_16, third2_16, fourth2_16) " \
                            "VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}')"
-insert_same_sql = "insert into news_simhash_map (nid, same_nid, diff_bit, ctime) VALUES ({0}, {1}, {2}, '{3}')"
+insert_same_sql = "insert into news_simhash_map (nid, same_nid, diff_bit, ctime, offline_nid) VALUES ({0}, {1}, {2}, '{3}', {4})"
 def cal_simhash_proc(nids):
     conn, cursor = doc_process.get_postgredb()
     n = 0
@@ -186,12 +186,11 @@ def check_and_remove_proc(nids_info, pos, offset):
                 continue
             dis = simhash.dif_bit(hash_v, long(r[1]))
             if dis <= 6:
-                cursor.execute(insert_same_sql.format(info[0], r[0], dis, t0.strftime('%Y-%m-%d %H:%M:%S')))
                 off = del_nid_of_fewer_comment(info[0], r[0], log=tmp_logger)
-                tmp_logger.info('{} vs {} , offline {}'.format(info[0], r[0], off))
+                cursor.execute(insert_same_sql.format(info[0], r[0], dis, t0.strftime('%Y-%m-%d %H:%M:%S'), off))
+                conn.commit()
         k += 1
 
-    conn.commit()
     cursor.close()
     conn.close()
 
@@ -203,7 +202,7 @@ def check_and_remove_news():
     #nids_sql = "select nid, hash_val, first_16, second_16, third_16, fourth_16, first2_16, second2_16, third2_16, fourth2_16 from news_simhash_olddata ns " \
     #           "inner join newslist_v2 nl on ns.nid=nl.nid where nl.ctime>now() - interval '30 day' "
     nids_sql = "select nid, hash_val, first_16, second_16, third_16, fourth_16, first2_16, second2_16, third2_16, fourth2_16 from news_simhash_olddata " \
-               "where nid < 13821715 and nid > 10000000" \
+               "where nid < 13821715 and nid > 10000122" \
                #"ns " \
                #"inner join newslist_v2 nl on ns.nid=nl.nid where nl.ctime>now() - interval '30 day' "
     cursor.execute(nids_sql)
