@@ -12,6 +12,7 @@ import os
 import requests
 from util.simhash import simhash, get_4_segments
 from util.logger import Logger
+from multiprocessing import Pool
 
 real_dir_path = os.path.split(os.path.realpath(__file__))[0]
 
@@ -115,6 +116,7 @@ def get_words_on_nid(nid):
 
 insert_news_simhash_sql2 = "insert into news_simhash_olddata (nid, hash_val, ctime, first_16, second_16, third_16, fourth_16, first2_16, second2_16, third2_16, fourth2_16) " \
                            "VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}')"
+insert_same_sql = "insert into news_simhash_map (nid, same_nid, diff_bit, ctime) VALUES ({0}, {1}, {2}, '{3}')"
 def cal_simhash_proc(nids):
     conn, cursor = doc_process.get_postgredb()
     n = 0
@@ -155,4 +157,58 @@ def cal_simhash_old():
     print '*****  all finished *****'
     cursor.close()
     conn.close()
+
+from util import simhash
+from sim_hash import del_nid_of_fewer_comment
+def check_and_remove_proc(nids_info, pos, offset):
+    hash_sql = "select ns.nid, hash_val from news_simhash_olddata  where ns.nid < {0} and ns.nid > {0} - 100000 " \
+               "and (first_16='{1}' or second_16='{2}' or third_16='{3}' or fourth_16='{4}') and (first2_16='{5}' or second2_16='{6}' or third2_16='{7}' or fourth2_16='{8}') "
+    k = pos
+    leng = len(nids_info)
+    check_up = min(leng, pos + offset)
+    conn, cursor = doc_process.get_postgredb()
+    t0 = datetime.datetime.now()
+    while k < check_up:
+        info = nids_info[k]
+        if doc_process.get_news_online_state(info[0]): #已经下线
+            continue
+        hash_v = long(info[1])
+        cursor.execute(hash_sql.format(info[0], info[2], info[3], info[4], info[5], info[6], info[7], info[8], info[9]))
+        rows = cursor.fetchall()
+        for r in rows:
+            if doc_process.get_news_online_state(r[0]): #已经下线
+                continue
+            dis = simhash.dif_bit(hash_v, long(r[1]))
+            if dis <= 6:
+                cursor.execute(insert_same_sql.format(info[0], r[0], dis, t0.strftime('%Y-%m-%d %H:%M:%S')))
+                del_nid_of_fewer_comment(info[0], r[0], log=tmp_logger)
+        k += 1
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+
+def check_and_remove_news():
+    conn, cursor = doc_process.get_postgredb_query()
+    print 'begin to check...'
+    nids_sql = "select nid, hash_val, first_16, second_16, third_16, fourth_16, first2_16, second2_16, third2_16, fourth2_16 from news_simhash_olddata "
+    cursor.execute(nids_sql)
+    print 'nids_sql finished!'
+    rows = cursor.fetchall()
+    nids_info = list(rows)
+    pool = Pool(30)
+    pos = 0
+    while pos < len(nids_info):
+        pool.apply_async(check_and_remove_proc, args=(nids_info, pos, pos))
+        pos += 200000
+
+    pool.close()
+    pool.join()
+    cursor.close()
+    conn.close()
+
+
+
+
 

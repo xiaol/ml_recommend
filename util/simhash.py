@@ -94,3 +94,12 @@ def get_4_segments(hash_bits):
     thi2 = hash_bits & 0b00000011110000000011110000000000000000111100000000000011110000
     fou2 = hash_bits & 0b00000000001111000000001111000000000000000011110000000000001111
     return str(fir), str(sec), str(thi), str(fou), str(fir2), str(sec2), str(thi2), str(fou2)
+
+
+def dif_bit(val1, val2, hashbits=64):
+    x = (val1 ^ val2) & ((1 << hashbits) - 1)
+    tot = 0
+    while x:
+        tot += 1
+        x &= x - 1
+    return tot

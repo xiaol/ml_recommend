@@ -227,7 +227,6 @@ def get_postgredb_query():
             raise
 
 
-
 '''
 nid_sql = 'select a.title, a.content, c.cname \
 from (select * from newslist_v2 where nid=%s) a \
@@ -249,6 +248,8 @@ def get_words_on_nid(nid):
                 txt += content['txt']
         total_txt = title + txt.encode('utf-8')
         word_list = filter_html_stopwords_pos(total_txt, remove_num=True, remove_single_word=True)
+    cursor.close()
+    conn.close()
     return word_list
 
 
@@ -731,5 +732,15 @@ def get_nids_sentences(nid_set):
     return nid_sentences_dict, nid_para_links_dict, nid_pname_dict
 
 
-
+def get_news_online_state(nid):
+    conn, cursor = get_postgredb_query()
+    check_sql = "select state from newslist_v2 where nid={}"
+    cursor.execute(check_sql.format(nid))
+    r = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    if r:
+        return r[0]
+    else:
+        raise ValueError('Do not find news state:{}'.format(nid))
 

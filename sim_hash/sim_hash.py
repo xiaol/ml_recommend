@@ -91,7 +91,7 @@ get_comment_num_sql = 'select nv.nid, nv.comment, ni.content from newslist_v2 nv
 recommend_sql = "select nid, rtime from newsrecommendlist where rtime > now() - interval '1 day' and nid in (%s, %s)"
 #offonline_sql = 'update newslist_v2 set state=1 where nid={0}'
 url = "http://114.55.142.40:9001/news_delete"
-def del_nid_of_fewer_comment(nid, n):
+def del_nid_of_fewer_comment(nid, n, log=logger):
     try:
         conn, cursor = doc_process.get_postgredb_query()
         #先判断新闻是否已经被手工推荐。有则删除没有被手工推荐的新闻
@@ -113,7 +113,7 @@ def del_nid_of_fewer_comment(nid, n):
             response = requests.post(url, data=data)
             cursor.close()
             conn.close()
-            logger.info('{0} has been recommended, so offline {1}'.format(stay_nid, del_nid))
+            log.info('{0} has been recommended, so offline {1}'.format(stay_nid, del_nid))
             return
 
         cursor.execute(get_comment_num_sql.format(nid, n))
@@ -129,9 +129,9 @@ def del_nid_of_fewer_comment(nid, n):
         response = requests.post(url, data=data)
         cursor.close()
         conn.close()
-        logger.info('{0} vs {1},  offline {2}'.format(nid, n, del_nid))
+        log.info('{0} vs {1},  offline {2}'.format(nid, n, del_nid))
     except Exception as e:
-        logger.error(traceback.format_exc())
+        log.error(traceback.format_exc())
 
 
 ################################################################################
