@@ -121,6 +121,8 @@ def del_nid_of_fewer_comment(nid, n, log=logger):
         nid_goal = []
         for r in rows:
             nid_goal.append((r[0], goal_to_del(r[2], r[1])))
+        if len(nid_goal) == 0:  #查库失败, 直接删除旧新闻
+            return n
         sorted_goal = sorted(nid_goal, key=lambda goal:goal[1])
         del_nid = sorted_goal[0][0]
 

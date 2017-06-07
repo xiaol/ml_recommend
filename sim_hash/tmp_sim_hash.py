@@ -169,27 +169,31 @@ def check_and_remove_proc(nids_info, pos, offset):
     conn, cursor = doc_process.get_postgredb()
     t0 = datetime.datetime.now()
     while k < check_up:
-        info = nids_info[k]
-        tmp_logger.info("check {}".format(info[0]))
-        if doc_process.get_news_online_state(info[0]) != 0: #已经下线
-            tmp_logger.info('    this news has been offline!')
-            k += 1
-            continue
-        hash_v = long(info[1])
-        #tmp_logger.info(cursor.mogrify(hash_sql.format(info[0], info[2], info[3], info[4], info[5], info[6], info[7], info[8], info[9])))
-        cursor.execute(hash_sql.format(info[0], info[2], info[3], info[4], info[5], info[6], info[7], info[8], info[9]))
-        rows = cursor.fetchall()
-        for r in rows:
-            tmp_logger.info('    potential {}'.format(r[0]))
-            if doc_process.get_news_online_state(r[0]): #已经下线
+        try:
+            info = nids_info[k]
+            tmp_logger.info("check {}".format(info[0]))
+            if doc_process.get_news_online_state(info[0]) != 0: #已经下线
+                tmp_logger.info('    this news has been offline!')
                 k += 1
                 continue
-            dis = simhash.dif_bit(hash_v, long(r[1]))
-            if dis <= 6:
-                off = del_nid_of_fewer_comment(info[0], r[0], log=tmp_logger)
-                cursor.execute(insert_same_sql.format(info[0], r[0], dis, t0.strftime('%Y-%m-%d %H:%M:%S'), off))
-                conn.commit()
-        k += 1
+            hash_v = long(info[1])
+            #tmp_logger.info(cursor.mogrify(hash_sql.format(info[0], info[2], info[3], info[4], info[5], info[6], info[7], info[8], info[9])))
+            cursor.execute(hash_sql.format(info[0], info[2], info[3], info[4], info[5], info[6], info[7], info[8], info[9]))
+            rows = cursor.fetchall()
+            for r in rows:
+                tmp_logger.info('    potential {}'.format(r[0]))
+                if doc_process.get_news_online_state(r[0]): #已经下线
+                    k += 1
+                    continue
+                dis = simhash.dif_bit(hash_v, long(r[1]))
+                if dis <= 6:
+                    off = del_nid_of_fewer_comment(info[0], r[0], log=tmp_logger)
+                    cursor.execute(insert_same_sql.format(info[0], r[0], dis, t0.strftime('%Y-%m-%d %H:%M:%S'), off))
+                    conn.commit()
+                k += 1
+        except:
+            k += 1
+            continue
 
     cursor.close()
     conn.close()
@@ -202,7 +206,7 @@ def check_and_remove_news():
     #nids_sql = "select nid, hash_val, first_16, second_16, third_16, fourth_16, first2_16, second2_16, third2_16, fourth2_16 from news_simhash_olddata ns " \
     #           "inner join newslist_v2 nl on ns.nid=nl.nid where nl.ctime>now() - interval '30 day' "
     nids_sql = "select nid, hash_val, first_16, second_16, third_16, fourth_16, first2_16, second2_16, third2_16, fourth2_16 from news_simhash_olddata " \
-               "where nid < 13821715 and nid > 10000122" \
+               "where nid < 13821715 and nid > 10435849" \
                #"ns " \
                #"inner join newslist_v2 nl on ns.nid=nl.nid where nl.ctime>now() - interval '30 day' "
     cursor.execute(nids_sql)
