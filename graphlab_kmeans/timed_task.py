@@ -10,7 +10,7 @@ from redis_process import nid_queue
 from graphlab_kmeans.kmeans_for_update import chnl_k_dict
 
 #定义取用户点击的循环周期
-period = 30
+period = 3
 click_sql = "select c.uid, c.nid, c.ctime from newsrecommendclick c \
 inner join newslist_v2 nl  on c.nid=nl.nid \
 INNER JOIN channellist_v2 cl on nl.chid = cl.id \
