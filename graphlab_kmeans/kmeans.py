@@ -207,10 +207,10 @@ def kmeans_predict(nid_list, log=logger):
     nid_info = {}
     for nid in nid_list:
         conn, cursor = doc_process.get_postgredb_query()
-        cursor.execute(nid_sql, [nid])
+        cursor.execute(nid_sql.format(nid))
         row = cursor.fetchone()
         if not row:
-            print 'Error: do not get info of nid: ' + str(nid)
+            log.info('do not get info of {}'.format(nid))
             continue
         title = row[0]
         content_list = row[1]
