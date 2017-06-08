@@ -56,8 +56,10 @@ def coll_click():
 
         df = pd.DataFrame({'uid':user_ids, 'nid':nid_ids, 'ctime':click_time}, columns=('uid', 'nid', 'ctime'))
         time_str = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+        '''
         click_file = os.path.join(real_dir_path, 'data', time_str)
         df.to_csv(click_file, index=False)
+        '''
         #calculate similarity.  user_dict is a map of userid and index, W is simility matrix with index representing userid
         W = get_user_click_similarity(user_ids, nid_ids, click_time)
         conn.close()
@@ -87,11 +89,13 @@ def coll_user_topics(model_v, time_str):
                 user_topic_prop_dict[r[0]] = dict()
             user_topic_prop_dict[r[0]][r[1]] = r[2]
 
+        '''
         df = pd.DataFrame({'uid': user_ids, 'topic': topic_ids, 'property': props}, columns=('uid', 'topic', 'property'))
         #time_str = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
         topic_file = os.path.join(real_dir_path, 'data', 'user_topic_data_'+time_str + '.txt')
         df.to_csv(topic_file, index=False)
-        log_cf.info('    uid-topic-property are save to {}'.format(topic_file))
+        '''
+        log_cf.info('    coll_user_topics end')
         return user_topic_prop_dict, user_ids, topic_ids, props
     except:
         traceback.print_exc()
@@ -113,8 +117,8 @@ def cal_neignbours(user_ids, topic_ids, props, time):
             user_neighbour_dict[master] = topK_list
             #print cursor.mogrify(insert_similarity_sql.format(master, json.dumps(topK_list), time))
             cursor.execute(insert_similarity_sql.format(master, json.dumps(topK_list), time))
-        #'''
-        user_user_file = os.path.join(real_dir_path, 'data', 'user_topic_similarity_'+time + '.txt')
+            conn.commit()
+        '''
         master_user = []
         slave_user = []
         similarity = []
@@ -125,10 +129,11 @@ def cal_neignbours(user_ids, topic_ids, props, time):
                 slave_user.append(i2[0])
                 similarity.append(i2[1])
         df2 = pd.DataFrame({'uid1':master_user, 'uid2':slave_user, 'similarity':similarity}, columns=('uid1', 'uid2', 'similarity'))
+        user_user_file = os.path.join(real_dir_path, 'data', 'user_topic_similarity_'+time + '.txt')
         df2.to_csv(user_user_file, index=False)
         log_cf.info('    uid1-uid2-similarity are save to {}'.format(user_user_file))
-        #'''
-        conn.commit()
+        '''
+        log_cf.info("    cal_neighbour finished!")
         conn.close()
         print 'finished!!'
         return user_neighbour_dict
