@@ -10,7 +10,10 @@ from redis_process import nid_queue
 from data_process import channel_for_topic_dict
 import datetime
 from datetime import timedelta
-
+from util import logger
+import os
+real_dir_path = os.path.split(os.path.realpath(__file__))[0]
+logger_9989 = logger.Logger('process9989_3',  os.path.join(real_dir_path,  'log/log_9989_3.txt'))
 #定义取用户点击的循环周期
 period = 3
 #click_sql = "select uid, nid, ctime from newsrecommendclick where ctime > now() - INTERVAL '5 minute'"
@@ -35,6 +38,7 @@ def get_clicks_5m():
         last_time = r[2].strftime('%Y-%m-%d %H:%M:%S.%f')
         print '    {}'.format(last_time)
         ctime_str = r[2].strftime('%Y-%m-%d %H:%M:%S')
+        logger_9989.info('    pruduce {}--{}--{}'.format(r[0], r[1], ctime_str))
         nid_queue.produce_user_click_lda(r[0], r[1], ctime_str)
     cursor.close()
     conn.close()
