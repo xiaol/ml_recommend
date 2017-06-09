@@ -20,7 +20,7 @@ INNER JOIN channellist_v2 cl on nl.chid = cl.id \
 where cname in ({0}) and c.ctime > '{1}'"
 #where cname in ({0}) and c.ctime > now() - INTERVAL '{1} second' and c.stime>0"
 
-last_time = (datetime.datetime.now() - timedelta(seconds=3)).strftime('%Y-%m-%d %H:%M:%S:%f')
+last_time = (datetime.datetime.now() - timedelta(seconds=3)).strftime('%Y-%m-%d %H:%M:%S.%f')
 
 channels = ', '.join("\'" + ch+"\'" for ch in channel_for_topic_dict.keys())
 def get_clicks_5m():
