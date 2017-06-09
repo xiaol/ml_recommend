@@ -128,7 +128,7 @@ def consume_nid_sentence_simhash(num=1):
         nid_list.append(nid)
         n += 1
         t1 = datetime.datetime.now()
-        if n >= num or (t1 - t0).total_seconds() > 10:
+        if n >= num or (t1 - t0).total_seconds() > 5:
             sentence_hash.coll_sentence_hash_time(nid_list)
             n = 0
             del nid_list[:]

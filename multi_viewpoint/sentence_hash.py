@@ -200,6 +200,7 @@ def cal_process(nid_set, log=None, same_t=3, news_interval=3, same_dict = {}):
             kkkk += 1
             n = 0
             nid = item[0]
+            log.info('    cal {} sentences...'.format(nid))
             #log.info('--- consume :{}'.format(nid))
             t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             para_sent_dict = item[1]
@@ -366,7 +367,8 @@ def cal_process(nid_set, log=None, same_t=3, news_interval=3, same_dict = {}):
                             cursor.executemany(insert_same_sentence, same_sentence_sql_para)  #有效的重复句子
                             #log.info('get same sentence map :{}'.format(str_no_html.encode('utf-8')))
                             #多放观点  1. 句子长度>30.  2 不同源  3. 去除首尾
-                            if len(str_no_html) > 30 and n > 2 and (n < sen_len-3):
+                            #if len(str_no_html) > 30 and n > 2 and (n < sen_len-3):
+                            if len(str_no_html) > 15:
                                 sub_nids_set = set()
                                 for same in same_sentence_sql_para:
                                     nn = same[1]  #nid
@@ -378,12 +380,12 @@ def cal_process(nid_set, log=None, same_t=3, news_interval=3, same_dict = {}):
                                         for ct in ctimes:
                                             ctime_dict[str(ct[0])] = ct[1]
                                         cursor.execute(multo_vp_insert_sql, (str(same[0]), same[2], str(same[1]), same[3], t, ctime_dict[str(same[0])], ctime_dict[str(same[1])]))
-                                        log.info('get multi viewpoint :{}'.format(str_no_html.encode('utf-8')))
+                                        log.info('      get multi viewpoint :{}'.format(str_no_html.encode('utf-8')))
                                         sub_nids_set.add(same[0])
                                         sub_nids_set.add(same[1])
                                 #log.info("num of mvp is {}".format(sub_nids_set))
                                 if len(sub_nids_set) >= 2:  ## 专题新闻入队列
-                                    log.info('generate subject for {}'.format(sub_nids_set))
+                                    log.info('      generate subject for {}'.format(sub_nids_set))
                                     #for i in sub_nids_set:
                                     #    subject_nids.add(i)
                                     key_sents = [str_no_html.encode('utf-8'), ]
