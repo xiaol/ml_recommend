@@ -286,7 +286,9 @@ def predict_click(click_info, log=logger_click):
         get_chname_id_dict()
     uid = click_info[0]
     nid = click_info[1]
-    time_str = click_info[2]
+    #time_str = click_info[2]
+    t = datetime.datetime.now()
+    time_str = t.strftime('%Y-%m-%d %H:%M:%S')
     log.info('consume kmenas -----{} {} {}'.format(uid, nid, time_str))
     ctime = datetime.datetime.strptime(time_str, '%Y-%m-%d %H:%M:%S')
     valid_time = ctime + timedelta(days=15) #有效时间定为30天
