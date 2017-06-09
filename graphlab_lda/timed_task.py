@@ -27,6 +27,7 @@ def get_clicks_5m():
     global last_time
     conn, cursor = get_postgredb()
     #cursor.execute(click_sql.format(channels, period))
+    print cursor.mogrify(click_sql.format(channels, last_time))
     cursor.execute(click_sql.format(channels, last_time))
     rows = cursor.fetchall()
     for r in rows:
