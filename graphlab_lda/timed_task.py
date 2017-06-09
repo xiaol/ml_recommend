@@ -17,7 +17,7 @@ period = 3
 click_sql = "select c.uid, c.nid, c.ctime from newsrecommendclick c \
 inner join newslist_v2 nl  on c.nid=nl.nid \
 INNER JOIN channellist_v2 cl on nl.chid = cl.id \
-where cname in ({0}) and c.ctime > '{}'"
+where cname in ({0}) and c.ctime > '{1}'"
 #where cname in ({0}) and c.ctime > now() - INTERVAL '{1} second' and c.stime>0"
 
 last_time = (datetime.datetime.now() - timedelta(seconds=3)).strftime('%Y-%m-%d %H:%M:%S:%f')
