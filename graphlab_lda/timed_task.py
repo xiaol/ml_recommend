@@ -17,10 +17,10 @@ period = 3
 click_sql = "select c.uid, c.nid, c.ctime from newsrecommendclick c \
 inner join newslist_v2 nl  on c.nid=nl.nid \
 INNER JOIN channellist_v2 cl on nl.chid = cl.id \
-where cname in ({0}) and c.ctime > {}"
+where cname in ({0}) and c.ctime > '{}'"
 #where cname in ({0}) and c.ctime > now() - INTERVAL '{1} second' and c.stime>0"
 
-last_time = datetime.datetime.now() - timedelta(seconds=3)
+last_time = (datetime.datetime.now() - timedelta(seconds=3)).strftime('%Y-%m-%d %H:%M:%S:%f')
 
 channels = ', '.join("\'" + ch+"\'" for ch in channel_for_topic_dict.keys())
 def get_clicks_5m():
@@ -30,7 +30,7 @@ def get_clicks_5m():
     cursor.execute(click_sql.format(channels, last_time))
     rows = cursor.fetchall()
     for r in rows:
-        last_time = r[2]
+        last_time = r[2].strftime('%Y-%m-%d %H:%M:%S:%f')
         ctime_str = r[2].strftime('%Y-%m-%d %H:%M:%S')
         nid_queue.produce_user_click_lda(r[0], r[1], ctime_str)
     cursor.close()
