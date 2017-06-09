@@ -31,7 +31,7 @@ def get_clicks_5m():
     cursor.execute(click_sql.format(channels, last_time))
     rows = cursor.fetchall()
     for r in rows:
-        last_time = r[2].strftime('%Y-%m-%d %H:%M:%S:%f')
+        last_time = r[2].strftime('%Y-%m-%d %H:%M:%S.%f')
         ctime_str = r[2].strftime('%Y-%m-%d %H:%M:%S')
         nid_queue.produce_user_click_lda(r[0], r[1], ctime_str)
     cursor.close()
