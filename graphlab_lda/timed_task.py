@@ -25,6 +25,7 @@ last_time = (datetime.datetime.now() - timedelta(seconds=3)).strftime('%Y-%m-%d 
 channels = ', '.join("\'" + ch+"\'" for ch in channel_for_topic_dict.keys())
 def get_clicks_5m():
     global last_time
+    print datetime.datetime.now()
     conn, cursor = get_postgredb()
     #cursor.execute(click_sql.format(channels, period))
     print cursor.mogrify(click_sql.format(channels, last_time))
