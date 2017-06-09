@@ -36,6 +36,7 @@ def get_clicks_5m():
     for r in rows:
         last_time = r[2].strftime('%Y-%m-%d %H:%M:%S.%f')
         ctime_str = r[2].strftime('%Y-%m-%d %H:%M:%S')
+        logger_9981.info('    pruduce {}--{}--{}'.format(r[0], r[1], ctime_str))
         nid_queue.produce_user_click_kmeans(r[0], r[1], ctime_str)
     cursor.close()
     conn.close()
