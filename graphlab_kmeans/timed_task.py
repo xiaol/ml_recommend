@@ -24,20 +24,26 @@ INNER JOIN channellist_v2 cl on nl.chid = cl.id \
 where cname in ({0}) and c.ctime > '{1}' order by c.ctime "
 #where cname in ({0}) and c.ctime > now() - INTERVAL '{1} second' "
 
-last_time = (datetime.datetime.now() - timedelta(seconds=3)).strftime('%Y-%m-%d %H:%M:%S.%f')
+#last_time = (datetime.datetime.now() - timedelta(seconds=3)).strftime('%Y-%m-%d %H:%M:%S.%f')
+last_time = datetime.datetime.now() - timedelta(seconds=3)
 
 channels = ', '.join("\'" + ch+"\'" for ch in chnl_k_dict.keys())
 def get_clicks_5m():
     logger_9981.info('news epoch...')
     global last_time
+    now = datetime.datetime.now()
+    if last_time > now:
+        logger_9981.info('    **** time error! {}'.format(last_time))
+        last_time = now - timedelta(seconds=3)
+
     conn, cursor = get_postgredb()
     #cursor.execute(click_sql.format(channels, period))
-    logger_9981.info("    ctime > '{}'".format(last_time))
-    cursor.execute(click_sql.format(channels, last_time))
+    logger_9981.info("    ctime > '{}'".format(last_time.strftime('%Y-%m-%d %H:%M:%S.%f')))
+    cursor.execute(click_sql.format(channels, last_time.strftime('%Y-%m-%d %H:%M:%S.%f')))
     rows = cursor.fetchall()
     logger_9981.info('    len of rows is {}'.format(len(list(rows))))
     for r in rows:
-        last_time = r[2].strftime('%Y-%m-%d %H:%M:%S.%f')
+        last_time = r[2]
         ctime_str = r[2].strftime('%Y-%m-%d %H:%M:%S')
         logger_9981.info('    pruduce {}--{}--{}'.format(r[0], r[1], ctime_str))
         nid_queue.produce_user_click_kmeans(r[0], r[1], ctime_str)
