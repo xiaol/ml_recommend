@@ -316,7 +316,8 @@ def cal_process(nid_set, log=None, same_t=3, news_interval=3, same_dict = {}):
                     if len(nids_for_ads) >= 10:
                         #先处理同源潜在广告
                         if len(pname_set) <= PNAME_T or (len(pname_set) > 5 and len(chid_set) < 4):
-                            if n > sen_len * .2 and n < sen_len * .8:
+                            #if n > sen_len * .2 and n < sen_len * .8:
+                            if float(n) < float(sen_len * .2) or float(n) > float(sen_len * .8):
                                 min_time = ctime_list[0]
                                 max_time = ctime_list[0]
                                 for kkk in xrange(1, len(ctime_list)):
