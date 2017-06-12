@@ -17,10 +17,10 @@ logger_9989 = logger.Logger('process9989_3',  os.path.join(real_dir_path,  'log/
 #定义取用户点击的循环周期
 period = 3
 #click_sql = "select uid, nid, ctime from newsrecommendclick where ctime > now() - INTERVAL '5 minute'"
-click_sql = "select c.uid, c.nid, c.ctime from newsrecommendclick c \
+click_sql = "select c.uid, c.nid, c.ctime, c.itime from newsrecommendclick c \
 inner join newslist_v2 nl  on c.nid=nl.nid \
 INNER JOIN channellist_v2 cl on nl.chid = cl.id \
-where cname in ({0}) and c.ctime > '{1}' order by c.ctime"
+where cname in ({0}) and c.itime > '{1}' order by c.itime"
 #where cname in ({0}) and c.ctime > now() - INTERVAL '{1} second' and c.stime>0"
 
 #last_time = (datetime.datetime.now() - timedelta(seconds=3)).strftime('%Y-%m-%d %H:%M:%S.%f')
@@ -40,9 +40,9 @@ def get_clicks_5m():
     cursor.execute(click_sql.format(channels, last_time.strftime('%Y-%m-%d %H:%M:%S.%f')))
     rows = cursor.fetchall()
     for r in rows:
-        if r[2] > now:
+        if r[3] > now:
             continue
-        last_time = r[2]
+        last_time = r[3]
         ctime_str = r[2].strftime('%Y-%m-%d %H:%M:%S')
         logger_9989.info('    pruduce {}--{}--{}'.format(r[0], r[1], ctime_str))
         nid_queue.produce_user_click_lda(r[0], r[1], ctime_str)
