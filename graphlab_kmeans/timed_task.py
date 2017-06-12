@@ -43,6 +43,8 @@ def get_clicks_5m():
     rows = cursor.fetchall()
     logger_9981.info('    len of rows is {}'.format(len(list(rows))))
     for r in rows:
+        if r[2] > now:
+            continue
         last_time = r[2]
         ctime_str = r[2].strftime('%Y-%m-%d %H:%M:%S')
         logger_9981.info('    pruduce {}--{}--{}'.format(r[0], r[1], ctime_str))
