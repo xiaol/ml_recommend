@@ -28,11 +28,14 @@ last_time = (datetime.datetime.now() - timedelta(seconds=3)).strftime('%Y-%m-%d 
 
 channels = ', '.join("\'" + ch+"\'" for ch in chnl_k_dict.keys())
 def get_clicks_5m():
+    logger_9981.info('news epoch...')
     global last_time
     conn, cursor = get_postgredb()
     #cursor.execute(click_sql.format(channels, period))
+    logger_9981.info("    ctime > '{}'".format(last_time))
     cursor.execute(click_sql.format(channels, last_time))
     rows = cursor.fetchall()
+    logger_9981.info('    len of rows is {}'.format(len(list(rows))))
     for r in rows:
         last_time = r[2].strftime('%Y-%m-%d %H:%M:%S.%f')
         ctime_str = r[2].strftime('%Y-%m-%d %H:%M:%S')
