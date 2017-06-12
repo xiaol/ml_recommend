@@ -41,11 +41,10 @@ def get_clicks_5m():
     logger_9981.info("    ctime > '{}'".format(last_time.strftime('%Y-%m-%d %H:%M:%S.%f')))
     cursor.execute(click_sql.format(channels, last_time.strftime('%Y-%m-%d %H:%M:%S.%f')))
     rows = cursor.fetchall()
-    logger_9981.info('    len of rows is {}'.format(len(list(rows))))
     for r in rows:
         if r[2] > now:
             continue
-        last_time = r[2]
+        last_time = r[2]    #last_time会保留最晚的时间
         ctime_str = r[2].strftime('%Y-%m-%d %H:%M:%S')
         logger_9981.info('    pruduce {}--{}--{}'.format(r[0], r[1], ctime_str))
         nid_queue.produce_user_click_kmeans(r[0], r[1], ctime_str)
