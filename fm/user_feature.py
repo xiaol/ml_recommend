@@ -47,20 +47,21 @@ def get_active_user_info(min_interval=1, min_click=1):
     user_time_sql = "select nid, ctime from newsrecommendclick " \
                     "where uid={} and " \
                     "ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{} day' "
+    user_click_dict = dict()
     for u in user_raw_info.keys():
         hour_dict = dict()  #记录每个小时的点击数
         cursor.execute(user_time_sql.format(u, t, min_interval))
         rows = cursor.fetchall()
+        user_click_dict[u] = []
         for r in rows:
             h = r[1].hour
             hour_dict[h] = 1 if h not in hour_dict else hour_dict[h]+1
+            user_click_dict[u].append(r[0])
         user_raw_info[u].append(hour_dict.keys())
 
     user_csv = pd.Series(user_raw_info).to_csv('user_feature.csv')
+    user_click_csv = pd.Series(user_click_dict).to_csv('user_click.csv')
     print 'finished!!'
-
-
-
     #取负样本
 
     cursor.close()
