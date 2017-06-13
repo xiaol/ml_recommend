@@ -403,7 +403,7 @@ def cal_process(nid_set, log=None, same_t=3, news_interval=3, same_dict = {}):
                 conn.close()
                 cursor_query.close()
                 conn_query.close()
-            if len(subject_sentence_nids) > 0:
+            if len(subject_sentence_nids) > 0 and len(subject_sentence_nids) < 3:
                 #log.info("before merge : {}".format(subject_sentence_nids))
                 subs = merge_subs(subject_sentence_nids)
                 #log.info("after merge : {}".format(subs))
