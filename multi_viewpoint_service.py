@@ -22,7 +22,7 @@ class Application(tornado.web.Application):
 
 if __name__ == '__main__':
     port = int(sys.argv[1])
-    if port == 9965:
+    if port == 9965: #计算新闻的句子hash值
         http_server = tornado.httpserver.HTTPServer(Application())
         http_server.listen(port)
         #sentence_hash.coll_sentence_hash()
