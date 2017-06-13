@@ -17,11 +17,14 @@ import pandas as pd
 import psycopg2
 import traceback
 from bs4 import BeautifulSoup
+import socket
 
 sentence_delimiters = ['?', '!', ';', '？', '！', '。', '；', '……', '…', '\n']
 question_delimiters = [u'?', u'？']
 news_text_nid_sql = "select nid, title, content from newslist_v2 where nid={0}"
 
+myname = socket.getfqdn(socket.gethostname())
+myaddr = socket.gethostbyname(myname)
 
 #使用BeautifulSoup提取内容
 #@output:
@@ -184,11 +187,13 @@ def jieba_extract_keywords(str, K):
 
 POSTGRE_USER = 'postgres'
 POSTGRE_PWD = 'ly@postgres&2015'
-#POSTGRE_HOST = '120.27.163.25'
-POSTGRE_HOST = '10.47.54.175'
 POSTGRE_DBNAME = 'BDP'
-#POSTGRES = "postgresql://postgres:ly@postgres&2015@120.27.163.25:5432/BDP"
-POSTGRES = "postgresql://postgres:ly@postgres&2015@10.47.54.175:5432/BDP"
+if myaddr == '10.172.64.2':  #hpc
+    POSTGRE_HOST = '10.47.54.175'
+    POSTGRES = "postgresql://postgres:ly@postgres&2015@10.47.54.175:5432/BDP"
+else:
+    POSTGRE_HOST = '120.27.163.25'
+    POSTGRES = "postgresql://postgres:ly@postgres&2015@120.27.163.25:5432/BDP"
 def get_postgredb():
     try:
         connection = psycopg2.connect(database=POSTGRE_DBNAME, user=POSTGRE_USER, password=POSTGRE_PWD, host=POSTGRE_HOST,)
@@ -206,11 +211,13 @@ def get_postgredb():
 
 
 #数据库查询从节点
-#POSTGRE_HOST_QUERY = '120.27.162.201'
-POSTGRE_HOST_QUERY = '10.47.54.32'
+if myaddr == '10.172.64.2':  #hpc
+    POSTGRE_HOST_QUERY = '10.47.54.32'
+    POSTGRES_QUERY = "postgresql://postgres:ly@postgres&2015@10.47.54.32:5432/BDP"
+else:
+    POSTGRE_HOST_QUERY = '120.27.162.201'
+    POSTGRES_QUERY = "postgresql://postgres:ly@postgres&2015@120.27.162.201:5432/BDP"
 POSTGRE_DBNAME_QUERY = 'BDP'
-#POSTGRES_QUERY = "postgresql://postgres:ly@postgres&2015@120.27.162.201:5432/BDP"
-POSTGRES_QUERY = "postgresql://postgres:ly@postgres&2015@10.47.54.32:5432/BDP"
 def get_postgredb_query():
     try:
         connection = psycopg2.connect(database=POSTGRE_DBNAME_QUERY, user=POSTGRE_USER, password=POSTGRE_PWD, host=POSTGRE_HOST_QUERY,)
@@ -382,11 +389,14 @@ def cut_pos_nlpir(doc, topK = 20):
 
 from pyltp import Segmentor, Postagger
 segmentor = Segmentor()
-segmentor.load('/root/git/ltp_data/cws.model')
-#segmentor.load('/Users/a000/git/ltp_data/cws.model')
 poser = Postagger()
-poser.load('/root/git/ltp_data/pos.model')
-#poser.load('/Users/a000/git/ltp_data/pos.model')
+if myaddr == '10.172.64.2':  #hpc
+    segmentor.load('/root/git/ltp_data/cws.model')
+    poser.load('/root/git/ltp_data/pos.model')
+else:
+    segmentor.load('/Users/a000/git/ltp_data/cws.model')
+    poser.load('/Users/a000/git/ltp_data/pos.model')
+
 
 allow_pos_ltp = ('a', 'i', 'j', 'n', 'nh', 'ni', 'nl', 'ns', 'nt', 'nz', 'v', 'ws')
 #使用哈工大pyltp分词, 过滤词性
@@ -672,14 +682,14 @@ def coll_cut_extract_multiprocess(chnl_num_dict,
 
 
 ################################################################################
-#@brief: 根据频道过滤,只保留特定的频道
+#@brief: 根据频道过滤,只保留特定的频道及在线的新闻
 #@input:  nids
 #         cnames
 #@output: nids of cnames
 ################################################################################
-knbc_sql = "select nid from info_news ni inner join channellist_v2 cl " \
-           "on ni.chid=cl.id " \
-           "where nid in %s and cl.cname in %s "
+knbc_sql = "select nid from newslist_v2 nl inner join channellist_v2 cl " \
+           "on nl.chid=cl.id " \
+           "where nid in %s and cl.cname in %s and nl.state=0 "
 def keep_nids_based_cnames(nids_tuple, cname_tuple):
     conn, cursor = get_postgredb_query()
     cursor.execute(knbc_sql, (nids_tuple, cname_tuple))
