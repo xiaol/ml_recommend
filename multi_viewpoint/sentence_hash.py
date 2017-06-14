@@ -313,6 +313,8 @@ def cal_process(nid_set, log=None, same_t=3, news_interval=3, same_dict = {}):
                         chid_set.add(rk[1])
                         ctime_list.append(rk[2])
                         nid_pn[rk[3]] = rk[0]
+                    if len(nids_for_ads) / float(len(pname_set)) > 3: #2017.06.13 添加
+                        is_new_ads = True
                     if len(nids_for_ads) >= 10:
                         #先处理同源潜在广告
                         if len(pname_set) <= PNAME_T or (len(pname_set) > 5 and len(chid_set) < 4):
