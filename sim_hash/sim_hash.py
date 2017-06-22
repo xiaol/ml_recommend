@@ -35,17 +35,15 @@ def get_news_hash(nid_list):
         return {}
 
 
-################################################################################
-#@brief: 查看是否有重复。  相似度达到一定值就认为是相同
-#@input:
-#         news_simhash   ---  新闻的simhash对象
-#        check_interval --- 检查数据时间范围,例如检查三天内的数据, default: 999999
-#        threshold      ---  相同的判断阈值
-#@output: list  --- 相同的nid
-################################################################################
 hash_sql = "select ns.nid, hash_val from news_simhash ns inner join newslist_v2 nv on ns.nid=nv.nid where (ns.ctime > now() - interval '{0} day') and nv.state=0 " \
            "and (first_16='{1}' or second_16='{2}' or third_16='{3}' or fourth_16='{4}') and (first2_16='{5}' or second2_16='{6}' or third2_16='{7}' or fourth2_16='{8}') "
 def get_news_interval(h, interval = 9999):
+    '''
+    找到一定时间内可能重复的新闻
+    :param h:
+    :param interval:
+    :return:
+    '''
     fir, sec, thi, fou, fir2, sec2, thi2, fou2 = get_4_segments(h.__long__())
     conn, cursor = doc_process.get_postgredb_query()
     cursor.execute(hash_sql.format(interval, fir, sec, thi, fou, fir2, sec2, thi2, fou2))
@@ -56,7 +54,15 @@ def get_news_interval(h, interval = 9999):
     conn.close()
     return nid_hv_list
 
+
 def get_same_news(news_simhash, check_list, threshold = 3):
+    '''
+    获取与特定simhash相同的新闻
+    :param news_simhash: 待检查的simhash
+    :param check_list: 检查列表
+    :param threshold: 阈值, 作为相同的判断条件
+    :return:
+    '''
     try:
         same_list = []
         for r in check_list:
@@ -70,7 +76,7 @@ def get_same_news(news_simhash, check_list, threshold = 3):
         logger.error(traceback.format_exc())
 
 
-#去除广告的原则
+#去除广告的原则, 目前考虑图片数量,段落数量,评论数量
 #得分越小, 越需要删除
 def goal_to_del(contents, coment_num):
     img_num = 0
@@ -120,7 +126,7 @@ def del_nid_of_fewer_comment(nid, n, log=logger):
         rows = cursor.fetchall()
         nid_goal = []
         for r in rows:
-            nid_goal.append((r[0], goal_to_del(r[2], r[1])))
+            nid_goal.append((r[0], goal_to_del(r[2], r[1])))  #计算两篇新闻的得分
         if len(nid_goal) == 0:  #查库失败, 直接删除旧新闻
             return n
         sorted_goal = sorted(nid_goal, key=lambda goal:goal[1])
@@ -149,23 +155,23 @@ def cal_and_check_news_hash(nid_list):
         t0 = datetime.datetime.now()
         conn, cursor = doc_process.get_postgredb()
         for nid in nid_list:
-            words_list = doc_process.get_words_on_nid(nid)
-            if len(words_list) < 10:
+            words_list = doc_process.get_words_on_nid(nid) #获取新闻的分词
+            if len(words_list) < 10: #文本过短不去重
                 continue
-            h = simhash(words_list)
-            check_list = get_news_interval(h, 2)
-            same_list = get_same_news(h, check_list, threshold=6)
+            h = simhash(words_list) #本篇新闻的hash值
+            check_list = get_news_interval(h, 2)  #获取要对比的新闻列表,目前取2天内的新闻做重复性检查
+            same_list = get_same_news(h, check_list, threshold=6) #重复新闻
             if len(same_list) > 0: #已经存在相同的新闻
                 for n_dis in same_list:
                     n = n_dis[0]
                     diff_bit = n_dis[1]
                     if n != nid:
-                        off_nid = del_nid_of_fewer_comment(nid, n)
-                        cursor.execute(insert_same_sql.format(nid, n, diff_bit, t0.strftime('%Y-%m-%d %H:%M:%S'), off_nid))
+                        off_nid = del_nid_of_fewer_comment(nid, n) #下线一篇新闻
+                        cursor.execute(insert_same_sql.format(nid, n, diff_bit, t0.strftime('%Y-%m-%d %H:%M:%S'), off_nid)) #记录去重操作
             #else: #没有相同的新闻,将nid添加到news_hash
             t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            fir, sec, thi, fou, fir2, sec2, thi2, fou2 = get_4_segments(h.__long__())
-            cursor.execute(insert_news_simhash_sql.format(nid, h.__str__(), t, fir, sec, thi, fou, fir2, sec2, thi2, fou2))
+            fir, sec, thi, fou, fir2, sec2, thi2, fou2 = get_4_segments(h.__long__()) #获取hash值的分段
+            cursor.execute(insert_news_simhash_sql.format(nid, h.__str__(), t, fir, sec, thi, fou, fir2, sec2, thi2, fou2))#记录新闻hash新闻
             conn.commit()
         cursor.close()
         conn.close()
