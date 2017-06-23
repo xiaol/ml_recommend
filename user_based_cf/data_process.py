@@ -20,6 +20,7 @@ import json
 
 real_dir_path = os.path.split(os.path.realpath(__file__))[0] #文件所在路径
 log_cf = logger.Logger('log_cf', os.path.join(real_dir_path, 'log', 'log.txt'))
+log_cf_clear_data = logger.Logger('log_cf_clear_data', os.path.join(real_dir_path, 'log', 'log_clear_data.txt'))
 
 
 ################################################################################
@@ -70,7 +71,7 @@ def coll_click():
 
 #uid=0是旧版app,没有确切的uid。所有旧版app的使用者的id都是0
 user_topic_prop_sql = "select uid, topic_id, probability from user_topics_v2 where model_v = '{}' and uid != 0 and create_time > now() - interval '20 day'"
-def coll_user_topics(model_v, time_str):
+def coll_user_topics(model_v):
     try:
         log_cf.info('    coll_user_topics begin ...')
         conn, cursor = get_postgredb_query()
@@ -276,15 +277,31 @@ def get_potential_topic(user_topic_prop_dict, user_neighbours, model_v, time):
 def get_user_topic_cf():
     log_cf.info('begin to calculate user_topic_cf...')
     time = datetime.datetime.now()
-    time_str = time.strftime('%Y-%m-%d-%H-%M-%S')
+    #time_str = time.strftime('%Y-%m-%d-%H-%M-%S')
     model_v = get_newest_topic_v()
     #读取user-topic-property
-    user_topic_prop_dict, user_ids, topic_ids, props = coll_user_topics(model_v, time_str)
+    user_topic_prop_dict, user_ids, topic_ids, props = coll_user_topics(model_v)
     #计算neighbour
-    user_neighbours = cal_neignbours(user_ids, topic_ids, props, time_str)
+    user_neighbours = cal_neignbours(user_ids, topic_ids, props, time)
     #计算neighbour推荐的topic
     get_potential_topic(user_topic_prop_dict, user_neighbours, model_v, time)
     log_cf.info("!!! calculate finished!")
+
+
+clear_sql = "delete from user_topic_cf where ctime < now() - interval '1 day'"
+clear_sql2 = "delete from user_similarity_cf where ctime < now() - interval '1 day'"
+def clear_data():
+    try:
+        log_cf_clear_data.info('begin clear data...')
+        conn, cursor = get_postgredb()
+        cursor.execute(clear_sql)
+        cursor.execute(clear_sql2)
+        conn.commit()
+        cursor.close()
+        conn.close()
+        log_cf_clear_data.info('finish clearing data...')
+    except:
+        pass
 
 
 if __name__ == '__main__':
