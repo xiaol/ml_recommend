@@ -643,6 +643,7 @@ def coll_cut_chnal(chname, num, save_dir, cut_save_file):
         raw_df['doc'] = docs_series
         #raw_df = raw_df.dropna()
         raw_df.to_csv(cut_save_file, index=False)
+        del raw_df
         print '    **************{} cut finished! '.format(chname)
     except:
         traceback.print_exc()
