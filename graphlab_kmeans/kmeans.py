@@ -36,7 +36,7 @@ chnl_k_dict = {'财经':20, '股票':10, '故事':20, '互联网':20, '健康':3
                '游戏':40, '育儿':20,
                '体育':20, '娱乐':10, '社会':10, '科技':12, '国际':5}
 
-chnl_k_dict = {'财经':20, '股票':1, '故事':20, '互联网':20, '健康':30, '军事':20,
+chnl_k_dict = {'财经':20, '股票':1, '故事':20, '互联网':20, '健康':50, '军事':20,
                '科学':20, '历史':30, '旅游':20, '美食':20, '美文':20, '萌宠':20,
                '汽车':30, '时尚':30, '探索':10, '外媒':30, '养生':30, '影视':30,
                '游戏':30, '育儿':20,'体育':20, '娱乐':10, '社会':10,'科技':12,
@@ -343,9 +343,9 @@ def deal_old_news_clicks(day=10, deal_news=True, deal_click=True):
         if deal_news:
             nid_queue.clear_queue_kmeans()
             #s_new = "select nid from newslist_v2 where (ctime > now() - interval '{} day') and chid not in (44) and state=0"
-            s_new = "select nid from newslist_v2 where (ctime > now() - interval '10 day') and (ctime < now() - interval '3 day')  and chid not in (44) and state=0"
+            s_new = "select nid from newslist_v2 where (ctime > now() - interval '{} day')  and chid not in (44) and state=0"
             #cursor.execute(s_new.format(day))
-            cursor.execute(s_new)
+            cursor.execute(s_new.format(day))
             rows = cursor.fetchall()
             nids = []
             for r in rows:
@@ -366,9 +366,9 @@ def deal_old_news_clicks(day=10, deal_news=True, deal_click=True):
             nid_queue.clear_kmeans_queue_click()
             logger_olddata.info('    deal_old_news_click--- predict click begin...')
             #s_click = "select uid, nid, ctime from newsrecommendclick where (ctime > now() - interval '{} day') "
-            s_click = "select uid, nid, ctime from newsrecommendclick where (ctime > now() - interval '10 day') and (ctime < now() - interval '3 day') "
+            s_click = "select uid, nid, ctime from newsrecommendclick where ctime > now() - interval '10 day'"
             #cursor.execute(s_click.format(day))
-            cursor.execute(s_click)
+            cursor.execute(s_click.format(s_click))
             rows = cursor.fetchall()
             clicks = []
             for r in rows:
