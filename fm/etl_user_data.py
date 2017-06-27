@@ -1,5 +1,17 @@
 # -*- coding: utf-8 -*-
 
+from util.postgres import postgres as pg
+import datetime
+
+def get_active_user():
+    nt = datetime.datetime.now()
+    str_now = nt.strftime('%Y-%m-%d %H:%M:%S')
+    sql = '''
+            select uid from newsrecommendclick 
+            where ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{} day'  
+            group by uid HAVING "count"(*)>={}
+        '''
+    rows = pg.query(sql.format(str_now, 1, 1))
 
 def enumerate_user_brand():
     pass
@@ -10,6 +22,10 @@ def enumerate_user_os_version():
 
 
 def construct_user_feature_matrix():
+    pass
+
+
+def enumerate_user_attribute(attribute_name):
     pass
 
 

@@ -6,6 +6,7 @@ import scipy.sparse as sparse
 import scipy.io
 import numpy as np
 
+
 def save_sparse_matrix(filename, x):
     x_coo = x.tocoo()
     row = x_coo.row
@@ -13,6 +14,7 @@ def save_sparse_matrix(filename, x):
     data = x_coo.data
     shape = x_coo.shape
     np.savez(filename, row=row, col=col, data=data, shape=shape)
+
 
 def load_sparse_matrix(filename):
     y = np.load(filename)
