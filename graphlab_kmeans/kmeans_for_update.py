@@ -39,7 +39,7 @@ chnl_k_dict = {'财经':20, '股票':10, '故事':20, '互联网':20, '健康':5
                '自媒体':80, '奇闻':10}
 
 
-chnl_newsnum_dict = {'财经':20000, '股票':5000, '故事':10000, '互联网':10000, '健康':120000, '军事':10000,
+chnl_newsnum_dict = {'财经':20000, '股票':5000, '故事':10000, '互联网':10000, '健康':60000, '军事':10000,
                      '科学':10000, '历史':10000, '旅游':10000, '美食':20000, '美文':3700, '萌宠':10000,
                      '汽车':10000, '时尚':5000, '探索':1500, '外媒':10000, '养生':30000, '影视':5000,
                      '游戏':10000, '育儿':10000, '体育':20000, '娱乐':10000, '社会':30000, '科技':10000,
@@ -69,6 +69,8 @@ def create_kmeans_core(chname, docs, model_save_dir):
         g_channel_kmeans_model_dict[chname] = model
         #save model to file
         model.save(model_save_dir+'/'+chname)
+        del docs_trim
+        del trim_sa
         print 'create kmeans model for {} finish'.format(chname)
     except:
         traceback.print_exc()
