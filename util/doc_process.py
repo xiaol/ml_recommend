@@ -647,6 +647,7 @@ def coll_cut_chnal(chname, num, save_dir, cut_save_file):
         print '    **************{} cut finished! '.format(chname)
     except:
         traceback.print_exc()
+        print '    !!!!!!!error for {}'.format(chname)
 
 
 def coll_cut_extract_multiprocess(chnl_num_dict,
