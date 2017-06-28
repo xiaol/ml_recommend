@@ -34,7 +34,7 @@ def get_newest_model_dir():
         ms[m] = m.replace('-', '')
     ms_sort = sorted(ms.items(), key=lambda x:x[1])
     if len(ms_sort) != 0:
-        return kmeans_model_save_dir + ms_sort.pop()[0]
+        return os.path.join(kmeans_model_save_dir, ms_sort.pop()[0])
     else:
         return kmeans_model_save_dir
 
