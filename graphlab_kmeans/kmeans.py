@@ -172,8 +172,10 @@ def load_models(models_dir):
         g_channel_kmeans_model_dict[mf] = gl.load_model(models_dir + '/'+ mf)
 
 
-def load_newest_models():
-    load_models(get_newest_model_dir())
+def load_newest_models(log=logger):
+    model_dir = get_newest_model_dir()
+    load_models(model_dir)
+    log.info('load model: {}'.format(model_dir))
 
 ###############################################################################
 #@brief  :预测新数据
@@ -201,7 +203,7 @@ def kmeans_predict(nid_list, log=logger):
     global g_channel_kmeans_model_dict, chname_id_dict
     log.info('predict : {}'.format(nid_list))
     if len(g_channel_kmeans_model_dict) == 0:
-        load_newest_models()
+        load_newest_models(log)
     if (len(chname_id_dict)) == 0:
         get_chname_id_dict()
     nid_info = {}
