@@ -22,97 +22,12 @@ logger_olddata = Logger('kmeans_olddata', os.path.join(real_dir_path, 'log/kmean
 #定义全局变量
 data_dir = os.path.join(real_dir_path, 'data')
 real_dir_path = os.path.split(os.path.realpath(__file__))[0]
-kmeans_model_save_dir = real_dir_path + '/' + 'models/'
-if not os.path.exists(kmeans_model_save_dir):
-    os.mkdir(kmeans_model_save_dir)
+#kmeans_model_save_dir = real_dir_path + '/' + 'models/'
+from kmeans_for_update import kmeans_model_save_dir
 g_channel_kmeans_model_dict = {}
-#chnl_k_dict = {'体育':20, '娱乐':10, '社会':10, '科技':12, '国际':5}
-#chnl_k_dict = {'体育':20}
-#chnl_k_dict = {'娱乐':20, '社会':20, '国际':10}
-#chnl_k_dict = {'体育':20, '娱乐':20, '社会':20, '科技':20, '国际':10}
-chnl_k_dict = {'财经':20, '股票':10, '故事':20, '互联网':20, '健康':30, '军事':20,
-               '科学':20, '历史':30, '旅游':20, '美食':20, '美文':20, '萌宠':20,
-               '汽车':30, '时尚':30, '探索':30, '外媒':30, '养生':30, '影视':30,
-               '游戏':40, '育儿':20,
-               '体育':20, '娱乐':10, '社会':10, '科技':12, '国际':5}
-
-chnl_k_dict = {'财经':20, '股票':1, '故事':20, '互联网':20, '健康':50, '军事':20,
-               '科学':20, '历史':30, '旅游':20, '美食':20, '美文':20, '萌宠':20,
-               '汽车':30, '时尚':30, '探索':10, '外媒':30, '养生':30, '影视':30,
-               '游戏':30, '育儿':20,'体育':20, '娱乐':10, '社会':10,'科技':12,
-               '国际':5, '美女': 1, '搞笑': 1, '趣图':1, '风水玄学':10, '本地':10,
-               '自媒体':20, '奇闻':20}
-
-
-#chnl_newsnum_dict = {'财经':20000, '股票':10000, '故事':10000, '互联网':20000, '健康':20000, '军事':10000,
-#                     '科学':10000, '历史':10000, '旅游':10000, '美食':10000, '美文':10000, '萌宠':20000,
-#                     '汽车':20000, '时尚':20000, '探索':1500, '外媒':10000, '养生':20000, '影视':20000,
-#                     '游戏':20000, '育儿':20000, '体育':20000, '娱乐':20000, '社会':30000, '科技':20000,
-#                     '国际':20000,'美女': 100, '搞笑': 100, '趣图':100, '风水玄学':10000, '本地':20000,
-#                     '自媒体':10000, '奇闻':10000}
-chnl_newsnum_dict = {'财经':50, '股票':50}
-
-#创建新版本模型子进程
-def create_kmeans_core(chname, docs, model_save_dir):
-    try:
-        global g_channel_kmeans_model_dict
-        #logger.info('---begin to deal with {}'.format(chname))
-        print 'begin to create kmeans model for {}'.format(chname)
-        trim_sa = gl.text_analytics.trim_rare_words(docs, threshold=5, to_lower=False)
-        docs_trim = gl.text_analytics.count_words(trim_sa)
-        model = gl.kmeans.create(gl.SFrame(docs_trim),
-                                 num_clusters=chnl_k_dict[chname],
-                                 max_iterations=200)
-        g_channel_kmeans_model_dict[chname] = model
-        #save model to file
-        model.save(model_save_dir+'/'+chname)
-        print 'create kmeans model for {} finish'.format(chname)
-    except:
-        traceback.print_exc()
-
-
-#创建新版本的模型
-def create_new_kmeans_model():
-    try:
-        t0 = datetime.datetime.now()
-        global kmeans_model_save_dir,  model_v
-        model_create_time = datetime.datetime.now()
-        time_str = model_create_time.strftime('%Y-%m-%d-%H-%M-%S')
-        data_dir_v = os.path.join(data_dir, time_str)
-        model_v = kmeans_model_save_dir + time_str
-        if not os.path.exists(model_v):
-            os.mkdir(model_v)
-            logger.info('create kmeans models {}'.format(time_str))
-        if not os.path.exists(data_dir_v):
-            os.mkdir(data_dir_v)
-
-        from util.doc_process import coll_cut_extract
-        coll_cut_extract(chnl_newsnum_dict, data_dir_v, os.path.join(data_dir_v, 'idf.txt'))
-        news = gl.SFrame.read_csv(os.path.join(data_dir_v, 'cut_extract.csv'))
-        chnls = news['chnl']  #SArray类型
-        nids = news['nid']
-        docs = news['doc']
-        chnl_doc_dict = dict()
-        #提取各个频道的新闻
-        for i in xrange(chnls.size()):
-            if chnls[i] not in chnl_doc_dict:
-                print chnls[i]
-                chnl_doc_dict[chnls[i]] = []
-            chnl_doc_dict[chnls[i]].append(docs[i])
-        #单进程训练
-        for item in chnl_doc_dict.items():
-            print type(item[1])
-            create_kmeans_core(item[0], gl.SArray(item[1]), model_v)
-        t1 = datetime.datetime.now()
-        time_cost = (t1 - t0).seconds
-        print 'create models finished!! it cost ' + str(time_cost) + '\'s'
-    except:
-        traceback.print_exc()
-
 
 
 def get_newest_model_dir():
-    global kmeans_model_save_dir
     models = os.listdir(kmeans_model_save_dir)
     ms = {}
     for m in models:
@@ -123,43 +38,8 @@ def get_newest_model_dir():
     else:
         return kmeans_model_save_dir
 
-#初始化模型版本号为最新的保存的模型
 model_v = os.path.split(get_newest_model_dir())[1]
-def create_model_proc(chname, model_save_dir=None):
-    if chname not in chnl_k_dict.keys():
-        return
-    global g_channle_kmeans_model_dict, data_dir
-    print '******************{}'.format(chname)
-    docs = gl.SFrame.read_csv(os.path.join(data_dir, chname), header=False)
-    trim_sa = gl.text_analytics.trim_rare_words(docs['X1'], threshold=5, to_lower=False)
-    docs = gl.text_analytics.count_words(trim_sa)
-    model = gl.kmeans.create(gl.SFrame(docs), num_clusters=chnl_k_dict[chname],
-                             max_iterations=200)
-    print 'create kmeans model for {} finish'.format(chname)
-    g_channel_kmeans_model_dict[chname] = model
-    #save model to file
-    if model_save_dir:
-        model.save(model_save_dir+'/'+chname)
-
-def create_kmeans_models():
-    global kmeans_model_save_dir, g_channle_kmeans_model_dict, model_v
-    model_create_time = datetime.datetime.now()
-    time_str = model_create_time.strftime('%Y-%m-%d-%H-%M-%S')
-    model_v = kmeans_model_save_dir + time_str
-    if not os.path.exists(model_v):
-        os.mkdir(model_v)
-        logger.info('create kmeans models {}'.format(time_str))
-
-    t0 = datetime.datetime.now()
-    for chanl in chnl_k_dict.keys():
-        create_model_proc(chanl, model_v) #只能单进程。 gl的数据结构(SFrame等)无法通过传递给子进程
-    t1 = datetime.datetime.now()
-    time_cost = (t1 - t0).seconds
-    print 'create models finished!! it cost ' + str(time_cost) + '\'s'
-
-
 def load_models(models_dir):
-    print 'load_models()'
     global g_channel_kmeans_model_dict, model_v
     import os
     model_v = os.path.split(models_dir)[1]
@@ -167,8 +47,6 @@ def load_models(models_dir):
         g_channel_kmeans_model_dict.clear()
     models_files = os.listdir(models_dir)
     for mf in models_files:
-        print '    load ' + mf
-        print models_dir
         g_channel_kmeans_model_dict[mf] = gl.load_model(models_dir + '/'+ mf)
 
 
@@ -231,7 +109,6 @@ def kmeans_predict(nid_list, log=logger):
         cursor.close()
         conn.close()
 
-    #clstid_nid_dict = {}
     for chname in g_channel_kmeans_model_dict.keys():
         nids = []
         doc_list = []
@@ -259,19 +136,11 @@ def kmeans_predict(nid_list, log=logger):
             time_str = now.strftime('%Y-%m-%d %H:%M:%S')
             cursor.execute(insert_sql.format(nids[i], model_v, chname, pred[i], chname_id_dict[chname], time_str))
 
-            #if pred[i] not in clstid_nid_dict.keys():
-            #    clstid_nid_dict[pred[i]] = []
-            #    clstid_nid_dict[pred[i]].append(nids[i])
-            #else:
-            #    clstid_nid_dict[pred[i]].append(nids[i])
         conn.commit()
         cursor.close()
         conn.close()
-    #print clstid_nid_dict
-    #return clstid_nid_dict
 
 
-#nt_sql = "select ch_name, cluster_id from news_kmeans where nid = {0} and model_v = '{1}' "
 nt_sql = "select ch_name, cluster_id, model_v from news_kmeans where nid = {0}"
 ut_sql = "select times from user_kmeans_cluster where uid = {0} and model_v = '{1}' and ch_name = '{2}' and cluster_id ='{3}' "
 ut_update_sql = "update user_kmeans_cluster set times='{0}', create_time = '{1}', fail_time='{2}' where " \
@@ -288,7 +157,6 @@ def predict_click(click_info, log=logger_click):
         get_chname_id_dict()
     uid = click_info[0]
     nid = click_info[1]
-    #time_str = click_info[2]
     t = datetime.datetime.now()
     time_str = t.strftime('%Y-%m-%d %H:%M:%S')
     log.info('consume kmenas -----{} {} {}'.format(uid, nid, time_str))
@@ -318,23 +186,6 @@ def predict_click(click_info, log=logger_click):
     conn.close()
 
 
-s1 = 'select * from user_kmeans_cluster'
-def updateModel():
-    conn, cursor = doc_process.get_postgredb()
-    cursor.execute(s1) #获取nid可能的话题
-    rows = cursor.fetchall()
-    print len(rows)
-    cursor.close()
-    conn.close()
-
-s2 ="update user_kmeans_cluster set model_v='{0}'"
-def updateModel2():
-    conn, cursor = doc_process.get_postgredb()
-    cursor.execute(s2.format('2017-01-17-17-27-04')) #获取nid可能的话题
-    conn.commit()
-    cursor.close()
-    conn.close()
-
 #使用新模型处理旧新闻和点击
 def deal_old_news_clicks(day=10, deal_news=True, deal_click=True):
     try:
@@ -344,9 +195,7 @@ def deal_old_news_clicks(day=10, deal_news=True, deal_click=True):
         conn, cursor = doc_process.get_postgredb_query()
         if deal_news:
             nid_queue.clear_queue_kmeans()
-            #s_new = "select nid from newslist_v2 where (ctime > now() - interval '{} day') and chid not in (44) and state=0"
             s_new = "select nid from newslist_v2 where (ctime > now() - interval '{} day')  and chid not in (44) and state=0"
-            #cursor.execute(s_new.format(day))
             cursor.execute(s_new.format(day))
             rows = cursor.fetchall()
             nids = []
@@ -367,9 +216,7 @@ def deal_old_news_clicks(day=10, deal_news=True, deal_click=True):
         if deal_click:
             nid_queue.clear_kmeans_queue_click()
             logger_olddata.info('    deal_old_news_click--- predict click begin...')
-            #s_click = "select uid, nid, ctime from newsrecommendclick where (ctime > now() - interval '{} day') "
             s_click = "select uid, nid, ctime from newsrecommendclick where ctime > now() - interval '{} day'"
-            #cursor.execute(s_click.format(day))
             cursor.execute(s_click.format(day))
             rows = cursor.fetchall()
             clicks = []
