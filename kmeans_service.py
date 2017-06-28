@@ -90,13 +90,13 @@ if __name__ == '__main__':
         http_server = tornado.httpserver.HTTPServer(tornado.web.Application())
         http_server.listen(port) #同时提供手工处理端口
         from graphlab_kmeans import kmeans
-        kmeans.deal_old_news_clicks(7, deal_news=True, deal_click=True)
+        kmeans.deal_old_news_clicks(3, deal_news=True, deal_click=True)
         from redis_process import nid_queue
         nid_queue.consume_nid_kmeans(200)
     elif port == 9976:  #离线计算旧数据
         http_server = tornado.httpserver.HTTPServer(EmptyApp())
         http_server.listen(port) #同时提供手工处理端口
         from graphlab_kmeans import kmeans
-        kmeans.deal_old_news_clicks(7, deal_news=True, deal_click=True) #计算七天数据
+        kmeans.deal_old_news_clicks(3, deal_news=True, deal_click=True) #计算七天数据
 
     tornado.ioloop.IOLoop.instance().start()
