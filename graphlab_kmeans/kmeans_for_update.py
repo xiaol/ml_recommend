@@ -20,7 +20,8 @@ logger_update = Logger('kmeans_update', os.path.join(real_dir_path, 'log/update.
 
 #定义全局变量
 data_dir = os.path.join(real_dir_path, 'data')
-kmeans_model_save_dir = os.path.join(real_dir_path, 'models', '000')
+#kmeans_model_save_dir = os.path.join(real_dir_path, 'models', '000')
+kmeans_model_save_dir = os.path.join('/root/ossfs', 'kmeans_models')  #模型保存路径
 if not os.path.exists(kmeans_model_save_dir):
     os.mkdir(kmeans_model_save_dir)
 g_channel_kmeans_model_dict = {}
