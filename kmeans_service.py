@@ -98,5 +98,12 @@ if __name__ == '__main__':
         http_server.listen(port) #同时提供手工处理端口
         from graphlab_kmeans import kmeans
         kmeans.deal_old_news_clicks(3, deal_news=True, deal_click=True) #计算七天数据
+    elif port == 9975: #计算特定频道的数据
+        http_server = tornado.httpserver.HTTPServer(EmptyApp())
+        http_server.listen(port) #同时提供手工处理端口
+        from graphlab_kmeans import kmeans_for_chnl
+        kmeans_for_chnl.predict_chnl_news('健康')
+        kmeans_for_chnl.predict_chnl_news('养生')
+
 
     tornado.ioloop.IOLoop.instance().start()
