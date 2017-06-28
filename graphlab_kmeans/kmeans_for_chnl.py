@@ -47,3 +47,6 @@ def predict_chnl_news(chnl_name, num_limit=None):
             logger_chnl.info('{} of {} finished!'.format(n, l))
         kmeans_predict(nids[n - 1000:len(nids)], logger_chnl)
 
+    cursor.close()
+    conn.close()
+
