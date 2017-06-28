@@ -366,9 +366,9 @@ def deal_old_news_clicks(day=10, deal_news=True, deal_click=True):
             nid_queue.clear_kmeans_queue_click()
             logger_olddata.info('    deal_old_news_click--- predict click begin...')
             #s_click = "select uid, nid, ctime from newsrecommendclick where (ctime > now() - interval '{} day') "
-            s_click = "select uid, nid, ctime from newsrecommendclick where ctime > now() - interval '10 day'"
+            s_click = "select uid, nid, ctime from newsrecommendclick where ctime > now() - interval '{} day'"
             #cursor.execute(s_click.format(day))
-            cursor.execute(s_click.format(s_click))
+            cursor.execute(s_click.format(day))
             rows = cursor.fetchall()
             clicks = []
             for r in rows:
