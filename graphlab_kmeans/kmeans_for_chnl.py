@@ -26,10 +26,12 @@ def predict_chnl_news(chnl_name, num_limit=None):
     if num_limit:
         chnl_sql = '''select nid from info_news a inner join channellist_v2 cl
                   on a.chid=cl.id where cl.cname={} limit {}'''
+        logger_chnl.info(cursor.mogrify(chnl_sql.format(chnl_name)))
         cursor.execute(chnl_sql.format(chnl_name, num_limit))
     else:
         chnl_sql = '''select nid from info_news a inner join channellist_v2 cl
                   on a.chid=cl.id where cl.cname={}'''
+        logger_chnl.info(cursor.mogrify(chnl_sql.format(chnl_name)))
         cursor.execute(chnl_sql.format(chnl_name))
 
     rows = cursor.fetchall()
