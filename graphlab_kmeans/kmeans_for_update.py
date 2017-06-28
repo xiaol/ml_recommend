@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 17/1/4 上午10:10
 # @Author  : liulei
-# @Brief   : 离线更新kmeans模型版本
+# @Brief   : 离线更新kmeans模型版本, 生成新模型; 并提供新模型的测试
 # @File    : kmeans.py
 # @Software: PyCharm Community Edition
 
@@ -9,7 +9,6 @@ import os
 import datetime
 import graphlab as gl
 from util import doc_process
-from multiprocessing import Process
 import traceback
 
 from util.doc_process import cut_pos_ltp
@@ -20,16 +19,11 @@ logger_update = Logger('kmeans_update', os.path.join(real_dir_path, 'log/update.
 
 #定义全局变量
 data_dir = os.path.join(real_dir_path, 'data')
-kmeans_model_save_dir = os.path.join(real_dir_path, 'models', '000')
+#kmeans_model_save_dir = os.path.join(real_dir_path, 'models', '000')
+kmeans_model_save_dir = os.path.join('/root/ossfs', 'kmeans_models')  #模型保存路径
 if not os.path.exists(kmeans_model_save_dir):
     os.mkdir(kmeans_model_save_dir)
 g_channel_kmeans_model_dict = {}
-
-#chnl_k_dict = {'财经':20, '股票':10, '故事':20, '互联网':20, '健康':30, '军事':20,
-#               '科学':20, '历史':30, '旅游':20, '美食':20, '美文':20, '萌宠':20,
-#               '汽车':30, '时尚':30, '探索':30, '外媒':30, '养生':30, '影视':30,
-#               '游戏':40, '育儿':20,
-#               '体育':20, '娱乐':10, '社会':10, '科技':12, '国际':5}
 
 chnl_k_dict = {'财经':20, '股票':10, '故事':20, '互联网':20, '健康':50, '军事':20,
                '科学':20, '历史':30, '旅游':20, '美食':20, '美文':20, '萌宠':10,
@@ -45,22 +39,13 @@ chnl_newsnum_dict = {'财经':20000, '股票':5000, '故事':10000, '互联网':
                      '游戏':10000, '育儿':10000, '体育':20000, '娱乐':10000, '社会':30000, '科技':10000,
                      '国际':20000,'美女': 10, '搞笑': 10, '趣图':10, '风水玄学':10000, '本地':20000,
                      '自媒体': 40000, '奇闻':10000}
-'''
-#chnl_newsnum_dict = {'体育':20000, '美女':10}
-chnl_newsnum_dict = {'财经':30, '股票':10, '故事':20, '互联网':20, '健康':12, '军事':30,
-                     '科学':10, '历史':20, '旅游':10, '美食':20, '美文':37, '萌宠':10,
-                     '汽车':30, '时尚':50, '探索':15, '外媒':10, '养生':30, '影视':50,
-                     '游戏':20, '育儿':10, '体育':30, '娱乐':20, '社会':30, '科技':10,
-                     '国际':20,'美女': 10, '搞笑': 10, '趣图':10, '风水玄学':10, '本地':20,
-                     '自媒体': 40, '奇闻':10}
-'''
 
 #创建新版本模型子进程
 def create_kmeans_core(chname, docs, model_save_dir):
     try:
         global g_channel_kmeans_model_dict
         #logger.info('---begin to deal with {}'.format(chname))
-        print 'begin to create kmeans model for {}'.format(chname)
+        logger_update.info('begin to create kmeans model for {}'.format(chname))
         trim_sa = gl.text_analytics.trim_rare_words(docs, threshold=5, to_lower=False)
         docs_trim = gl.text_analytics.count_words(trim_sa)
         model = gl.kmeans.create(gl.SFrame(docs_trim),
@@ -71,7 +56,7 @@ def create_kmeans_core(chname, docs, model_save_dir):
         model.save(model_save_dir+'/'+chname)
         del docs_trim
         del trim_sa
-        print 'create kmeans model for {} finish'.format(chname)
+        logger_update.info('create kmeans model for {} finish'.format(chname))
     except:
         traceback.print_exc()
 
@@ -109,10 +94,9 @@ def create_new_kmeans_model():
             create_kmeans_core(item[0], gl.SArray(item[1]), model_v)
         t1 = datetime.datetime.now()
         time_cost = (t1 - t0).seconds
-        print 'create models finished!! it cost ' + str(time_cost) + '\'s'
+        logger_update.info('create models finished!! it cost ' + str(time_cost) + '\'s')
     except:
         traceback.print_exc()
-
 
 
 def get_newest_model_dir():
@@ -130,7 +114,6 @@ def get_newest_model_dir():
 model_v = os.path.split(get_newest_model_dir())[1]
 
 def load_models(models_dir):
-    print 'load_models()'
     global g_channel_kmeans_model_dict, model_v
     import os
     model_v = os.path.split(models_dir)[1]
@@ -138,18 +121,12 @@ def load_models(models_dir):
         g_channel_kmeans_model_dict.clear()
     models_files = os.listdir(models_dir)
     for mf in models_files:
-        print '    load ' + mf
-        print models_dir
         g_channel_kmeans_model_dict[mf] = gl.load_model(models_dir + '/'+ mf)
 
 
 def load_newest_models():
     load_models(get_newest_model_dir())
 
-###############################################################################
-#@brief  :预测新数据
-#@input  :
-###############################################################################
 chname_id_dict = {}
 def get_chname_id_dict():
     global chname_id_dict
@@ -229,11 +206,6 @@ def kmeans_predict(nid_list):
         print 'news num of ' + chname + ' is ' + str(len(nids))
         if len(nids) == 0:
             continue
-        #print '-----'
-        #print nids[0]
-        #print '--11---'
-        #print doc_list[0]
-        #print '---22--'
         logger_update.info('type of doc_list is {}'.format(type(doc_list[0])))
         ws = gl.SArray(doc_list)
         docs = gl.SFrame(data={'X1': ws})
