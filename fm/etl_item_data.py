@@ -3,6 +3,10 @@
 from util.postgres import postgres as pg
 import datetime
 
+
+def recall_candidates():
+    pass
+
 def set_lda_topic_num(num=5000):
     num;pass
 
@@ -21,18 +25,26 @@ def enumerate_article_editor_rank():
 
 
 def enumerate_recommend_strategy():
-    pass
+    strategy = {'hot': 0, 'recommend': 1, 'wilson': 2, 'editor': 3, 'other': 4}
 
 
 def enumerate_article_attribute(attribute_name):
     pass
 
 
+def enumerate_kmeans():
+    save()  # save for explanation
+
+
 def construct_item_feature_matrix():
     pass
 
 
-def load():
+def save():
+    pass
+
+
+def load(items_list):
     return {1: [0, 1], 2: [1, 0], 3: [1, 0], 4: [0, 1]}   # item_id , feature vector
 
 
