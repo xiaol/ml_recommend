@@ -197,6 +197,12 @@ def is_news_same(nid1, nid2, same_t=3):
 
 #依据sentence_hash放到队列中的待查新闻
 def check_same_news(nid1, nid2):
+    conn, cursor = doc_process.get_postgredb()
+    check_state = "select state from newslist_v2 where nid in ({}, {})"
+    cursor.execute(check_state.format(nid1, nid2))
+    rs = cursor.fetchall()
+    if 1 in list(rs):
+        return
     words_list1 = doc_process.get_words_on_nid(nid1) #获取新闻的分词
     words_list2 = doc_process.get_words_on_nid(nid2) #获取新闻的分词
     h1 = simhash(words_list1) #本篇新闻的hash值

@@ -323,8 +323,15 @@ def generate_subject(sub):
     try:
         sub_sents = sub[0]
         sub_nids = sub[1]
-        logger_sub.info('******prepare to create subject for {}'.format(sub_nids))
         conn, cursor = get_postgredb()
+        state_sql = 'select nid from newslist_v2 where nid in ({}) and state=0'
+        cursor.execute(state_sql.format(','.join(str(n) for n in sub_nids)))
+        rs = cursor.fetchall()
+        sub_nids = list(rs)
+        if len(sub_nids) <= 1:
+            conn.close()
+            return
+        logger_sub.info('******prepare to create subject for {}'.format(sub_nids))
         ##############检查是否需要新建专题还是更新到旧专题###
         if len(sub_nids) > 4:  #含4条以上新闻才可以合并到其他专题
             oldsub_nid_dict = dict()  #记录旧topic--与本sub相同的nid
