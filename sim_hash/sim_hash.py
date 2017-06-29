@@ -194,6 +194,30 @@ def is_news_same(nid1, nid2, same_t=3):
     except:
         raise
 
+
+#依据sentence_hash放到队列中的待查新闻
+def check_same_news(nid1, nid2):
+    words_list1 = doc_process.get_words_on_nid(nid1) #获取新闻的分词
+    words_list2 = doc_process.get_words_on_nid(nid2) #获取新闻的分词
+    h1 = simhash(words_list1) #本篇新闻的hash值
+    h2 = simhash(words_list2) #本篇新闻的hash值
+    diff_bit = h1.hamming_distance(h2)
+    if diff_bit > 12: #大于12, 认为不可能是同一篇新闻
+        return
+    title_sql = "select title from newslist_v2 where nid in ({}, {})"
+    conn, cursor = doc_process.get_postgredb()
+    cursor.execute(title_sql.format(nid1, nid2))
+    rows = cursor.fetchall()
+    titles = [r[0] for r in rows]
+    if doc_process.get_sentence_similarity(titles[0], titles[1]) > 0.3: #标题相似性大于0.3
+        off_nid = del_nid_of_fewer_comment(nid1, nid2)
+        t0 = datetime.datetime.now()
+        cursor.execute(insert_same_sql.format(nid1, nid2, diff_bit, t0.strftime('%Y-%m-%d %H:%M:%S'), off_nid)) #记录去重操作
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+
 import jieba
 if __name__ == '__main__':
 

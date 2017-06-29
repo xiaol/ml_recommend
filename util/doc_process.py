@@ -757,3 +757,15 @@ def get_news_online_state(nid):
     else:
         raise ValueError('Do not find news state:{}'.format(nid))
 
+
+def get_sentence_similarity(s1, s2):
+    w1 = set(jieba.cut(s1))
+    w2 = set(jieba.cut(s2))
+    w3 = w1 & w2
+    w4 = w1 | w2
+    return len(w3) / float(len(w4))
+
+
+
+
+

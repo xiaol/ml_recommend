@@ -386,6 +386,7 @@ def cal_process(nid_set, log=None, same_t=3, news_interval=3, same_dict = {}):
                                         log.info('      get multi viewpoint :{}'.format(str_no_html.encode('utf-8')))
                                         sub_nids_set.add(same[0])
                                         sub_nids_set.add(same[1])
+                                        subject_queue.product_simhash2((same[0], same[1]))
                                 #log.info("num of mvp is {}".format(sub_nids_set))
                                 if len(sub_nids_set) >= 2:  ## 专题新闻入队列
                                     log.info('      generate subject for {}'.format(sub_nids_set))
