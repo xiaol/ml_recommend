@@ -35,6 +35,11 @@ if __name__ == '__main__':
         from sim_hash import tmp_sim_hash
         #tmp_sim_hash.cal_simhash_old()
         tmp_sim_hash.check_and_remove_news()
+    elif port == 9970:
+        http_server = tornado.httpserver.HTTPServer(tornado.web.Application())
+        http_server.listen(port) #同时提供手工处理端口
+        from multi_viewpoint import subject_queue
+        subject_queue.consume_simhash2()
 
 
 
