@@ -47,20 +47,29 @@ def enumerate_user_attribute(attribute_name, active_users):
     return feature_dict
 
 
+def get_active_users_detail(active_users):
+    sql = '''
+               SELECT uid,brand,platform,os,os_version,device_size,network, ctype,
+                province, city, area from user_device where uid in ({})
+        '''
+    rows = pg.query(sql.format(','.join(str(u) for u in active_users)))
+    return rows
+
+
 def load(active_users, ):
     users_feature_dict = {}
-    sql = '''
-           SELECT * from user_device where uid={}
-    '''
     feature_brand_dict = enumerate_user_brand(active_users)
-    for user in active_users:
-        user_detail = pg.query(sql.format(str(user)))
+    users_detail = get_active_users_detail(active_users)
+    for user_detail in users_detail:
         copy_feature_brand_dict = feature_brand_dict.copy()
-        copy_feature_brand_dict[user_detail[3]] = 1
-        users_feature_dict[user] = feature_brand_dict.values()
+        if not user_detail:
+            users_feature_dict[user_detail[0]] = copy_feature_brand_dict.values()
+            continue
+        copy_feature_brand_dict[user_detail[1]] = 1
+        users_feature_dict[user_detail[0]] = copy_feature_brand_dict.values()
     return users_feature_dict
     # return {1: [1, 0], 2: [0, 1], 3: [1, 0], 4: [0, 1]}   # user_id, user_feature vector
 
 if __name__ == '__main__':
     users = get_active_user(time_interval='30 minutes')
-    print enumerate_user_brand(users)
+    print load(users)

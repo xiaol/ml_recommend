@@ -6,7 +6,7 @@ import datetime
 
 def get_click_samples(active_users):
     sql = '''
-        select * from newsrecommendclick 
+        select  uid, nid, ctime, stime, logtype, logchid from newsrecommendclick 
                       where uid in ({})
     '''
     rows = pg.query(sql.format(','.join(str(u) for u in active_users)))
@@ -26,8 +26,8 @@ def get_read_samples(active_users):
     users_dict = {}
     for user in active_users:
         pos = user % 100
-        if users_dict[pos] is None:
-            users_dict[pos] = {pos, [user]}
+        if pos not in users_dict:
+            users_dict[pos] = [user]
         else:
             users_dict[pos].append(user)
 

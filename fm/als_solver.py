@@ -20,5 +20,7 @@ print y_pred
 
 print 'mse:', mean_squared_error(y_test, y_pred)
 
+# mse: 0.0625933908868 baseline
+
 
 
