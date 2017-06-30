@@ -8,10 +8,6 @@ def recall_candidates():
     pass
 
 
-def set_lda_topic_num(num=5000):
-    num;pass
-
-
 def enumerate_article_pname():
     nt = datetime.datetime.now()
     str_now = nt.strftime('%Y-%m-%d %H:%M:%S')
@@ -27,10 +23,10 @@ def enumerate_article_editor_rank():
 
 def enumerate_recommend_strategy():
     # strategy = {'hot': 0, 'recommend': 1, 'wilson': 2, 'editor': 3, 'other': 4}
-    logtype = {'wilson':0, 'collection':4, 'slide image news':5, 'video':6, 'local news':7,
+    logtype = {'wilson': 0, 'topic collection': 4, 'slide image news':5, 'video':6, 'local news':7,
                 'baidu keyword':11, 'comment news':12, 'lda': 21, 'kmeans':22, 'editor+machine':23,
-               'editor': 24, 'big image news':25, 'related images':26, 'CF':27, 'news in topic':41,
-               'top rank':100, }
+               'editor': 24, 'big image news':25, 'related images':26, 'CF':27,
+               'news in comment center':28,'news in topic':41, 'top rank':100, }
     # TODO dismatch logtype
     strategy_feature_dict = dict((v, 0) for k,v in logtype.iteritems())
 
@@ -45,9 +41,9 @@ def enumerate_kmeans():
     save()  # save for explanation
 
 
-def construct_item_feature_matrix():
-    pass
-
+def enumerate_item_topics(topic_num):
+    topic_feature_vector = [0] * topic_num
+    return topic_feature_vector
 
 def save():
     pass
@@ -61,11 +57,31 @@ def get_item_detail(items_list):
     return rows
 
 
-def load(items_list):
-    items_detail = get_item_detail(items_list)
-    for item_detail in items_detail:
-       pass # TODO
-    return {1: [0, 1], 2: [1, 0], 3: [1, 0], 4: [0, 1]}   # item_id , feature vector
+def get_item_topic(items_list, model_v='2017-04-07-10-49-37'):
+    sql = '''
+        select nid, topic_id, probability, model_v, ctime from news_topic_v2 
+        where model_v= '{}' and nid in ({}) 
+    '''
+    rows = pg.query(sql.format(model_v, ','.join(str(i) for i in items_list)))
+    return rows
+
+
+def get_kmeans(items_list):
+    pass
+
+
+def load(items_list, topic_num):
+    items_feature_dict = {}
+    feature_topic_vector = enumerate_item_topics(topic_num)
+
+    for item in items_list:
+        items_feature_dict[item] = [0]*len(feature_topic_vector)
+
+    items_topic = get_item_topic(items_list)
+    for item_topic in items_topic:
+        items_feature_dict[item_topic[0]][item_topic[1]] = 1  # item_topic[2]
+
+    return items_feature_dict  # item id, feature vector pair.
 
 
 if __name__ == '__main__':

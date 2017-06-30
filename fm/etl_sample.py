@@ -4,25 +4,31 @@ from util.postgres import postgres as pg
 import datetime
 
 
-def get_click_samples(active_users):
+def get_click_samples(active_users, time_interval):
+    nt = datetime.datetime.now()
+    str_now = nt.strftime('%Y-%m-%d %H:%M:%S')
     sql = '''
         select  uid, nid, ctime, stime, logtype, logchid from newsrecommendclick 
-                      where uid in ({})
+            where ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}'  
+                      and uid in ({})
     '''
-    rows = pg.query(sql.format(','.join(str(u) for u in active_users)))
+    rows = pg.query(sql.format(str_now, time_interval, ','.join(str(u) for u in active_users)))
     return rows
 
 
-def get_read_samples_by_pos(active_users, pos):
+def get_read_samples_by_pos(active_users, pos, time_interval):
+    nt = datetime.datetime.now()
+    str_now = nt.strftime('%Y-%m-%d %H:%M:%S')
     sql = '''
         select uid, nid, readtime, logtype, logchid from newsrecommendread_{} 
-                      where uid in ({})
+            where readtime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}'  
+                      and uid in ({})
     '''
-    rows = pg.query(sql.format(pos, ','.join(str(u) for u in active_users)))
+    rows = pg.query(sql.format(pos, str_now, time_interval, ','.join(str(u) for u in active_users)))
     return rows
 
 
-def get_read_samples(active_users):
+def get_read_samples(active_users, time_interval):
     users_dict = {}
     for user in active_users:
         pos = user % 100
@@ -33,7 +39,7 @@ def get_read_samples(active_users):
 
     read_samples = []
     for key_pos, user_list in users_dict.iteritems():
-        read_samples.extend(get_read_samples_by_pos(user_list, key_pos))
+        read_samples.extend(get_read_samples_by_pos(user_list, key_pos, time_interval))
 
     return read_samples
 
