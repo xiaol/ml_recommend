@@ -27,3 +27,5 @@ def get_hashval():
     print 'it takes {} sec'.format((t1-t0).total_seconds())
 
 
+if __name__ == "__main__":
+    get_hashval()
