@@ -19,7 +19,7 @@ def get_hashval():
     hashval = 3255685376439667788
     same = []
     for r in rows:
-        if simhash.dif_bit(hashval, long(r[1])) <= 3:
+        if simhash.dif_bit(hashval, long(r[1])) <= 12:
             same.append(r[0])
 
 
