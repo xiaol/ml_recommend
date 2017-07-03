@@ -17,6 +17,7 @@ from util.logger import Logger
 real_dir_path = os.path.split(os.path.realpath(__file__))[0]
 
 logger = Logger('sim_hash', os.path.join(real_dir_path, 'log/log.txt'))
+logger_sen = Logger('sim_hash_sen', os.path.join(real_dir_path, 'log/log_sen.txt'))  #根据sentence hash 去重
 
 ###########################################################################
 #@brief :计算新闻的hash值.
@@ -216,7 +217,7 @@ def check_same_news(nid1, nid2):
     rows = cursor.fetchall()
     titles = [r[0] for r in rows]
     if doc_process.get_sentence_similarity(titles[0], titles[1]) > 0.3: #标题相似性大于0.3
-        off_nid = del_nid_of_fewer_comment(nid1, nid2)
+        off_nid = del_nid_of_fewer_comment(nid1, nid2, log=logger_sen)
         t0 = datetime.datetime.now()
         cursor.execute(insert_same_sql.format(nid1, nid2, diff_bit, t0.strftime('%Y-%m-%d %H:%M:%S'), off_nid)) #记录去重操作
     conn.commit()
