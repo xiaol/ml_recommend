@@ -4,7 +4,15 @@ from util.postgres import postgres as pg
 import datetime
 
 
-def recall_candidates():
+# prepare the items for user recommend
+def recall_candidates(user_topic_dict):
+    """
+    :users_feature_dict: topic, kmeans
+
+    user history lda + user history kmeans + cf + wilson + all channels' big picture/hot news + editor+
+    specific topic(日本, 旅行), (动漫, 漫画)/ keyword / channel id
+    :return:
+    """
     pass
 
 
@@ -17,6 +25,7 @@ def enumerate_article_pname():
     rows = pg.query(sql.format(str_now, 7))
     return rows[0][0]
 
+
 def enumerate_article_editor_rank():
     pass
 
@@ -24,7 +33,7 @@ def enumerate_article_editor_rank():
 def enumerate_recommend_strategy():
     # strategy = {'hot': 0, 'recommend': 1, 'wilson': 2, 'editor': 3, 'other': 4}
     logtype = {'wilson': 0, 'topic collection': 4, 'slide image news':5, 'video':6, 'local news':7,
-                'baidu keyword':11, 'comment news':12, 'lda': 21, 'kmeans':22, 'editor+machine':23,
+                'baidu keyword':11, 'comment news':12, 'lda': 21, 'kmeans':22, 'editor chosen hot news':23,
                'editor': 24, 'big image news':25, 'related images':26, 'CF':27,
                'news in comment center':28,'news in topic':41, 'top rank':100, }
     # TODO dismatch logtype
@@ -44,6 +53,7 @@ def enumerate_kmeans():
 def enumerate_item_topics(topic_num):
     topic_feature_vector = [0] * topic_num
     return topic_feature_vector
+
 
 def save():
     pass
