@@ -54,6 +54,7 @@ def get_read_sample_feature(read_samples_list, users_feature_dict, items_feature
         feature_list = list(users_feature_dict[read_sample[0]])
         feature_list.extend(copy_strategies_dict.values())
 
+        # join the user and item features horizontally
         feature_list.extend(items_feature_dict[read_sample[1]])
 
         feature_key = tuple(feature_list)
