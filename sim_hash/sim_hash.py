@@ -56,6 +56,57 @@ def get_news_interval(h, interval = 9999):
     return nid_hv_list
 
 
+def get_old_news(interval=3):
+    old_news_sql = "select ns.nid, hash_val from news_simhash ns " \
+                   "inner join newslist_v2 nv on ns.nid=nv.nid " \
+                   "where (ns.ctime > now() - interval '{0} day') and nv.state=0 "
+    conn, cursor = doc_process.get_postgredb_query()
+    cursor.execute(old_news_sql.format(interval))
+    rows = cursor.fetchall()
+    nids_hash_dict = dict()
+    for r in rows:
+        nids_hash_dict[r[0]] = r[1]
+    cursor.close()
+    conn.close()
+    return nids_hash_dict
+
+
+
+def del_same_old_news(nid, nid_hash_dict):
+    '''
+        直接对比
+    '''
+    words_list = doc_process.get_words_on_nid(nid) #获取新闻的分词
+    if len(words_list) < 10: #文本过短不去重
+        return
+    conn, cursor = doc_process.get_postgredb()
+    h = simhash(words_list) #本篇新闻的hash值
+    t0 = datetime.datetime.now()
+    nid_off = False
+    for n, hv in nid_hash_dict.items():
+        diff_bit = h.hamming_distance_with_val(long(hv))
+        if diff_bit <= 6:
+            offnid = del_nid_of_fewer_comment(nid, n)
+            cursor.execute(insert_same_sql.format(nid, n, diff_bit, t0.strftime('%Y-%m-%d %H:%M:%S'), offnid)) #记录去重操作
+            if offnid == nid: #新检测的新闻下线,则不再需要对比其他
+                nid_off = True
+                break
+
+    if not nid_off:  #如果没有下线,加入字典,以便后面的新闻可以对比
+        nid_hash_dict[nid] = h.__str__()
+    t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    fir, sec, thi, fou, fir2, sec2, thi2, fou2 = get_4_segments(h.__long__()) #获取hash值的分段
+    cursor.execute(insert_news_simhash_sql.format(nid, h.__str__(), t, fir, sec, thi, fou, fir2, sec2, thi2, fou2))#记录新闻hash新闻
+    conn.commt()
+    cursor.close()
+    conn.close()
+
+
+
+
+
+
+
 def get_same_news(news_simhash, check_list, threshold = 3):
     '''
     获取与特定simhash相同的新闻
@@ -154,6 +205,10 @@ def cal_and_check_news_hash(nid_list):
     try:
         logger.info('begin to calculate simhash of {}'.format(' '.join(str(m) for m in nid_list)))
         t0 = datetime.datetime.now()
+        nid_hash_dict = get_old_news(interval=2)
+        for nid in nid_list:
+            del_same_old_news(nid, nid_hash_dict)
+        '''
         conn, cursor = doc_process.get_postgredb()
         for nid in nid_list:
             words_list = doc_process.get_words_on_nid(nid) #获取新闻的分词
@@ -176,6 +231,7 @@ def cal_and_check_news_hash(nid_list):
             conn.commit()
         cursor.close()
         conn.close()
+        '''
         t1 = datetime.datetime.now()
         logger.info('finish to calculate simhash. it takes {} s'.format(str((t1 - t0).total_seconds())))
     except:
@@ -212,7 +268,6 @@ def check_same_news(nid1, nid2):
     if diff_bit > 12: #大于12, 认为不可能是同一篇新闻
         return
     title_sql = "select title from newslist_v2 where nid in ({}, {})"
-    conn, cursor = doc_process.get_postgredb()
     cursor.execute(title_sql.format(nid1, nid2))
     rows = cursor.fetchall()
     titles = [r[0] for r in rows]
