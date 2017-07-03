@@ -24,6 +24,7 @@ def get_hashval():
 
 
     t1 = datetime.datetime.now()
+    print len(same)
     print 'it takes {} sec'.format((t1-t0).total_seconds())
 
 
