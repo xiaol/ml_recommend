@@ -11,10 +11,10 @@ import datetime
 
 def get_hashval():
     sql = "select nid, hash_val from news_simhash where ctime > now() - interval '2 day'"
-    t0 = datetime.datetime.now()
     conn, cursor = get_postgredb_query()
     cursor.execute(sql)
     rows = cursor.fetchall()
+    t0 = datetime.datetime.now()
     print 'compare with {}'.format(len(rows))
     hashval = 3255685376439667788
     same = []
