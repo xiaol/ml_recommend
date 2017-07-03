@@ -97,14 +97,9 @@ def del_same_old_news(nid, nid_hash_dict):
     t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     fir, sec, thi, fou, fir2, sec2, thi2, fou2 = get_4_segments(h.__long__()) #获取hash值的分段
     cursor.execute(insert_news_simhash_sql.format(nid, h.__str__(), t, fir, sec, thi, fou, fir2, sec2, thi2, fou2))#记录新闻hash新闻
-    conn.commt()
+    conn.commit()
     cursor.close()
     conn.close()
-
-
-
-
-
 
 
 def get_same_news(news_simhash, check_list, threshold = 3):
