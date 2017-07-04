@@ -60,7 +60,8 @@ def get_news_interval(h, interval = 9999):
 def get_old_news(interval=2):
     old_news_sql = "select ns.nid, hash_val from news_simhash ns " \
                    "inner join newslist_v2 nv on ns.nid=nv.nid " \
-                   "where (ns.ctime > now() - interval '{0} day') and nv.state=0 "
+                   "where (ns.ctime > now() - interval '{0} day') and nv.state=0 " \
+                   "and nv.chid != 44"
     conn, cursor = doc_process.get_postgredb_query()
     cursor.execute(old_news_sql.format(interval))
     rows = cursor.fetchall()
