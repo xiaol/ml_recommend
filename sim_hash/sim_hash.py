@@ -210,6 +210,11 @@ def del_nid_of_fewer_comment(nid, n, log=logger):
         log.error(traceback.format_exc())
 
 
+def check_nid_proc(nids, nid_hash_dict):
+    for n in nids:
+        del_same_old_news(n, nid_hash_dict)
+
+
 ################################################################################
 #@brief : 计算新闻hash值,并且检测是否是重复新闻。如果重复,则删除该新闻
 ################################################################################
@@ -225,8 +230,15 @@ def cal_and_check_news_hash(nid_list):
         cal_save_simhash(nid_list)
 
         nid_hash_dict = get_old_news(interval=1.5)
-        for nid in nid_list:
-            del_same_old_news(int(nid), nid_hash_dict)
+        small_list = [nid_list[i:i + 5] for i in range(0, len(nid_list), 5)]
+        pool = Pool(20)
+        for nids in small_list:
+            pool.apply_async(check_nid_proc, args=(nids, nid_hash_dict))
+
+        pool.close()
+        pool.join()
+        #for nid in nid_list:
+        #    del_same_old_news(int(nid), nid_hash_dict)
         '''
         conn, cursor = doc_process.get_postgredb()
         for nid in nid_list:
