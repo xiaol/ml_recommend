@@ -125,11 +125,7 @@ def del_same_old_news(nid, nid_hash_dict):
 
 def get_same_news(news_simhash, check_list, threshold = 3):
     '''
-    获取与特定simhash相同的新闻
-    :param news_simhash: 待检查的simhash
-    :param check_list: 检查列表
-    :param threshold: 阈值, 作为相同的判断条件
-    :return:
+        获取与特定simhash相同的新闻
     '''
     try:
         same_list = []
@@ -224,7 +220,6 @@ insert_news_simhash_sql = "insert into news_simhash (nid, hash_val, ctime, first
                           "VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}')"
 def cal_and_check_news_hash(nid_list):
     try:
-        #print '----'
         logger.info('begin to calculate {0} simhash of {1}'.format(len(nid_list), ','.join(str(m) for m in nid_list)))
         t0 = datetime.datetime.now()
         #计算这些新闻的hash值并保存
@@ -238,32 +233,6 @@ def cal_and_check_news_hash(nid_list):
 
         pool.close()
         pool.join()
-        #for nid in nid_list:
-        #    del_same_old_news(int(nid), nid_hash_dict)
-        '''
-        conn, cursor = doc_process.get_postgredb()
-        for nid in nid_list:
-            words_list = doc_process.get_words_on_nid(nid) #获取新闻的分词
-            if len(words_list) < 10: #文本过短不去重
-                continue
-            h = simhash(words_list) #本篇新闻的hash值
-            check_list = get_news_interval(h, 2)  #获取要对比的新闻列表,目前取2天内的新闻做重复性检查
-            same_list = get_same_news(h, check_list, threshold=6) #重复新闻
-            if len(same_list) > 0: #已经存在相同的新闻
-                for n_dis in same_list:
-                    n = n_dis[0]
-                    diff_bit = n_dis[1]
-                    if n != nid:
-                        off_nid = del_nid_of_fewer_comment(nid, n) #下线一篇新闻
-                        cursor.execute(insert_same_sql.format(nid, n, diff_bit, t0.strftime('%Y-%m-%d %H:%M:%S'), off_nid)) #记录去重操作
-            #else: #没有相同的新闻,将nid添加到news_hash
-            t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            fir, sec, thi, fou, fir2, sec2, thi2, fou2 = get_4_segments(h.__long__()) #获取hash值的分段
-            cursor.execute(insert_news_simhash_sql.format(nid, h.__str__(), t, fir, sec, thi, fou, fir2, sec2, thi2, fou2))#记录新闻hash新闻
-            conn.commit()
-        cursor.close()
-        conn.close()
-        '''
         t1 = datetime.datetime.now()
         logger.info('finish to calculate simhash. it takes {} s'.format(str((t1 - t0).total_seconds())))
     except:
