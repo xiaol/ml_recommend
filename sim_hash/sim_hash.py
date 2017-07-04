@@ -105,12 +105,12 @@ def del_same_old_news(nid, nid_hash_dict):
         return
     conn, cursor = doc_process.get_postgredb()
     hash_val = nid_hash_dict[nid]
+    logger.info('    check {} -- {}, {}'.format(nid, hash_val, len(nid_hash_dict)))
     for n, hv in nid_hash_dict.items():
         if n == nid:
             continue
 
         diff_bit = dif_bit(hash_val, hv)
-        print nid, n, diff_bit, diff_bit<=6
         if diff_bit <= 6:
             offnid = del_nid_of_fewer_comment(nid, n)
             t0 = datetime.datetime.now()
@@ -229,6 +229,7 @@ def cal_and_check_news_hash(nid_list):
 
         nid_hash_dict = get_old_news(interval=2)
         for nid in nid_list:
+            logger.info('    check {}'.format(nid))
             del_same_old_news(nid, nid_hash_dict)
         '''
         conn, cursor = doc_process.get_postgredb()
