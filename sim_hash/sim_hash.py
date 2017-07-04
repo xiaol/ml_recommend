@@ -225,7 +225,7 @@ def cal_and_check_news_hash(nid_list):
         #计算这些新闻的hash值并保存
         cal_save_simhash(nid_list)
 
-        nid_hash_dict = get_old_news(interval=1.5)
+        nid_hash_dict = get_old_news(interval=2)
         small_list = [nid_list[i:i + 5] for i in range(0, len(nid_list), 5)]
         pool = Pool(20)
         for nids in small_list:
