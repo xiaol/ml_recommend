@@ -103,27 +103,17 @@ def del_same_old_news(nid, nid_hash_dict):
     '''
     if nid not in nid_hash_dict:
         return
-    t0 = datetime.datetime.now()
-    #print t0
-    #print '3'
     conn, cursor = doc_process.get_postgredb()
-    t0 = datetime.datetime.now()
-    #print t0
-    #print '4'
     hash_val = nid_hash_dict[nid]
     for n, hv in nid_hash_dict.items():
         if n == nid:
             continue
 
-        t0 = datetime.datetime.now()
-        #print t0
-        #print '    5'
-        diff_bit = dif_bit(hash_val, long(hv))
+        diff_bit = dif_bit(hash_val, hv)
+        print nid, n, diff_bit, diff_bit<=6
         if diff_bit <= 6:
             offnid = del_nid_of_fewer_comment(nid, n)
             t0 = datetime.datetime.now()
-            #print t0
-            #print '    6'
             cursor.execute(insert_same_sql.format(nid, n, diff_bit, t0.strftime('%Y-%m-%d %H:%M:%S'), offnid)) #记录去重操作
             logger.info('________ delete {}'.format(offnid))
             nid_hash_dict.pop(offnid)
@@ -235,18 +225,9 @@ def cal_and_check_news_hash(nid_list):
         logger.info('begin to calculate {0} simhash of {1}'.format(len(nid_list), ' '.join(str(m) for m in nid_list)))
         t0 = datetime.datetime.now()
         #计算这些新闻的hash值并保存
-        print  t0
-        #print '0'
         cal_save_simhash(nid_list)
-        t00 = datetime.datetime.now()
-        print t00
-        #print '1'
 
         nid_hash_dict = get_old_news(interval=2)
-        print 'len of nid = {}'.format(len(nid_hash_dict))
-        t00 = datetime.datetime.now()
-        print t00
-        #print '2'
         for nid in nid_list:
             del_same_old_news(nid, nid_hash_dict)
         '''
