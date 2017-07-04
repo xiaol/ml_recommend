@@ -67,11 +67,7 @@ def get_old_news(interval=2):
     cursor.execute(old_news_sql.format(interval))
     rows = cursor.fetchall()
     nids_hash_dict = dict()
-    n = 0
     for r in rows:
-        if n == 0:
-            logger.info(' =====  {}'.format(type(r[0])))
-            n += 1
         nids_hash_dict[r[0]] = long(r[1])
     cursor.close()
     conn.close()
@@ -233,20 +229,10 @@ def cal_and_check_news_hash(nid_list):
         t0 = datetime.datetime.now()
         #计算这些新闻的hash值并保存
         cal_save_simhash(nid_list)
-        conn, cursor = doc_process.get_postgredb_query()
-        sql = "select nid from news_simhash where nid in ({}) and ctime > now() - interval '1 day'"
-        sql = '''select ns.nid, ns.hash_val from news_simhash ns inner join newslist_v2 nv on ns.nid=nv.nid where (ns.ctime > now() - interval '2 day') and nv.state=0 and nv.chid != 44 and ns.nid in ({})
-'''
-        cursor.execute(sql.format(','.join(str(n) for n in nid_list)))
-        logger.info(cursor.mogrify(sql.format(','.join(str(n) for n in nid_list))))
-        rows = cursor.fetchall()
-        logger.info("    ****** after cal {}".format(len(rows)))
-        conn.close()
 
         nid_hash_dict = get_old_news(interval=2)
         for nid in nid_list:
-            logger.info('    check {}, {}'.format(nid, type(nid)))
-            del_same_old_news(nid, nid_hash_dict)
+            del_same_old_news(int(nid), nid_hash_dict)
         '''
         conn, cursor = doc_process.get_postgredb()
         for nid in nid_list:
