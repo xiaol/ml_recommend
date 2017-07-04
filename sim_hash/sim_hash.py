@@ -222,7 +222,7 @@ insert_news_simhash_sql = "insert into news_simhash (nid, hash_val, ctime, first
 def cal_and_check_news_hash(nid_list):
     try:
         #print '----'
-        logger.info('begin to calculate {0} simhash of {1}'.format(len(nid_list), ' '.join(str(m) for m in nid_list)))
+        logger.info('begin to calculate {0} simhash of {1}'.format(len(nid_list), ','.join(str(m) for m in nid_list)))
         t0 = datetime.datetime.now()
         #计算这些新闻的hash值并保存
         cal_save_simhash(nid_list)
