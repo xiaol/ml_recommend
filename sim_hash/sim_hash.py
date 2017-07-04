@@ -101,6 +101,7 @@ def del_same_old_news(nid, nid_hash_dict):
     '''
         直接对比
     '''
+    nid = int(nid)
     if nid not in nid_hash_dict:
         return
     conn, cursor = doc_process.get_postgredb()
@@ -211,7 +212,6 @@ def del_nid_of_fewer_comment(nid, n, log=logger):
 
 
 def check_nid_proc(nids, nid_hash_dict):
-    logger.info('    len)dict = {}, {}'.format(len(nid_hash_dict), len(nids)))
     for n in nids:
         del_same_old_news(n, nid_hash_dict)
 
