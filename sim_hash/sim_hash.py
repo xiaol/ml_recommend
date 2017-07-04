@@ -115,8 +115,7 @@ def del_same_old_news(nid, nid_hash_dict):
             t0 = datetime.datetime.now()
             cursor.execute(insert_same_sql.format(nid, n, diff_bit, t0.strftime('%Y-%m-%d %H:%M:%S'), offnid)) #记录去重操作
             nid_hash_dict.pop(offnid)
-            if offnid == nid: #新检测的新闻下线,则不再需要对比其他
-                break
+            break  #认为只与一个可能存在相同。  从数据看这么做.
 
     conn.commit()
     cursor.close()
