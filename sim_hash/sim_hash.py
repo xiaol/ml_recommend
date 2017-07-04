@@ -62,7 +62,6 @@ def get_old_news(interval=2):
                    "inner join newslist_v2 nv on ns.nid=nv.nid " \
                    "where (ns.ctime > now() - interval '{0} day') and nv.state=0 " \
                    "and nv.chid != 44"
-    logger.info('    now = {}'.format(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
     conn, cursor = doc_process.get_postgredb_query()
     cursor.execute(old_news_sql.format(interval))
     rows = cursor.fetchall()
@@ -90,7 +89,6 @@ def cal_save_simhash(nid_list):
     small_list = [nid_list[i:i + 5] for i in range(0, len(nid_list), 5)]
     pool = Pool(20)
     t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    logger.info('    cal hahs time={}'.format(t))
     for nids in small_list:
         pool.apply_async(cal_save_simhash_proc, args=(nids, t))
 
@@ -104,11 +102,9 @@ def del_same_old_news(nid, nid_hash_dict):
         直接对比
     '''
     if nid not in nid_hash_dict:
-        logger.info('    *** {} not in dict '.format(nid))
         return
     conn, cursor = doc_process.get_postgredb()
     hash_val = nid_hash_dict[nid]
-    logger.info('    check {} -- {}, {}'.format(nid, hash_val, len(nid_hash_dict)))
     for n, hv in nid_hash_dict.items():
         if n == nid:
             continue
@@ -118,7 +114,6 @@ def del_same_old_news(nid, nid_hash_dict):
             offnid = del_nid_of_fewer_comment(nid, n)
             t0 = datetime.datetime.now()
             cursor.execute(insert_same_sql.format(nid, n, diff_bit, t0.strftime('%Y-%m-%d %H:%M:%S'), offnid)) #记录去重操作
-            logger.info('________ delete {}'.format(offnid))
             nid_hash_dict.pop(offnid)
             if offnid == nid: #新检测的新闻下线,则不再需要对比其他
                 break
