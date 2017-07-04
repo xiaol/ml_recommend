@@ -7,6 +7,7 @@
 
 from util.doc_process import get_postgredb_query
 from util import simhash
+from sim_hash import sim_hash
 import datetime
 
 def get_hashval():
@@ -29,4 +30,6 @@ def get_hashval():
 
 
 if __name__ == "__main__":
-    get_hashval()
+    n_list =[22152934, 22152935,22152936]
+    sim_hash.cal_and_check_news_hash(n_list)
+
