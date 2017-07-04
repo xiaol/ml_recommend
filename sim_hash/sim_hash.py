@@ -231,7 +231,7 @@ def cal_and_check_news_hash(nid_list):
         cal_save_simhash(nid_list)
         conn, cursor = doc_process.get_postgredb_query()
         sql = "select nid from news_simhash where nid in ({}) and ctime > now() - interval '1 day'"
-        cursor.execute(sql.format(str(n) for n in nid_list))
+        cursor.execute(sql.format(','.join(str(n) for n in nid_list)))
         rows = cursor.fetchall()
         logger.info("    ****** after cal {}".format(len(rows)))
         conn.close()
