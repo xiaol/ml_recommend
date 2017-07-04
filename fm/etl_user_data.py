@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from util.postgres import postgres as pg
+from util.postgres import postgres_read_only as pg
 import datetime
 
 
@@ -18,9 +18,14 @@ def get_active_user(time_interval='1 day', click_times=1):
     return a_users
 
 
-def recall_candidates():
-    users = get_active_user('5 minutes')
-    users_feature_dict, users_detail_dict, users_topic_dict = load(users, 5000, '15 days')
+def recall_candidates(boolean_test_users=False):
+    if boolean_test_users:
+        users = [33658617]
+    else:
+        users = get_active_user('5 minutes')
+
+    users_feature_dict, users_detail_dict, users_topic_dict = \
+        user_extractor.load(users, 5000, '15 days')
     return users_feature_dict, users_detail_dict, users_topic_dict
 
 
@@ -109,54 +114,61 @@ def get_user_kmeans(users):
     pass
 
 
-def load(active_users, topic_num, topic_time_interval):
-    users_feature_dict = {}
-    feature_brand_dict = enumerate_user_brand(active_users)
-    # Many users don't have device features, so need to initialize the feature dicts.
-    for user in active_users:
-        users_feature_dict[user] = [0]*len(feature_brand_dict)
+class UserExtractor(object):
 
-    users_detail = get_users_detail(active_users)
-    users_detail_dict = {}
+    feature_brand_dict = {}
 
-    for user_detail in users_detail:
-        # feature vector: brand platform, os, os_version,
-        # device_size, network, ctype, province, city, area, user_history_topic, user_history_kmeans
-        copy_feature_brand_dict = feature_brand_dict.copy()
+    def load(self, active_users, topic_num, topic_time_interval):
+        users_feature_dict = {}
+        if not self.feature_brand_dict:
+            self.feature_brand_dict = enumerate_user_brand(active_users)
+        # Many users don't have device features, so need to initialize the feature dicts.
+        for user in active_users:
+            users_feature_dict[user] = [0]*len(self.feature_brand_dict)
 
-        if not user_detail:
+        users_detail = get_users_detail(active_users)
+        users_detail_dict = {}
+
+        for user_detail in users_detail:
+            # feature vector: brand platform, os, os_version,
+            # device_size, network, ctype, province, city, area, user_history_topic, user_history_kmeans
+            copy_feature_brand_dict = self.feature_brand_dict.copy()
+
+            if not user_detail:
+                users_feature_dict[user_detail[0]] = copy_feature_brand_dict.values()
+                continue
+
+            copy_feature_brand_dict[user_detail[1]] = 1
             users_feature_dict[user_detail[0]] = copy_feature_brand_dict.values()
-            continue
 
-        copy_feature_brand_dict[user_detail[1]] = 1
-        users_feature_dict[user_detail[0]] = copy_feature_brand_dict.values()
+            users_detail_dict[user_detail[0]] = user_detail[1:]
+        '''
+        ---------------------------------------------------------------------------------Ugly line
+        '''
+        topic_feature_offset = len(self.feature_brand_dict)
+        feature_topic_vector = enumerate_user_topic(topic_num)
+        users_topic_dict = {}
 
-        users_detail_dict[user_detail[0]] = user_detail[1:]
-    '''
-    ---------------------------------------------------------------------------------Ugly line
-    '''
-    topic_feature_offset = len(feature_brand_dict)
-    feature_topic_vector = enumerate_user_topic(topic_num)
-    users_topic_dict = {}
+        for user in active_users:
+            copy_feature_topic_vector = list(feature_topic_vector)
+            users_feature_dict[user].extend(copy_feature_topic_vector)
 
-    for user in active_users:
-        copy_feature_topic_vector = list(feature_topic_vector)
-        users_feature_dict[user].extend(copy_feature_topic_vector)
+        users_topic = get_users_topic(active_users, topic_time_interval)
+        for user_topic in users_topic:
 
-    users_topic = get_users_topic(active_users, topic_time_interval)
-    for user_topic in users_topic:
+            if not user_topic:
+                continue
+            try:
+                users_feature_dict[user_topic[0]][topic_feature_offset+user_topic[1]] = 1  # user_topic[2]
+                users_topic_dict[user_topic[0]] = user_topic[1:]
+            except:
+                print '------hold-------'
 
-        if not user_topic:
-            continue
-        try:
-            users_feature_dict[user_topic[0]][topic_feature_offset+user_topic[1]] = 1  # user_topic[2]
-            users_topic_dict[user_topic[0]] = user_topic[1:]
-        except:
-            print '------hold-------'
+        return users_feature_dict, users_detail_dict, users_topic_dict
+        # return {1: [1, 0], 2: [0, 1], 3: [1, 0], 4: [0, 1]}   # user_id, user_feature vector
 
-    return users_feature_dict, users_detail_dict, users_topic_dict
-    # return {1: [1, 0], 2: [0, 1], 3: [1, 0], 4: [0, 1]}   # user_id, user_feature vector
+user_extractor = UserExtractor()
 
 if __name__ == '__main__':
     users_test = get_active_user(time_interval='30 minutes')
-    print load(users_test)
+    print user_extractor.load(users_test)

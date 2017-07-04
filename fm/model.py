@@ -15,13 +15,14 @@ def construct_feature_matrix(topic_num):
     :param topic_num:  the number of lda topics
     :return:
     """
-    active_users = etl_user_data.get_active_user(time_interval='2 minutes')
+    active_users = etl_user_data.get_active_user(time_interval='10 seconds')
 
-    users_feature_dict = etl_user_data.load(active_users, topic_num, '15 days')
+    users_feature_dict, users_detail_dict, users_topic_dict = etl_user_data.\
+        user_extractor.load(active_users, topic_num, '15 days')
 
     # uid nid readtime logtype logchid
-    read_samples_list = etl_sample.get_read_samples(active_users, '2 days')
-    click_samples_list = etl_sample.get_click_samples(active_users, '2 days')
+    read_samples_list = etl_sample.get_read_samples(active_users, '1 hour')
+    click_samples_list = etl_sample.get_click_samples(active_users, '1 hour')
 
     items_list = [read_sample[1] for read_sample in read_samples_list]
     items_list.extend([click_sample[1] for click_sample in click_samples_list])
@@ -49,12 +50,15 @@ def get_read_sample_feature(read_samples_list, users_feature_dict, items_feature
         if read_sample[0] not in users_feature_dict:
             continue  # TODO something bad happened, very very bad
         copy_strategies_dict = strategies_dict.copy()
+        if read_sample[3] not in copy_strategies_dict:
+            print 'unknown logtype ', read_sample[3]
+            continue
         copy_strategies_dict[read_sample[3]] = 1
 
         feature_list = list(users_feature_dict[read_sample[0]])
         feature_list.extend(copy_strategies_dict.values())
 
-        # join the user and item features horizontally
+        # join the user, strategies and item features horizontally
         feature_list.extend(items_feature_dict[read_sample[1]])
 
         feature_key = tuple(feature_list)
@@ -71,6 +75,9 @@ def get_click_sample_feature(click_samples_list, read_samples_feature,
         if click_sample[0] not in users_feature_dict:
             continue  # TODO something bad happened, very very bad
         copy_strategies_dict = strategies_dict.copy()
+        if click_sample[4] not in copy_strategies_dict:
+            print 'unknown logtype ', click_sample[4]
+            continue
         copy_strategies_dict[click_sample[4]] = 1
 
         feature_list = list(users_feature_dict[click_sample[0]])

@@ -17,7 +17,7 @@ class Postgres(object):
     min_connections = 1
     max_connections = 5
 
-    def __init__(self):
+    def __init__(self, db_host= "120.27.162.201"):
         self.pool = pool.SimpleConnectionPool(
             minconn=self.min_connections,
             maxconn=self.max_connections,
@@ -62,4 +62,5 @@ class Postgres(object):
         cur = connection.cursor()
         return connection, cur
 
-postgres = Postgres()
+postgres_read_only = Postgres()
+postgres_write_only = Postgres(db_host="120.27.163.25")
