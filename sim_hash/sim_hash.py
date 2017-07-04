@@ -65,7 +65,7 @@ def get_old_news(interval=2):
     rows = cursor.fetchall()
     nids_hash_dict = dict()
     for r in rows:
-        nids_hash_dict[r[0]] = r[1]
+        nids_hash_dict[r[0]] = long(r[1])
     cursor.close()
     conn.close()
     return nids_hash_dict
@@ -230,6 +230,7 @@ def cal_and_check_news_hash(nid_list):
         #print '1'
 
         nid_hash_dict = get_old_news(interval=2)
+        print 'len of nid = {}'.format(len(nid_hash_dict))
         t00 = datetime.datetime.now()
         #print t00
         #print '2'
