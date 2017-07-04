@@ -11,7 +11,7 @@ import logging
 import datetime
 import os
 import requests
-from util.simhash import simhash, get_4_segments
+from util.simhash import simhash, get_4_segments, dif_bit
 from util.logger import Logger
 
 real_dir_path = os.path.split(os.path.realpath(__file__))[0]
@@ -56,7 +56,7 @@ def get_news_interval(h, interval = 9999):
     return nid_hv_list
 
 
-def get_old_news(interval=3):
+def get_old_news(interval=2):
     old_news_sql = "select ns.nid, hash_val from news_simhash ns " \
                    "inner join newslist_v2 nv on ns.nid=nv.nid " \
                    "where (ns.ctime > now() - interval '{0} day') and nv.state=0 "
@@ -71,33 +71,53 @@ def get_old_news(interval=3):
     return nids_hash_dict
 
 
+def cal_save_simhash(nid_list):
+    conn, cursor = doc_process.get_postgredb()
+    for nid in nid_list:
+        words_list = doc_process.get_words_on_nid(nid) #获取新闻的分词
+        h = simhash(words_list) #本篇新闻的hash值
+        t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        fir, sec, thi, fou, fir2, sec2, thi2, fou2 = get_4_segments(h.__long__()) #获取hash值的分段
+        cursor.execute(insert_news_simhash_sql.format(nid, h.__str__(), t, fir, sec, thi, fou, fir2, sec2, thi2, fou2))#记录新闻hash新闻
+        conn.commit()
+    cursor.close()
+    conn.close()
+
+
 
 def del_same_old_news(nid, nid_hash_dict):
     '''
         直接对比
     '''
-    words_list = doc_process.get_words_on_nid(nid) #获取新闻的分词
-    if len(words_list) < 10: #文本过短不去重
+    if nid not in nid_hash_dict:
         return
-    conn, cursor = doc_process.get_postgredb()
-    h = simhash(words_list) #本篇新闻的hash值
     t0 = datetime.datetime.now()
-    nid_off = False
+    print t0
+    print '3'
+    conn, cursor = doc_process.get_postgredb()
+    t0 = datetime.datetime.now()
+    print t0
+    print '4'
+    hash_val = nid_hash_dict[nid]
     for n, hv in nid_hash_dict.items():
-        diff_bit = h.hamming_distance_with_val(long(hv))
+        if n == nid:
+            continue
+
+        t0 = datetime.datetime.now()
+        print t0
+        print '    5'
+        diff_bit = dif_bit(hash_val, long(hv))
         if diff_bit <= 6:
             offnid = del_nid_of_fewer_comment(nid, n)
+            t0 = datetime.datetime.now()
+            print t0
+            print '    6'
             cursor.execute(insert_same_sql.format(nid, n, diff_bit, t0.strftime('%Y-%m-%d %H:%M:%S'), offnid)) #记录去重操作
+            nid_hash_dict.pop(offnid)
             if offnid == nid: #新检测的新闻下线,则不再需要对比其他
-                nid_off = True
                 break
 
-    if not nid_off:  #如果没有下线,加入字典,以便后面的新闻可以对比
-        nid_hash_dict[nid] = h.__str__()
-    t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    fir, sec, thi, fou, fir2, sec2, thi2, fou2 = get_4_segments(h.__long__()) #获取hash值的分段
-    cursor.execute(insert_news_simhash_sql.format(nid, h.__str__(), t, fir, sec, thi, fou, fir2, sec2, thi2, fou2))#记录新闻hash新闻
-    conn.commit()
+    #conn.commit()
     cursor.close()
     conn.close()
 
@@ -198,9 +218,21 @@ insert_news_simhash_sql = "insert into news_simhash (nid, hash_val, ctime, first
                           "VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}')"
 def cal_and_check_news_hash(nid_list):
     try:
-        logger.info('begin to calculate simhash of {}'.format(' '.join(str(m) for m in nid_list)))
+        print '----'
+        logger.info('begin to calculate {0} simhash of {1}'.format(len(nid_list), ' '.join(str(m) for m in nid_list)))
         t0 = datetime.datetime.now()
+        #计算这些新闻的hash值并保存
+        print  t0
+        print '0'
+        cal_save_simhash(nid_list)
+        t00 = datetime.datetime.now()
+        print t00
+        print '1'
+
         nid_hash_dict = get_old_news(interval=2)
+        t00 = datetime.datetime.now()
+        print t00
+        print '2'
         for nid in nid_list:
             del_same_old_news(nid, nid_hash_dict)
         '''
