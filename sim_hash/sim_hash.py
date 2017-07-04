@@ -229,6 +229,12 @@ def cal_and_check_news_hash(nid_list):
         t0 = datetime.datetime.now()
         #计算这些新闻的hash值并保存
         cal_save_simhash(nid_list)
+        conn, cursor = doc_process.get_postgredb_query()
+        sql = "select nid from news_simhash where nid in ({}) and ctime > now() - interval '1 day'"
+        cursor.execute(sql.format(str(n) for n in nid_list))
+        rows = cursor.fetchall()
+        logger.info("    ****** after cal {}".format(len(rows)))
+        conn.close()
 
         nid_hash_dict = get_old_news(interval=2)
         for nid in nid_list:
