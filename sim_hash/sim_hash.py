@@ -94,6 +94,7 @@ def cal_save_simhash(nid_list):
 
     pool.close()
     pool.join()
+    del pool
 
 
 def del_same_old_news(nid, nid_hash_dict):
