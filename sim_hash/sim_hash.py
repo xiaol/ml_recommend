@@ -92,32 +92,32 @@ def del_same_old_news(nid, nid_hash_dict):
     if nid not in nid_hash_dict:
         return
     t0 = datetime.datetime.now()
-    print t0
-    print '3'
+    #print t0
+    #print '3'
     conn, cursor = doc_process.get_postgredb()
     t0 = datetime.datetime.now()
-    print t0
-    print '4'
+    #print t0
+    #print '4'
     hash_val = nid_hash_dict[nid]
     for n, hv in nid_hash_dict.items():
         if n == nid:
             continue
 
         t0 = datetime.datetime.now()
-        print t0
-        print '    5'
+        #print t0
+        #print '    5'
         diff_bit = dif_bit(hash_val, long(hv))
         if diff_bit <= 6:
             offnid = del_nid_of_fewer_comment(nid, n)
             t0 = datetime.datetime.now()
-            print t0
-            print '    6'
+            #print t0
+            #print '    6'
             cursor.execute(insert_same_sql.format(nid, n, diff_bit, t0.strftime('%Y-%m-%d %H:%M:%S'), offnid)) #记录去重操作
             nid_hash_dict.pop(offnid)
             if offnid == nid: #新检测的新闻下线,则不再需要对比其他
                 break
 
-    #conn.commit()
+    conn.commit()
     cursor.close()
     conn.close()
 
@@ -218,21 +218,21 @@ insert_news_simhash_sql = "insert into news_simhash (nid, hash_val, ctime, first
                           "VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}')"
 def cal_and_check_news_hash(nid_list):
     try:
-        print '----'
+        #print '----'
         logger.info('begin to calculate {0} simhash of {1}'.format(len(nid_list), ' '.join(str(m) for m in nid_list)))
         t0 = datetime.datetime.now()
         #计算这些新闻的hash值并保存
-        print  t0
-        print '0'
+        #print  t0
+        #print '0'
         cal_save_simhash(nid_list)
         t00 = datetime.datetime.now()
-        print t00
-        print '1'
+        #print t00
+        #print '1'
 
         nid_hash_dict = get_old_news(interval=2)
         t00 = datetime.datetime.now()
-        print t00
-        print '2'
+        #print t00
+        #print '2'
         for nid in nid_list:
             del_same_old_news(nid, nid_hash_dict)
         '''
