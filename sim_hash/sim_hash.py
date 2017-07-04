@@ -13,6 +13,7 @@ import os
 import requests
 from util.simhash import simhash, get_4_segments, dif_bit
 from util.logger import Logger
+from multiprocessing import Pool
 
 real_dir_path = os.path.split(os.path.realpath(__file__))[0]
 
@@ -71,9 +72,9 @@ def get_old_news(interval=2):
     return nids_hash_dict
 
 
-def cal_save_simhash(nid_list):
+def cal_save_simhash_proc(nids):
     conn, cursor = doc_process.get_postgredb()
-    for nid in nid_list:
+    for nid in nids:
         words_list = doc_process.get_words_on_nid(nid) #获取新闻的分词
         h = simhash(words_list) #本篇新闻的hash值
         t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -83,6 +84,15 @@ def cal_save_simhash(nid_list):
     cursor.close()
     conn.close()
 
+
+def cal_save_simhash(nid_list):
+    small_list = [nid_list[i:i + 5] for i in range(0, len(nid_list), 5)]
+    pool = Pool(20)
+    for nids in small_list:
+        pool.apply_async(cal_save_simhash_proc, args=(nids,))
+
+    pool.close()
+    pool.join()
 
 
 def del_same_old_news(nid, nid_hash_dict):
