@@ -62,6 +62,7 @@ def get_old_news(interval=2):
                    "inner join newslist_v2 nv on ns.nid=nv.nid " \
                    "where (ns.ctime > now() - interval '{0} day') and nv.state=0 " \
                    "and nv.chid != 44"
+    logger.info('    now = {}'.format(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
     conn, cursor = doc_process.get_postgredb_query()
     cursor.execute(old_news_sql.format(interval))
     rows = cursor.fetchall()
@@ -73,12 +74,11 @@ def get_old_news(interval=2):
     return nids_hash_dict
 
 
-def cal_save_simhash_proc(nids):
+def cal_save_simhash_proc(nids, t):
     conn, cursor = doc_process.get_postgredb()
     for nid in nids:
         words_list = doc_process.get_words_on_nid(nid) #获取新闻的分词
         h = simhash(words_list) #本篇新闻的hash值
-        t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         fir, sec, thi, fou, fir2, sec2, thi2, fou2 = get_4_segments(h.__long__()) #获取hash值的分段
         cursor.execute(insert_news_simhash_sql.format(nid, h.__str__(), t, fir, sec, thi, fou, fir2, sec2, thi2, fou2))#记录新闻hash新闻
         conn.commit()
@@ -89,8 +89,10 @@ def cal_save_simhash_proc(nids):
 def cal_save_simhash(nid_list):
     small_list = [nid_list[i:i + 5] for i in range(0, len(nid_list), 5)]
     pool = Pool(20)
+    t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    logger.info('    cal hahs time={}'.format(t))
     for nids in small_list:
-        pool.apply_async(cal_save_simhash_proc, args=(nids,))
+        pool.apply_async(cal_save_simhash_proc, args=(nids, t))
 
     pool.close()
     pool.join()
