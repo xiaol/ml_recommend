@@ -67,7 +67,10 @@ def get_old_news(interval=2):
     cursor.execute(old_news_sql.format(interval))
     rows = cursor.fetchall()
     nids_hash_dict = dict()
+    n = 0
     for r in rows:
+        if n == 0:
+            logger.info(' =====  {}'.format(type(r[0])))
         nids_hash_dict[r[0]] = long(r[1])
     cursor.close()
     conn.close()
@@ -241,7 +244,7 @@ def cal_and_check_news_hash(nid_list):
 
         nid_hash_dict = get_old_news(interval=2)
         for nid in nid_list:
-            logger.info('    check {}'.format(nid))
+            logger.info('    check {}, {}'.format(nid, type(nid)))
             del_same_old_news(nid, nid_hash_dict)
         '''
         conn, cursor = doc_process.get_postgredb()
