@@ -57,7 +57,7 @@ def get_news_interval(h, interval = 9999):
     return nid_hv_list
 
 
-def get_old_news(interval=2):
+def get_old_news(interval=2.0):
     old_news_sql = "select ns.nid, hash_val from news_simhash ns " \
                    "inner join newslist_v2 nv on ns.nid=nv.nid " \
                    "where (ns.ctime > now() - interval '{0} day') and nv.state=0 " \
@@ -224,7 +224,7 @@ def cal_and_check_news_hash(nid_list):
         #计算这些新闻的hash值并保存
         cal_save_simhash(nid_list)
 
-        nid_hash_dict = get_old_news(interval=2)
+        nid_hash_dict = get_old_news(interval=1.5)
         for nid in nid_list:
             del_same_old_news(int(nid), nid_hash_dict)
         '''
