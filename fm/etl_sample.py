@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from util.postgres import postgres as pg
+from util.postgres import postgres_read_only as pg
 import datetime
 
 

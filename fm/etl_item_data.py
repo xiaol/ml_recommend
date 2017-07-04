@@ -1,19 +1,41 @@
 # -*- coding: utf-8 -*-
 
-from util.postgres import postgres as pg
+from util.postgres import postgres_read_only as pg
 import datetime
 
 
 # prepare the items for user recommend
 def recall_candidates(user_topic_dict):
     """
-    :users_feature_dict: topic, kmeans
+    :users_topic_dict: lda
 
     user history lda + user history kmeans + cf + wilson + all channels' big picture/hot news + editor+
     specific topic(日本, 旅行), (动漫, 漫画)/ keyword / channel id
     :return:
     """
-    pass
+    nt = datetime.datetime.now()
+    str_now = nt.strftime('%Y-%m-%d %H:%M:%S')
+    candidates_list = []
+
+    sql_wilson = '''
+        SELECT nid, score, stime, chid from blanknews_sortinglist 
+        ORDER by score DESC 
+    '''
+    wilson_rows = pg.query(sql_wilson.format(str_now, '1 day'))
+    # TODO if wilson is empty , you get lucky
+    candidates_list.extend([w[0] for w in wilson_rows])
+
+    sql_lda = '''
+    '''
+
+    sql_hotnews = '''
+    '''
+
+    sql_bigimg = '''
+    '''
+
+    candidates_feature_dict = load(candidates_list, topic_num=5000)
+    return candidates_feature_dict
 
 
 def enumerate_article_pname():
