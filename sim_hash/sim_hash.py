@@ -71,6 +71,7 @@ def get_old_news(interval=2):
     for r in rows:
         if n == 0:
             logger.info(' =====  {}'.format(type(r[0])))
+            n += 1
         nids_hash_dict[r[0]] = long(r[1])
     cursor.close()
     conn.close()
