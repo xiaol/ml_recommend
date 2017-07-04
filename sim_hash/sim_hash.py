@@ -102,6 +102,7 @@ def del_same_old_news(nid, nid_hash_dict):
         直接对比
     '''
     if nid not in nid_hash_dict:
+        logger.info('    *** {} not in dict '.format(nid))
         return
     conn, cursor = doc_process.get_postgredb()
     hash_val = nid_hash_dict[nid]
