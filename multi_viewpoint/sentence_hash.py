@@ -370,8 +370,8 @@ def cal_process(nid_set, log=None, same_t=3, news_interval=3, same_dict = {}):
                             cursor.executemany(insert_same_sentence, same_sentence_sql_para)  #有效的重复句子
                             #log.info('get same sentence map :{}'.format(str_no_html.encode('utf-8')))
                             #多放观点  1. 句子长度>30.  2 不同源  3. 去除首尾
-                            #if len(str_no_html) > 30 and n > 2 and (n < sen_len-3):
-                            if len(str_no_html) > 15:
+                            if len(str_no_html) > 15 and n > 2 and (n < sen_len-2):
+                            #if len(str_no_html) > 15:
                                 sub_nids_set = set()
                                 for same in same_sentence_sql_para:
                                     nn = same[1]  #nid
