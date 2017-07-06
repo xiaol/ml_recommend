@@ -23,7 +23,10 @@ def recall_candidates(user_topic_dict):
     '''
     wilson_rows = pg.query(sql_wilson.format(str_now, '1 day'))
     # TODO if wilson is empty , you get lucky
-    candidates_list.extend([w[0] for w in wilson_rows])
+    wilson_list = [w[0] for w in wilson_rows]
+    candidates_list.extend(wilson_list)
+
+    strategies_dict = enumerate_recommend_strategy()
 
     sql_lda = '''
     '''
@@ -35,6 +38,15 @@ def recall_candidates(user_topic_dict):
     '''
 
     candidates_feature_dict = load(candidates_list, topic_num=5000)
+
+    for candidate_item in candidates_list:
+        copy_strategies_feature = list(strategies_dict.values())
+        copy_strategies_feature.extend(candidates_feature_dict[candidate_item])
+        candidates_feature_dict[candidate_item] = copy_strategies_feature
+
+    for wilson_item in wilson_list:
+        candidates_feature_dict[wilson_item][0] = 1
+
     return candidates_feature_dict
 
 
@@ -54,10 +66,11 @@ def enumerate_article_editor_rank():
 
 def enumerate_recommend_strategy():
     # strategy = {'hot': 0, 'recommend': 1, 'wilson': 2, 'editor': 3, 'other': 4}
-    logtype = {'wilson': 0, 'topic collection': 4, 'slide image news':5, 'video':6, 'local news':7,
-                'baidu keyword':11, 'comment news':12, 'lda': 21, 'kmeans':22, 'editor chosen hot news':23,
-               'editor': 24, 'big image news':25, 'related images':26, 'CF':27,
-               'news in comment center':28,'news in topic':41, 'top rank':100, }
+    logtype = {'wilson': 0, 'topic collection': 4, 'slide image news': 5, 'video': 6,
+               'local news': 7, 'channel hotnews': 13, 'baidu keyword': 11, 'comment news': 12,
+               'lda': 21, 'kmeans': 22, 'editor chosen hot news': 23, 'editor': 24,
+               'big image news': 25, 'related images':26, 'CF': 27, 'news in comment center': 28,
+               'channel big image news': 29, 'news in topic': 41, 'top rank': 100, }
     # TODO dismatch logtype
     strategy_feature_dict = dict((v, 0) for k,v in logtype.iteritems())
 
