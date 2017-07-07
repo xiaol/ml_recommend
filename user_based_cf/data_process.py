@@ -16,7 +16,10 @@ from util.doc_process import get_postgredb
 import datetime
 import math
 import json
+from heapq import nlargest
+from operator import itemgetter
 
+TEST_FLAG = False
 
 real_dir_path = os.path.split(os.path.realpath(__file__))[0] #文件所在路径
 log_cf = logger.Logger('log_cf', os.path.join(real_dir_path, 'log', 'log.txt'))
@@ -38,40 +41,11 @@ def get_newest_topic_v():
     return max(topic_vs)
 
 
-click_file = ''
-click_query_sql = "select uid, nid, ctime from newsrecommendclick where ctime > now() - interval '%s day'"
-#收集用户一段时间内的的点击行为
-def coll_click():
-    global click_file
-    try:
-        conn, cursor = get_postgredb_query()
-        cursor.execute(click_query_sql, (30,))
-        rows = cursor.fetchall()
-        user_ids = []
-        nid_ids = []
-        click_time = []
-        for r in rows:
-            user_ids.append(r[0])
-            nid_ids.append(r[1])
-            click_time.append(r[2])
-
-        df = pd.DataFrame({'uid':user_ids, 'nid':nid_ids, 'ctime':click_time}, columns=('uid', 'nid', 'ctime'))
-        time_str = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
-        '''
-        click_file = os.path.join(real_dir_path, 'data', time_str)
-        df.to_csv(click_file, index=False)
-        '''
-        #calculate similarity.  user_dict is a map of userid and index, W is simility matrix with index representing userid
-        W = get_user_click_similarity(user_ids, nid_ids, click_time)
-        conn.close()
-    except:
-        log_cf.exception(traceback.format_exc())
-        conn.close()
-
-
-#uid=0是旧版app,没有确切的uid。所有旧版app的使用者的id都是0
-user_topic_prop_sql = "select uid, topic_id, probability from user_topics_v2 where model_v = '{}' and uid != 0 and create_time > now() - interval '20 day'"
 def coll_user_topics(model_v):
+    # uid=0是旧版app,没有确切的uid。所有旧版app的使用者的id都是0
+    user_topic_prop_sql = '''select uid, topic_id, probability from user_topics_v2 
+                         where model_v = '{}' and uid != 0 and 
+                         create_time > now() - interval '0.1 day' '''
     try:
         log_cf.info('    coll_user_topics begin ...')
         conn, cursor = get_postgredb_query()
@@ -90,94 +64,80 @@ def coll_user_topics(model_v):
                 user_topic_prop_dict[r[0]] = dict()
             user_topic_prop_dict[r[0]][r[1]] = r[2]
 
-        '''
-        df = pd.DataFrame({'uid': user_ids, 'topic': topic_ids, 'property': props}, columns=('uid', 'topic', 'property'))
-        #time_str = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
-        topic_file = os.path.join(real_dir_path, 'data', 'user_topic_data_'+time_str + '.txt')
-        df.to_csv(topic_file, index=False)
-        '''
         log_cf.info('    coll_user_topics end')
+        del rows
+        cursor.close()
+        conn.close()
+        if TEST_FLAG:
+            f = os.path.join(real_dir_path, 'data', 'user_topic.csv')
+            df = {'user':user_ids, 'topic':topic_ids, 'prop':props}
+            pd.DataFrame(df).to_csv(f, columns=('user', 'topic', 'prop'))
         return user_topic_prop_dict, user_ids, topic_ids, props
     except:
         traceback.print_exc()
         log_cf.exception(traceback.format_exc())
 
 
-def cal_neignbours(user_ids, topic_ids, props, time):
+def cal_neignbours(user_ids, topic_ids, props):
     try:
-        #calcute similarity and save
-        conn, cursor = get_postgredb()
-        W = get_user_topic_similarity(user_ids, topic_ids, props)
+        W = get_user_topic_similarity2(user_ids, topic_ids, props)
         user_neighbour_dict = dict()
-        insert_similarity_sql = "insert into user_similarity_cf (uid, similarity, ctime) VALUES ({}, '{}', '{}')"
         for it in W.items():  #save every user's
             master = it[0]
             sims_dict = it[1]
-            sims_list = sorted(sims_dict.items(), key= lambda d:d[1], reverse=True)
-            topK_list = sims_list[:50]
-            user_neighbour_dict[master] = topK_list
-            #print cursor.mogrify(insert_similarity_sql.format(master, json.dumps(topK_list), time))
-            cursor.execute(insert_similarity_sql.format(master, json.dumps(topK_list), time))
-            conn.commit()
-        '''
-        master_user = []
-        slave_user = []
-        similarity = []
-        for item in W.items():
-            #master_user.append(item[0])
-            for i2 in item[1].items():
-                master_user.append(item[0])
-                slave_user.append(i2[0])
-                similarity.append(i2[1])
-        df2 = pd.DataFrame({'uid1':master_user, 'uid2':slave_user, 'similarity':similarity}, columns=('uid1', 'uid2', 'similarity'))
-        user_user_file = os.path.join(real_dir_path, 'data', 'user_topic_similarity_'+time + '.txt')
-        df2.to_csv(user_user_file, index=False)
-        log_cf.info('    uid1-uid2-similarity are save to {}'.format(user_user_file))
-        '''
+            user_neighbour_dict[master] = nlargest(30, sims_dict.iteritems(), key=itemgetter(1))
         log_cf.info("    cal_neighbour finished!")
-        conn.close()
-        print 'finished!!'
+        u_list, u2_list, prop = [], [], []
+        for item in user_neighbour_dict.items():
+            u_list.append(item[0])
+            u2_list.append(item[1][0])
+            prop.append(item[1][1])
+        if TEST_FLAG:
+            f = os.path.join(real_dir_path, 'data', 'sorted_sim.csv')
+            pd.DataFrame({'u1':u_list, 'u2':u2_list, 'prop':prop}).to_csv(f, columns=('u1', 'u2', 'prop'))
         return user_neighbour_dict
     except:
         traceback.print_exc()
         log_cf.exception(traceback.format_exc())
 
 
-
-#获取item-user倒排表, 格式  {nid1:[uid1, uid2...], nid2:...}
-def get_user_click_similarity(users, nids, times):
+def get_user_topic_similarity2(users, topics, props):
+    log_cf.info('    begin to get_user_topic_similarity...')
     user_set = set(users)
-    #记录用户id的索引id
-    user_dict = {}
-    user_invert_dict = {}
-    n = 0
-    for i in user_set:
-        user_dict[i] = n
-        user_invert_dict[n] = i
-        n += 1
-    item_user_dict = dict()
-    for i in xrange(len(nids)):
-        if nids[i] not in item_user_dict.keys():
-            item_user_dict[nids[i]] = set()
-        item_user_dict[nids[i]].add(user_dict[users[i]])
+    topic_user_prop = dict()
+    u_total = {}  #记录每个用户兴趣总值, 所有probability相加
+    for i in xrange(len(topics)):
+        topic_user_prop.setdefault(topics[i], dict())[users[i]] = props[i]
+        u_total[users[i]] = u_total.setdefault(users[i], 0) + props[i]
 
-    C = dict()  #记录用户相关矩阵
-    N = dict()  #记录每个用户看了多少item
-    for i, i_users in item_user_dict.items():
-        for u in i_users:
-            N[u] += 1
-            for v in i_users:
-                if u == v:
+    # get user relationship matrix
+    sim_pair_dict = {}  #记录用户相关矩阵
+    for user in user_set:
+        sim_pair_dict[user] = {}
+    for i, i_users_prop in topic_user_prop.items():
+        for u_prop in i_users_prop.items():  #字典
+            u1 = u_prop[0]
+            for v_prop in i_users_prop.items():
+                u2 = v_prop[0]
+                if u1 == v_prop[0]:
                     continue
-                C[u][v] += 1
+                sim_pair_dict[u1][u2] = sim_pair_dict[u1].setdefault(u2, 0) + min(u_prop[1], v_prop[1])
 
-    #calcute final similirity matrix W
-    W = dict()
-    for u, related_users in C.items():
-        for v, cuv in related_users.items():
-            W[user_invert_dict[u]][user_invert_dict[v]] = cuv / math.sqrt(N[u] * N[v])
+    #calcute final similirity matrix W based on user matrix
+    for u, sim_prop in sim_pair_dict.items():
+        sim_pair_dict[u][sim_prop[0]] /= math.sqrt(u_total[u] * u_total[sim_prop[0]])
+    u_list, u2_list, p_list = [], [], []
 
-    return W
+    for sim in sim_pair_dict.items():
+        u_list.append(sim[0])
+        u2_list.append(sim[1][0])
+        p_list.append(sim[1][1])
+
+    if TEST_FLAG:
+        f = os.path.join(real_dir_path, 'data', 'user_sim.csv')
+        pd.DataFrame({'u1':u_list, 'u2':u2_list, 'prop':p_list}).to_csv(f, columns=('u1', 'u2', 'prop'))
+    log_cf.info('    finished get_user_topic_similarity...')
+    return sim_pair_dict
 
 
 #获取topic-user倒排表, 格式  {topic1:[uid1, uid2...], topic2:...}
@@ -195,26 +155,22 @@ def get_user_topic_similarity(users, topics, props):
     #get invert-tabel
     topic_user_dict = dict()
     for i in xrange(len(topics)):
-        if topics[i] not in topic_user_dict.keys():
-            topic_user_dict[topics[i]] = dict()
-        topic_user_dict[topics[i]][user_dict[users[i]]] = props[i]
+        topic_user_dict.setdefault(topics[i], dict())[user_dict[users[i]]] = props[i]
 
-    #get user relationship matrix
+    # get user relationship matrix
     C = dict()  #记录用户相关矩阵
     N = dict()  #记录每个用户兴趣总值, 所有probability相加
     for i, i_users_prop in topic_user_dict.items():
         for u_prop in i_users_prop.items():  #字典
-            if u_prop[0] not in N:
-                N[u_prop[0]] = 0
-            N[u_prop[0]] += u_prop[1]
+            u1 = u_prop[0]
+            if u1 not in C:
+                C[u1] = {}
+            N[u1] = N.setdefault(u1, 0) + u_prop[1]
             for v_prop in i_users_prop.items():
-                if u_prop[0] == v_prop[0]:
+                u2 = v_prop[0]
+                if u1 == v_prop[0]:
                     continue
-                if u_prop[0] not in C:
-                    C[u_prop[0]] = {}
-                if v_prop[0] not in C[u_prop[0]]:
-                    C[u_prop[0]][v_prop[0]] = 0
-                C[u_prop[0]][v_prop[0]] += min(u_prop[1], v_prop[1])  #取最小的probability作为相似值
+                C[u1][u2] = C[u1].setdefault(u2, 0) + min(u_prop[1], v_prop[1])
 
     #calcute final similirity matrix W based on user matrix
     W = dict()
@@ -224,6 +180,7 @@ def get_user_topic_similarity(users, topics, props):
                 continue
             if user_invert_dict[u] not in W:
                 W[user_invert_dict[u]] = dict()
+            W.setdefault(user_invert_dict[u], dict())
             if user_invert_dict[v] not in W[user_invert_dict[u]]:
                 W[user_invert_dict[u]][user_invert_dict[v]] = 0
             #print 'cuv = {} and sqrt = {},  {}'.format(cuv, N[u], N[v])
@@ -253,37 +210,42 @@ def get_potential_topic(user_topic_prop_dict, user_neighbours, model_v, time):
             nei_topics_prop = user_topic_prop_dict[nei]  #邻居的所有topic
             for tp in nei_topics_prop.items():  #
                 if tp[0] not in user_topic_prop_dict[u]: #原用户并没有行为的topic
-                    if tp[0] not in potential_utp_dict[u]:
-                        potential_utp_dict[u][tp[0]] = sim * tp[1]
-                    else:
-                        potential_utp_dict[u][tp[0]] += sim * tp[1]
+                    potential_utp_dict[u][tp[0]] = potential_utp_dict[u].setdefault(tp[0], 0) + sim * tp[1]
 
     user_potential_topic_sql = "insert into user_topic_cf (uid, model_v, topic_id, property, ctime) VALUES ({}, '{}', {}, {}, '{}')"
-    conn, cursor = get_postgredb()
-    for item in potential_utp_dict.items():
-        u = item[0]
-        for it in item[1].items():
-            if it[1] > 0.05:
-                cursor.execute(user_potential_topic_sql.format(u, model_v, it[0], it[1], time))
-    conn.commit()
-    conn.close()
+    if TEST_FLAG:
+        us, ts, ps = [], [], []
+        for item in potential_utp_dict:
+            us.append(item[0])
+            ts.append(item[1][0])
+            ps.append(item[1][1])
+        f = os.path.join(real_dir_path, 'data', 'final_recommend.csv')
+        pd.DataFrame({'user':us, 'topic':ts, 'prop':ps}).to_csv(f, columns=('user', 'topic', 'prop'))
+    else:
+        conn, cursor = get_postgredb()
+        for item in potential_utp_dict.items():
+            u = item[0]
+            for it in item[1].items():
+                if it[1] > 0.05:
+                    cursor.execute(user_potential_topic_sql.format(u, model_v, it[0], it[1], time))
+        conn.commit()
+        conn.close()
     log_cf.info('    finished get_potential_topic...')
 
 
-
 ################################################################################
-#整体流程
+# 整体流程
 ################################################################################
 def get_user_topic_cf():
     log_cf.info('begin to calculate user_topic_cf...')
     time = datetime.datetime.now()
-    #time_str = time.strftime('%Y-%m-%d-%H-%M-%S')
+    # time_str = time.strftime('%Y-%m-%d-%H-%M-%S')
     model_v = get_newest_topic_v()
-    #读取user-topic-property
+    # 读取user-topic-property
     user_topic_prop_dict, user_ids, topic_ids, props = coll_user_topics(model_v)
-    #计算neighbour
-    user_neighbours = cal_neignbours(user_ids, topic_ids, props, time)
-    #计算neighbour推荐的topic
+    # 计算neighbour
+    user_neighbours = cal_neignbours(user_ids, topic_ids, props)
+    # 计算neighbour推荐的topic
     get_potential_topic(user_topic_prop_dict, user_neighbours, model_v, time)
     log_cf.info("!!! calculate finished!")
 
@@ -305,7 +267,6 @@ def clear_data():
 
 
 if __name__ == '__main__':
-    #coll_click()
     coll_user_topics()
 
 
