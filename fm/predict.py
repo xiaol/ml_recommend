@@ -16,10 +16,17 @@ feedSuffix = "webapi:news:feed:uid:"
 
 def update_user_ranking_recommend(user_id, recommend_sorted_list):
     # (user id, news id, channel id, topic (日本, 旅行)) ranking score , 30
-    newsFeedCache_json = redis_ali.get(feedSuffix + str(user_id))
-    newsFeed_dict = json.loads(newsFeedCache_json)
+    news_feed_json = redis_ali.get(feedSuffix + str(user_id))
+    if not news_feed_json:
+        return
 
-    json_str = json.dumps(newsFeed_dict)
+    news_feed_list = json.loads(news_feed_json)
+
+    # rtype类型:0 普通、1 热点、2 推送、3 广告、4 专题、5 图片新闻、6 视频、7 本地
+    update_news_feed_list = [x for x in news_feed_list if x['rtype'] != 0]
+    update_news_feed_list.extend(recommend_sorted_list)
+
+    json_str = json.dumps(update_news_feed_list)
     redis_ali.set(feedSuffix + str(user_id), json_str)
 
 
@@ -33,7 +40,7 @@ if __name__ == '__main__':
         if user not in users_topic_dict:
             pass
         else:
-            item_candidates = etl_item_data.recall_candidates(users_topic_dict[user])
+            item_candidates, wilson_dict = etl_item_data.recall_candidates(user, users_topic_dict[user])
 
         user_cols = [feature] * len(item_candidates)
 
@@ -46,4 +53,7 @@ if __name__ == '__main__':
         recommend_dict = dict(zip(item_candidates.keys(), recommend_list))
         sorted_list = sorted(recommend_dict.items(), key=operator.itemgetter(1), reverse=True)
 
-        update_user_ranking_recommend(user, sorted_list)
+        recommend_items_list = []
+        for i in range(5):
+            recommend_items_list.append(wilson_dict[sorted_list[i][0]])
+        update_user_ranking_recommend(user, recommend_items_list)

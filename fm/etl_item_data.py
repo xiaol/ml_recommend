@@ -2,10 +2,11 @@
 
 from util.postgres import postgres_read_only as pg
 import datetime
+import recall_items
 
 
 # prepare the items for user recommend
-def recall_candidates(user_topic_dict):
+def recall_candidates(user_id, user_topic_dict):
     """
     :users_topic_dict: lda
 
@@ -17,14 +18,9 @@ def recall_candidates(user_topic_dict):
     str_now = nt.strftime('%Y-%m-%d %H:%M:%S')
     candidates_list = []
 
-    sql_wilson = '''
-        SELECT nid, score, stime, chid from blanknews_sortinglist 
-        ORDER by score DESC 
-    '''
-    wilson_rows = pg.query(sql_wilson.format(str_now, '1 day'))
-    # TODO if wilson is empty , you get lucky
-    wilson_list = [w[0] for w in wilson_rows]
-    candidates_list.extend(wilson_list)
+    wilson_dict = recall_items.recall_wilson_news(user_id, 10)
+    wilson_keys_list = wilson_dict.keys()
+    candidates_list.extend(wilson_keys_list)
 
     strategies_dict = enumerate_recommend_strategy()
 
@@ -40,14 +36,14 @@ def recall_candidates(user_topic_dict):
     candidates_feature_dict = load(candidates_list, topic_num=5000)
 
     for candidate_item in candidates_list:
-        copy_strategies_feature = list(strategies_dict.values())
+        copy_strategies_feature = strategies_dict.values()
         copy_strategies_feature.extend(candidates_feature_dict[candidate_item])
         candidates_feature_dict[candidate_item] = copy_strategies_feature
 
-    for wilson_item in wilson_list:
+    for wilson_item in wilson_keys_list:
         candidates_feature_dict[wilson_item][0] = 1
 
-    return candidates_feature_dict
+    return candidates_feature_dict, wilson_dict
 
 
 def enumerate_article_pname():
