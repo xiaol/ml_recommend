@@ -7,14 +7,20 @@ import etl_user_data
 import numpy as np
 import scipy.sparse as sp
 from util.postgres import postgres_write_only as pg_write
+import operator
+from util.redis_connector import redis_ali
+import json
+
+feedSuffix = "webapi:news:feed:uid:"
 
 
-def update_user_ranking_recommend():
+def update_user_ranking_recommend(user_id, recommend_sorted_list):
     # (user id, news id, channel id, topic (日本, 旅行)) ranking score , 30
-    sql_delete = '''
-        DELETE FROM news_ranking_users_fm
-    '''
-    pg_write.query(sql_delete)
+    newsFeedCache_json = redis_ali.get(feedSuffix + str(user_id))
+    newsFeed_dict = json.loads(newsFeedCache_json)
+
+    json_str = json.dumps(newsFeed_dict)
+    redis_ali.set(feedSuffix + str(user_id), json_str)
 
 
 if __name__ == '__main__':
@@ -29,8 +35,6 @@ if __name__ == '__main__':
         else:
             item_candidates = etl_item_data.recall_candidates(users_topic_dict[user])
 
-        strategies_dict = etl_item_data.enumerate_recommend_strategy()
-        feature.extend(strategies_dict.values())
         user_cols = [feature] * len(item_candidates)
 
         cols = np.hstack((user_cols, item_candidates.values()))
@@ -38,6 +42,8 @@ if __name__ == '__main__':
 
         recommend_list = als_fm.predict(feature_matrix)
         # TODO sort but keep nid...
-        sorted_list = sorted(recommend_list, reverse=True)
+        # should not change the item_candidates' order
+        recommend_dict = dict(zip(item_candidates.keys(), recommend_list))
+        sorted_list = sorted(recommend_dict.items(), key=operator.itemgetter(1), reverse=True)
 
-        update_user_ranking_recommend()
+        update_user_ranking_recommend(user, sorted_list)

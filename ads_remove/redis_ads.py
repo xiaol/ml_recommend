@@ -2,7 +2,7 @@
 # @Time    : 16/11/21 下午4:34
 # @Author  : liulei
 # @Brief   : 
-# @File    : redis.py
+# @File    : redis_connector.py
 # @Software: PyCharm Community Edition
 
 from redis import Redis
