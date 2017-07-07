@@ -15,6 +15,8 @@ from tornado import ioloop
 
 if __name__ == '__main__':
     port = int(sys.argv[1])
+    if sys.argv[2]:
+        data_process.TEST_FLAG = bool(sys.argv[2])
     http_server = tornado.httpserver.HTTPServer(tornado.web.Application())
     http_server.listen(port)  # 同时提供手工处理端口
     if port == 9949:
