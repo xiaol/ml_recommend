@@ -84,7 +84,7 @@ def coll_user_topics(model_v):
         log_cf.exception(traceback.format_exc())
 
 
-def cal_neignbours(user_ids, topic_ids, props):
+def cal_neighbours(user_ids, topic_ids, props):
     try:
         W = get_user_topic_similarity2(user_ids, topic_ids, props)
         user_neighbour_dict = dict()
@@ -95,12 +95,14 @@ def cal_neignbours(user_ids, topic_ids, props):
         log_cf.info("    cal_neighbour finished!")
         u_list, u2_list, prop = [], [], []
         for item in user_neighbour_dict.items():
-            u_list.append(item[0])
-            u2_list.append(item[1][0])
-            prop.append(item[1][1])
+            for i in item[1]:
+                u_list.append(item[0])
+                u2_list.append(i[0])
+                prop.append(i[1])
         if TEST_FLAG:
             f = os.path.join(real_dir_path, 'data', 'sorted_sim.csv')
             pd.DataFrame({'u1':u_list, 'u2':u2_list, 'prop':prop}).to_csv(f, columns=('u1', 'u2', 'prop'))
+            print '    cal_neighbours finished!'
         return user_neighbour_dict
     except:
         traceback.print_exc()
@@ -131,17 +133,21 @@ def get_user_topic_similarity2(users, topics, props):
 
     #calcute final similirity matrix W based on user matrix
     for u, sim_prop in sim_pair_dict.items():
-        sim_pair_dict[u][sim_prop[0]] /= math.sqrt(u_total[u] * u_total[sim_prop[0]])
+        for u2, u_u2_sim in sim_prop.items():
+            sim_pair_dict[u][u2] /= math.sqrt(u_total[u] * u_total[u2])
     u_list, u2_list, p_list = [], [], []
 
     for sim in sim_pair_dict.items():
-        u_list.append(sim[0])
-        u2_list.append(sim[1][0])
-        p_list.append(sim[1][1])
+        for u2, prop in sim[1].items():
+            u_list.append(sim[0])
+            u2_list.append(u2)
+            p_list.append(prop)
+        print '    finished get_user_topic_similary...'
 
     if TEST_FLAG:
         f = os.path.join(real_dir_path, 'data', 'user_sim.csv')
         pd.DataFrame({'u1':u_list, 'u2':u2_list, 'prop':p_list}).to_csv(f, columns=('u1', 'u2', 'prop'))
+        print '     finished get_user_topic_similarity...'
     log_cf.info('    finished get_user_topic_similarity...')
     return sim_pair_dict
 
@@ -221,18 +227,23 @@ def get_potential_topic(user_topic_prop_dict, user_neighbours, model_v, time):
     user_potential_topic_sql = "insert into user_topic_cf (uid, model_v, topic_id, property, ctime) VALUES ({}, '{}', {}, {}, '{}')"
     if TEST_FLAG:
         us, ts, ps = [], [], []
-        for item in potential_utp_dict:
-            us.append(item[0])
-            ts.append(item[1][0])
-            ps.append(item[1][1])
+        for item in potential_utp_dict.items():
+            for i in item[1].items():
+                us.append(item[0])
+                ts.append(i[0])
+                ps.append(i[1])
         f = os.path.join(real_dir_path, 'data', 'final_recommend.csv')
         pd.DataFrame({'user':us, 'topic':ts, 'prop':ps}).to_csv(f, columns=('user', 'topic', 'prop'))
+        print '    finished get_potential_topic...'
     else:
         conn, cursor = get_postgredb()
         for item in potential_utp_dict.items():
             u = item[0]
-            for it in item[1].items():
-                if it[1] > 0.05:
+            topic_score = item[1]
+            #sorted_topic_score = sorted(topic_score.items(), key=lambda d: d[1], reverse=True)[:30]
+            sorted_topic_score = nlargest(30, topic_score.items(), key=itemgetter(1))
+            for it in sorted_topic_score:
+                if it[1] > 0.1:
                     cursor.execute(user_potential_topic_sql.format(u, model_v, it[0], it[1], time))
         conn.commit()
         conn.close()
@@ -250,10 +261,13 @@ def get_user_topic_cf():
     # 读取user-topic-property
     user_topic_prop_dict, user_ids, topic_ids, props = coll_user_topics(model_v)
     # 计算neighbour
-    user_neighbours = cal_neignbours(user_ids, topic_ids, props)
+    user_neighbours = cal_neighbours(user_ids, topic_ids, props)
     # 计算neighbour推荐的topic
     get_potential_topic(user_topic_prop_dict, user_neighbours, model_v, time)
-    log_cf.info("!!! calculate finished!")
+    if TEST_FLAG:
+        print "!!! calcute finished!"
+    else:
+        log_cf.info("!!! calculate finished!")
 
 
 clear_sql = "delete from user_topic_cf where ctime < now() - interval '1 day'"
