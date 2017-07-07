@@ -50,7 +50,7 @@ def coll_user_topics(model_v):
     else:
         user_topic_prop_sql = '''select uid, topic_id, probability from user_topics_v2 
                              where model_v = '{}' and uid != 0 and 
-                             create_time > now() - interval '2 day' '''
+                             create_time > now() - interval '3 day' '''
 
     try:
         log_cf.info('    coll_user_topics begin ...')
@@ -91,7 +91,7 @@ def cal_neighbours(user_ids, topic_ids, props):
         for it in W.items():  #save every user's
             master = it[0]
             sims_dict = it[1]
-            user_neighbour_dict[master] = nlargest(30, sims_dict.iteritems(), key=itemgetter(1))
+            user_neighbour_dict[master] = nlargest(50, sims_dict.iteritems(), key=itemgetter(1))
         log_cf.info("    cal_neighbour finished!")
         u_list, u2_list, prop = [], [], []
         for item in user_neighbour_dict.items():
