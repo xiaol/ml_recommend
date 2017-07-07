@@ -18,6 +18,13 @@ import psycopg2
 import traceback
 from bs4 import BeautifulSoup
 import socket
+import jieba.posseg
+
+real_dir_path = os.path.split(os.path.realpath(__file__))[0] #文件所在路径
+net_words_file = real_dir_path + '/networds.txt'
+stop_words_file = real_dir_path + '/stopwords.txt'
+stopwords = {}.fromkeys([line.rstrip() for line in open(stop_words_file)]) #utf-8
+jieba.load_userdict(net_words_file)
 
 sentence_delimiters = ['?', '!', ';', '？', '！', '。', '；', '……', '…', '\n']
 question_delimiters = [u'?', u'？']
@@ -108,16 +115,11 @@ def get_file_real_path():
 def get_file_real_dir_path():
     return os.path.split(os.path.realpath(__file__))[0]
 
-real_dir_path = os.path.split(os.path.realpath(__file__))[0] #文件所在路径
-net_words_file = real_dir_path + '/networds.txt'
-stop_words_file = real_dir_path + '/stopwords.txt'
-stopwords = {}.fromkeys([line.rstrip() for line in open(stop_words_file)]) #utf-8
 stopwords_set = set(stopwords)
 #去除html标签及停用词
 def remove_html_and_stopwords(str):
     #删除html标签
     txt_no_html = filter_tags(str)
-    jieba.load_userdict(net_words_file)
     words = jieba.cut(txt_no_html)  #unicode is returned
     final_words = []
     for w in words:
@@ -144,8 +146,6 @@ def filter_html_stopwords_pos(str, remove_num=False, remove_single_word=False, r
         txt_no_html = filter_tags(str)
     else:
         txt_no_html = str
-    import jieba.posseg
-    jieba.load_userdict(net_words_file)
     words = jieba.posseg.cut(txt_no_html)  #unicode is returned
     words_filter = filterPOS2(words, POS)
     final_words = []
@@ -180,7 +180,6 @@ def filter_html_stopwords_pos(str, remove_num=False, remove_single_word=False, r
 def jieba_extract_keywords(str, K):
     #删除html标签
     txt_no_html = filter_tags(str)
-    jieba.load_userdict(net_words_file)
     jieba.analyse.set_stop_words(stop_words_file)
     words = jieba.analyse.extract_tags(txt_no_html, K)
     return words
@@ -353,7 +352,6 @@ allow_pos = ('a', 'n', 'v', 'eng', 's', 't', 'i', 'j', 'l', 'z')
 def cut_pos_jieba(doc, topK = 20):
     s = ''.join(doc.split())
     s = filter_tags(s)
-    jieba.load_userdict(net_words_file)
     jieba.analyse.set_stop_words(stop_words_file)
     tags = jieba.analyse.extract_tags(s, topK=topK, withWeight=False, allowPOS=allow_pos)
     return ' '.join(tags).encode('utf-8')
@@ -403,7 +401,9 @@ allow_pos_ltp = ('a', 'i', 'j', 'n', 'nh', 'ni', 'nl', 'ns', 'nt', 'nz', 'v', 'w
 def cut_pos_ltp(doc, filter_pos = True, allow_pos = allow_pos_ltp, remove_tags=True, return_str=True):
     s = ''.join(doc.split())  #去除空白符
     if remove_tags:
-        s = filter_tags(s)  #去除html标签
+        soup = BeautifulSoup(s, 'lxml')
+        s = soup.get_text()
+        #s = filter_tags(s)  #去除html标签
     words = segmentor.segment(s)
 
     words2 = []
