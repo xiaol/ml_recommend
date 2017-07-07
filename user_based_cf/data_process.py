@@ -43,9 +43,15 @@ def get_newest_topic_v():
 
 def coll_user_topics(model_v):
     # uid=0是旧版app,没有确切的uid。所有旧版app的使用者的id都是0
-    user_topic_prop_sql = '''select uid, topic_id, probability from user_topics_v2 
-                         where model_v = '{}' and uid != 0 and 
-                         create_time > now() - interval '0.1 day' '''
+    if TEST_FLAG:
+        user_topic_prop_sql = '''select uid, topic_id, probability from user_topics_v2 
+                             where model_v = '{}' and uid != 0 and 
+                             create_time > now() - interval '10 minute' '''
+    else:
+        user_topic_prop_sql = '''select uid, topic_id, probability from user_topics_v2 
+                             where model_v = '{}' and uid != 0 and 
+                             create_time > now() - interval '2 day' '''
+
     try:
         log_cf.info('    coll_user_topics begin ...')
         conn, cursor = get_postgredb_query()
