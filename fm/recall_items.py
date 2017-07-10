@@ -7,7 +7,7 @@ def recall_wilson_news(user_id, limit):
     dayWindow3 = " now()-interval'3 day' "
     table_name = "newsrecommendread_" + str(user_id % 100)
     condition = " and nv.chid != 28 and nv.state=0 and (nv.rtype is null  or nv.rtype=0) "
-    select = "nv.nid, nv.docid, nv.title, nv.pname, nv.ptime, nv.purl, nv.chid, nv.collect, nv.concern, nv.un_concern, nv.comment, nv.style, array_to_string(nv.imgs, ',') as imgs,  nv.icon, nv.videourl, nv.duration, nv.thumbnail, nv.clicktimes, array_to_string(coalesce(nv.tags,'{}'),',') as tags "
+    select = "nv.nid, nv.docid, nv.title, nv.pname, nv.ptime, nv.purl, nv.chid, nv.collect, nv.concern, nv.un_concern, nv.comment, nv.style, nv.imgs,  nv.icon, nv.videourl, nv.duration, nv.thumbnail, nv.clicktimes, nv.tags"
 
     sql = '''
       select {select}, 0 as rtype, 0 as logtype

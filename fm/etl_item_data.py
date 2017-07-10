@@ -18,7 +18,7 @@ def recall_candidates(user_id, user_topic_dict):
     str_now = nt.strftime('%Y-%m-%d %H:%M:%S')
     candidates_list = []
 
-    wilson_dict = recall_items.recall_wilson_news(user_id, 10)
+    wilson_dict = recall_items.recall_wilson_news(user_id, 3000)
     wilson_keys_list = wilson_dict.keys()
     candidates_list.extend(wilson_keys_list)
 

@@ -21,8 +21,8 @@ def construct_feature_matrix(topic_num):
         user_extractor.load(active_users, topic_num, '15 days')
 
     # uid nid readtime logtype logchid
-    read_samples_list = etl_sample.get_read_samples(active_users, '1 hour')
-    click_samples_list = etl_sample.get_click_samples(active_users, '1 hour')
+    read_samples_list = etl_sample.get_read_samples(active_users, '3 days')
+    click_samples_list = etl_sample.get_click_samples(active_users, '3 days')
 
     items_list = [read_sample[1] for read_sample in read_samples_list]
     items_list.extend([click_sample[1] for click_sample in click_samples_list])
