@@ -2,7 +2,7 @@
 
 import os
 import sys
-path = os.path.abspath(os.path.abspath(__file__))
+path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(path)
 
 from util.postgres import postgres_read_only as pg
