@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 16/12/1 下午5:23
 # @Author  : liulei
-# @Brief   : 
+# @Brief   : 为topic model的训练提供数据
 # @File    : topic_model_doc_process.py
 # @Software: PyCharm Community Edition
 import os
@@ -12,20 +12,12 @@ real_dir_path = os.path.split(os.path.realpath(__file__))[0]
 logger_prep = logger.Logger('lda_preprocess', os.path.join(real_dir_path,  'log/log_preprocess.txt'))
 
 total_topic_num = 500000
-channel_for_topic = ['科技', '外媒', '社会', '财经', '体育', '汽车', '国际', '时尚', '探索', '科学',
-                     '娱乐', '养生', '育儿', '股票', '互联网', '美食', '健康', '影视', '军事', '历史',
-                     '故事', '旅游', '美文', '萌宠', '游戏']
-channel_for_topic = ['科技', '社会', '财经', '体育', '汽车', '国际']
-channel_for_topic = ['体育', '社会', '科技', '国际', '娱乐']
 channel_for_topic_dict = {'6':'体育', '2':'社会', '4':'科技', '9':'国际', '3':'娱乐'}
 #需要进行额外判断新闻topic的频道,这些频道最终使用channel_for_topic的model进行预测
 extra_channel_for_topic = ['点集', '自媒体']
-
 channel_for_topic = ['科技', '外媒', '社会', '财经', '体育', '汽车', '国际', '时尚', '探索', '科学',
                      '娱乐', '养生', '育儿', '股票', '互联网', '美食', '健康', '影视', '军事', '历史',
                      '故事', '旅游', '美文', '萌宠', '游戏']
-#channel_topic_dict = {'科技': 300, '外媒': 200, '社会':500, '财经':100, '汽车':200, '国际':300,
-#'时尚':200, '探索':}
 
 
 channle_sql ='SELECT a.title,a.content, a.nid, c.cname \
@@ -53,7 +45,7 @@ def collectNews(category, news_num, min_len=100):
         total_list = doc_process.filter_html_stopwords_pos(total_txt, remove_num=True, remove_single_word=True)
         if len(total_list) < min_len:
             continue
-        #根据tfidf进行二次筛选
+        #根据tfidf进行二次筛选, 没篇新闻保留了50个关键字,使训练速度加快； 以后可以放开
         total_list = doc_process.jieba_extract_keywords(' '.join(total_list), min(50, len(total_list)/5))
         with open(real_dir_path+'/data/'+category, 'a') as f:
             for w in total_list:
