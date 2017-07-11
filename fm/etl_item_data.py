@@ -63,7 +63,7 @@ def enumerate_article_editor_rank():
 def enumerate_recommend_strategy():
     # strategy = {'hot': 0, 'recommend': 1, 'wilson': 2, 'editor': 3, 'other': 4}
     logtype = {'wilson': 0, 'topic collection': 4, 'slide image news': 5, 'video': 6,
-               'local news': 7, 'channel hotnews': 13, 'baidu keyword': 11, 'comment news': 12,
+               'local news': 7, 'channel hotnews': 13, 'baidu keyword': 11, 'comment news': 12, 'hotnews': 14,
                'lda': 21, 'kmeans': 22, 'editor chosen hot news': 23, 'editor': 24,
                'big image news': 25, 'related images':26, 'CF': 27, 'news in comment center': 28,
                'channel big image news': 29, 'news in topic': 41, 'top rank': 100, }

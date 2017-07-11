@@ -1,6 +1,7 @@
 # coding: utf-8
 from psycopg2 import pool
 import psycopg2.extras
+from conf import DEBUG
 
 __author__ = "Laite Sun"
 __copyright__ = "Copyright 2016-2019, ShangHai Lie Ying"
@@ -75,6 +76,9 @@ class Postgres(object):
         connection = self.pool.getconn()
         cur = connection.cursor()
         return connection, cur
+if DEBUG:
+    postgres_read_only = Postgres()
+else:
+    postgres_read_only = Postgres(db_host='10.47.54.175')
 
-postgres_read_only = Postgres()
-postgres_write_only = Postgres(db_host="120.27.163.25")
+# postgres_write_only = Postgres(db_host="120.27.163.25")

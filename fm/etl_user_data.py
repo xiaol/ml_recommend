@@ -118,9 +118,13 @@ class UserExtractor(object):
 
     feature_brand_dict = {}
 
+    def preprocess_users_feature(self, all_users):
+        self.feature_brand_dict = enumerate_user_brand(all_users)
+
     def load(self, active_users, topic_num, topic_time_interval):
         users_feature_dict = {}
         if not self.feature_brand_dict:
+            print 'Warning-----user brand dict init online---'
             self.feature_brand_dict = enumerate_user_brand(active_users)
         # Many users don't have device features, so need to initialize the feature dicts.
         for user in active_users:
@@ -132,14 +136,15 @@ class UserExtractor(object):
         for user_detail in users_detail:
             # feature vector: brand platform, os, os_version,
             # device_size, network, ctype, province, city, area, user_history_topic, user_history_kmeans
-            copy_feature_brand_dict = self.feature_brand_dict.copy()
+            for k, v in self.feature_brand_dict.iteritems():
+                self.feature_brand_dict[k] = 0
 
             if not user_detail:
-                users_feature_dict[user_detail[0]] = copy_feature_brand_dict.values()
+                users_feature_dict[user_detail[0]] = self.feature_brand_dict.values()
                 continue
 
-            copy_feature_brand_dict[user_detail[1]] = 1
-            users_feature_dict[user_detail[0]] = copy_feature_brand_dict.values()
+            self.feature_brand_dict[user_detail[1]] = 1
+            users_feature_dict[user_detail[0]] = self.feature_brand_dict.values()
 
             users_detail_dict[user_detail[0]] = user_detail[1:]
         '''

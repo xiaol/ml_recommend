@@ -44,16 +44,22 @@ def get_read_samples(active_users, time_interval):
     return read_samples
 
 
+class SampleExtractor(object):
+    time_dict = dict((i, 0) for i in range(24))
+
+    def generate_time_feature(self, timestamp):
+        for k, v in self.time_dict.iteritems():
+            self.time_dict[k] = 0
+        self.time_dict[timestamp.hour] = 1
+        return self.time_dict.values()
+
+sampleExtractor = SampleExtractor()
+
+
 def news_recommend_read_helper(active_users):
     return active_users
 
 
-def news_recommend_click():
-    pass
-
-
-def transform():
-    pass
-
 if __name__ == '__main__':
+    time_feature = sampleExtractor.generate_time_feature('2017-7-11 16:30:21')
     print "hold"

@@ -6,7 +6,6 @@ import etl_item_data
 import etl_user_data
 import numpy as np
 import scipy.sparse as sp
-from util.postgres import postgres_write_only as pg_write
 import operator
 from util.redis_connector import redis_ali
 import json
@@ -19,9 +18,8 @@ feedSuffix = "webapi:news:feed:uid:"
 def update_user_ranking_recommend(user_id, recommend_sorted_list):
     # (user id, news id, channel id, topic (日本, 旅行)) ranking score , 30
     news_feed_json = redis_ali.get(feedSuffix + str(user_id))
-    if not news_feed_json:
-        news_feed_list = []
-    else:
+    news_feed_list = []
+    if news_feed_json:
         news_feed_list = json.loads(news_feed_json)
 
     # rtype类型:0 普通、1 热点、2 推送、3 广告、4 专题、5 图片新闻、6 视频、7 本地
@@ -36,12 +34,8 @@ def update_user_ranking_recommend(user_id, recommend_sorted_list):
     redis_ali.set(feedSuffix + str(user_id), json_str, ex=60*30)
 
 
-def get_user_candidates():
-    redis_ali.get("something")
-    return []
-
 if __name__ == '__main__':
-    als_fm = als_solver.train()
+    als_fm = als_solver.train(time_interval='1 hour')
     # recall must behind train
     users_feature_dict, users_detail_dict, users_topic_dict = \
         etl_user_data.recall_candidates(boolean_users=True, users_para=[33658617])
