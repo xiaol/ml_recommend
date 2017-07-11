@@ -37,7 +37,7 @@ def update_user_ranking_recommend(user_id, recommend_sorted_list):
 
 
 if __name__ == '__main__':
-    als_fm = als_solver.train(time_interval='1 hour')
+    als_fm, X_and_y = als_solver.train(time_interval='1 hour')
     # recall must behind train
     users_feature_dict, users_detail_dict, users_topic_dict = \
         etl_user_data.recall_candidates(boolean_users=True, users_para=[33658617])
