@@ -10,31 +10,51 @@ from util.postgres import postgres_write_only as pg_write
 import operator
 from util.redis_connector import redis_ali
 import json
+from news import News
+import random
 
 feedSuffix = "webapi:news:feed:uid:"
 
 
 def update_user_ranking_recommend(user_id, recommend_sorted_list):
     # (user id, news id, channel id, topic (日本, 旅行)) ranking score , 30
-    newsFeedCache_json = redis_ali.get(feedSuffix + str(user_id))
-    newsFeed_dict = json.loads(newsFeedCache_json)
+    news_feed_json = redis_ali.get(feedSuffix + str(user_id))
+    if not news_feed_json:
+        news_feed_list = []
+    else:
+        news_feed_list = json.loads(news_feed_json)
 
-    json_str = json.dumps(newsFeed_dict)
-    redis_ali.set(feedSuffix + str(user_id), json_str)
+    # rtype类型:0 普通、1 热点、2 推送、3 广告、4 专题、5 图片新闻、6 视频、7 本地
+    update_news_feed_list = [x for x in news_feed_list if x['rtype'] != 0]
+    for item in recommend_sorted_list:
+        News.format_news(item)
+        if random.choice([True, False]):  # need rtype more then one class
+            item['rtype'] = 1
+    update_news_feed_list.extend(recommend_sorted_list)
 
+    json_str = json.dumps(recommend_sorted_list,ensure_ascii=False)
+    redis_ali.set(feedSuffix + str(user_id), json_str, ex=60*30)
+
+
+def get_user_candidates():
+    redis_ali.get("something")
+    return []
 
 if __name__ == '__main__':
     als_fm = als_solver.train()
     # recall must behind train
     users_feature_dict, users_detail_dict, users_topic_dict = \
-        etl_user_data.recall_candidates(boolean_test_users=True)
+        etl_user_data.recall_candidates(boolean_users=True, users_para=[33658617])
 
     for user, feature in users_feature_dict.iteritems():
         if user not in users_topic_dict:
             pass
         else:
-            item_candidates = etl_item_data.recall_candidates(users_topic_dict[user])
+            item_candidates, wilson_dict = etl_item_data.recall_candidates(user, users_topic_dict[user])
 
+        if len(item_candidates) == 0:
+            print '------------------wilson is empty-----'
+            continue
         user_cols = [feature] * len(item_candidates)
 
         cols = np.hstack((user_cols, item_candidates.values()))
@@ -46,4 +66,7 @@ if __name__ == '__main__':
         recommend_dict = dict(zip(item_candidates.keys(), recommend_list))
         sorted_list = sorted(recommend_dict.items(), key=operator.itemgetter(1), reverse=True)
 
-        update_user_ranking_recommend(user, sorted_list)
+        recommend_items_list = []
+        for i in range(len(sorted_list)):
+            recommend_items_list.append(wilson_dict[sorted_list[i][0]])
+        update_user_ranking_recommend(user, recommend_items_list[:20])

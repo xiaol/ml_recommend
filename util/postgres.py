@@ -1,5 +1,6 @@
 # coding: utf-8
 from psycopg2 import pool
+import psycopg2.extras
 
 __author__ = "Laite Sun"
 __copyright__ = "Copyright 2016-2019, ShangHai Lie Ying"
@@ -35,6 +36,19 @@ class Postgres(object):
         rows = list()
         try:
             cursor = connection.cursor()
+            cursor.execute(sql)
+            rows = cursor.fetchall()
+        except Exception, e:
+            connection.rollback()
+        finally:
+            self.pool.putconn(connection)
+        return rows
+
+    def query_dict_cursor(self, sql):
+        connection = self.pool.getconn()
+        rows = list()
+        try:
+            cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
             cursor.execute(sql)
             rows = cursor.fetchall()
         except Exception, e:

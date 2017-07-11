@@ -4,7 +4,7 @@ from util.postgres import postgres_read_only as pg
 import datetime
 
 
-# TODO should cover unread users for cold start
+# TODO should cover only read  but not click users for cold start
 def get_active_user(time_interval='1 day', click_times=1):
     nt = datetime.datetime.now()
     str_now = nt.strftime('%Y-%m-%d %H:%M:%S')
@@ -18,9 +18,9 @@ def get_active_user(time_interval='1 day', click_times=1):
     return a_users
 
 
-def recall_candidates(boolean_test_users=False):
-    if boolean_test_users:
-        users = [33658617]
+def recall_candidates(boolean_users=True,  users_para=[33658617]):
+    if boolean_users:
+        users = users_para
     else:
         users = get_active_user('5 minutes')
 
