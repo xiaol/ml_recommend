@@ -32,7 +32,7 @@ def construct_feature_matrix(topic_num, time_interval='10 seconds'):
         users_feature_dict.update(users_feature_dict_split); users_detail_dict.update(users_detail_dict_split); users_topic_dict.update(users_topic_dict_split)
 
         # uid nid readtime logtype logchid
-        read_samples_list_split = etl_sample.get_read_samples(splited_users, '30 minutes')
+        read_samples_list_split = etl_sample.get_read_samples(splited_users, '1 hour')
         click_samples_list_split = etl_sample.get_click_samples(splited_users, '12 hours')
         read_samples_list.extend(read_samples_list_split); click_samples_list.extend(click_samples_list_split)
 
@@ -97,7 +97,7 @@ def get_samples_feature(read_samples_list, users_feature_dict, items_feature_dic
             strategies_dict[k] = 0
 
         if read_sample[3] not in strategies_dict:
-            print 'Unknown logtype: ', read_sample[3]
+            print 'Unknown logtype: ', read_sample[3],
             continue
         strategies_dict[read_sample[3]] = 1
 
@@ -126,7 +126,7 @@ def get_positive_sample_feature(click_samples_list, samples_feature_dict,
             strategies_dict[k] = 0
 
         if click_sample[4] not in strategies_dict:
-            print 'Unknown logtype ', click_sample[4]
+            print 'Unknown logtype ', click_sample[4],
             continue
         strategies_dict[click_sample[4]] = 1
 

@@ -71,7 +71,7 @@ def predict(time_interval='10 seconds'):
         recommend_items_list = []
         for i in range(len(sorted_list)):
             recommend_items_list.append(wilson_dict[sorted_list[i][0]])
-        update_user_ranking_recommend(user, recommend_items_list[:20])
+        update_user_ranking_recommend(user, recommend_items_list[:55])
 
 
 if __name__ == '__main__':
