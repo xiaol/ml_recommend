@@ -16,6 +16,7 @@ import datetime
 import time
 import argparse
 
+
 feedSuffix = "webapi:news:feed:uid:"
 
 
@@ -78,8 +79,17 @@ if __name__ == '__main__':
     parser.add_argument('--t', metavar='path', required=True,
                         help='time interval for retrieve usees')
     args = parser.parse_args()
+    sleep_time = 60*60
 
     while True:
+        st = time.time()
         predict(args.t)
-        time.sleep(60*60)
-        print 'Wake up allen, allen wake up.'
+        end = time.time()
+        elapse = end - st
+        print 'Allen Wake, you have ' + str(elapse) + ' seconds to run.'
+        if elapse > sleep_time:
+            print 'allen, you have a long dream. Wake up.'
+            continue
+        else:
+            time.sleep(sleep_time - elapse)
+            print 'Wake up allen, allen wake up.'
