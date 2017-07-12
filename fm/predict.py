@@ -13,8 +13,7 @@ import json
 from news import News
 import random
 import datetime
-
-
+import time
 
 feedSuffix = "webapi:news:feed:uid:"
 
@@ -39,36 +38,42 @@ def update_user_ranking_recommend(user_id, recommend_sorted_list):
 
 
 if __name__ == '__main__':
-    als_fm, X_and_y = als_solver.train(time_interval='10 minutes')
-    # recall must behind train
-    users_feature_dict, users_detail_dict, users_topic_dict = \
-        etl_user_data.recall_candidates(boolean_users=True, users_para=[33658617])
 
-    for user, feature in users_feature_dict.iteritems():
-        if user not in users_topic_dict:
-            pass
-        else:
-            item_candidates, wilson_dict = etl_item_data.recall_candidates(user, users_topic_dict[user])
+    while True:
+        als_fm, X_and_y = als_solver.train(time_interval='10 seconds')
+        # recall must behind train
+        users_feature_dict, users_detail_dict, users_topic_dict = \
+            etl_user_data.recall_candidates(boolean_users=True, users_para=[33658617])
 
-        if len(item_candidates) == 0:
-            print '------------------wilson is empty-----'
-            continue
+        for user, feature in users_feature_dict.iteritems():
+            if user not in users_topic_dict:
+                pass
+            else:
+                item_candidates, wilson_dict = etl_item_data.recall_candidates(user, users_topic_dict[user])
 
-        nt = datetime.datetime.now()
-        feature.extend(etl_sample.sampleExtractor.generate_time_feature(nt))
+            if len(item_candidates) == 0:
+                print '------------------wilson is empty-----'
+                continue
 
-        user_cols = [feature] * len(item_candidates)
+            nt = datetime.datetime.now()
+            feature.extend(etl_sample.sampleExtractor.generate_time_feature(nt))
 
-        cols = np.hstack((user_cols, item_candidates.values()))
-        feature_matrix = sp.csc_matrix(cols)
+            user_cols = [feature] * len(item_candidates)
 
-        recommend_list = als_fm.predict(feature_matrix)
-        # TODO sort but keep nid...
-        # should not change the item_candidates' order
-        recommend_dict = dict(zip(item_candidates.keys(), recommend_list))
-        sorted_list = sorted(recommend_dict.items(), key=operator.itemgetter(1), reverse=True)
+            cols = np.hstack((user_cols, item_candidates.values()))
+            feature_matrix = sp.csc_matrix(cols)
 
-        recommend_items_list = []
-        for i in range(len(sorted_list)):
-            recommend_items_list.append(wilson_dict[sorted_list[i][0]])
-        update_user_ranking_recommend(user, recommend_items_list[:20])
+            recommend_list = als_fm.predict(feature_matrix)
+            # TODO sort but keep nid...
+            # should not change the item_candidates' order
+            recommend_dict = dict(zip(item_candidates.keys(), recommend_list))
+            sorted_list = sorted(recommend_dict.items(), key=operator.itemgetter(1), reverse=True)
+
+            recommend_items_list = []
+            for i in range(len(sorted_list)):
+                recommend_items_list.append(wilson_dict[sorted_list[i][0]])
+            update_user_ranking_recommend(user, recommend_items_list[:20])
+
+        break
+        time.sleep(60*60)
+        print 'Wake up allen, allen wake up.'

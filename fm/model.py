@@ -8,8 +8,11 @@ import etl_user_data
 import etl_sample
 import numpy as np
 import scipy.sparse as sp
+from memory_profiler import profile
+import gc
 
 
+@profile
 def construct_feature_matrix(topic_num, time_interval='10 seconds'):
     """
     :param topic_num:  the number of lda topics
@@ -46,10 +49,33 @@ def construct_feature_matrix(topic_num, time_interval='10 seconds'):
                         click_samples_list, read_samples_feature_dict,
                         users_feature_dict, items_feature_dict)
 
-    cols = np.array([list(t) for t in features_dict.keys()])
-    feature_matrix = sp.csc_matrix(cols)
+    print 'features dict complete'
+    feature_list = features_dict.keys()  # feature list contains tuples
     y_samples = np.array(features_dict.values())
 
+    # import objgraph
+    # objgraph.show_refs([feature_list], filename='ref_topo.png')
+
+    del items_feature_dict
+    del read_samples_feature_dict
+    del features_dict
+    del read_samples_list
+    del click_samples_list
+    del items_list
+    del users_feature_dict_split
+    del users_detail_dict_split
+    del users_topic_dict_split
+    del users_feature_dict
+    del users_detail_dict
+    del users_topic_dict
+    del active_users
+
+    cols = np.array(feature_list, copy=False)
+    del feature_list
+    gc.collect()
+
+    print '-> compressed to matrix'
+    feature_matrix = sp.csc_matrix(cols)
     return feature_matrix, y_samples
 
 
@@ -70,7 +96,7 @@ def get_samples_feature(read_samples_list, users_feature_dict, items_feature_dic
             strategies_dict[k] = 0
 
         if read_sample[3] not in strategies_dict:
-            print 'Unknown logtype ', read_sample[3]
+            print 'Unknown logtype: ', read_sample[3]
             continue
         strategies_dict[read_sample[3]] = 1
 
@@ -117,5 +143,5 @@ def get_positive_sample_feature(click_samples_list, samples_feature_dict,
 
 
 if __name__ == '__main__':
-    X, y = construct_feature_matrix(5000)
+    X, y = construct_feature_matrix(5000, '10 seconds')
     print "hold"
