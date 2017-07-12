@@ -8,23 +8,25 @@ from sklearn.metrics import mean_squared_error
 from model import construct_feature_matrix
 
 
-def train_model(x_train, y_train):
-    fm = als.FMRegression(n_iter=1000, init_stdev=0.1, rank=2, l2_reg_w=0.1, l2_reg_V=0.5)
+def train_model(x_train, y_train, n_iter,
+                init_stdev=0.1, rank=2, l2_reg_w=0.1, l2_reg_V=0.5):
+    fm = als.FMRegression(n_iter=n_iter, init_stdev=init_stdev, rank=rank, l2_reg_w=l2_reg_w, l2_reg_V=l2_reg_V)
     fm.fit(x_train, y_train)
     return fm
 
 
-def train():
-    X, y = construct_feature_matrix(5000)
-    X_train, X_test, y_train, y_test = train_test_split(X, y)
+def train(n_iter=1000, time_interval='1 hour',
+          init_stdev=0.1, rank=2, l2_reg_w=0.1, l2_reg_V=0.5,
+          test_size=0.33, random_state=42):
+    X, y = construct_feature_matrix(5000, time_interval=time_interval)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
 
-    als_fm = train_model(X_train, y_train)
+    als_fm = train_model(X_train, y_train, n_iter, init_stdev=init_stdev, rank=rank, l2_reg_w=l2_reg_w, l2_reg_V=l2_reg_V)
     y_pred = als_fm.predict(X_test)
 
-    print y_pred
-
+    #print y_pred
     print 'mse:', mean_squared_error(y_test, y_pred)
-    return als_fm
+    return als_fm, (X_train, y_train, X_test, y_test)
 
 
 if __name__ == '__main__':

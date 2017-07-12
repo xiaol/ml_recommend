@@ -2,7 +2,7 @@
 # @Time    : 16/12/19 下午1:50
 # @Author  : liulei
 # @Brief   :
-# @File    : test.py
+# @File    : some_test.py
 # @Software: PyCharm Community Edition
 #from util import doc_process
 from sim_hash import sim_hash

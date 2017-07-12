@@ -10,8 +10,7 @@ __license__ = "Private"
 __email__ = "sunlt@lieying.cn"
 __date__ = "2017-03-1 15:05"
 
-DEBUG = True
-
+from conf import DEBUG
 REDIS_URL = 'redis://ccd827d637514872:LYcache2015' \
             '@ccd827d637514872.m.cnhza.kvstore.aliyuncs.com:6379'
 

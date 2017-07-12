@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+import os
+import sys
+path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(path)
+
 from util.postgres import postgres_read_only as pg
 
 
@@ -27,6 +32,17 @@ def recall_wilson_news(user_id, limit):
         wilson_dict[w['nid']]['ptime'] = str(wilson_dict[w['nid']]['ptime'])
     return wilson_dict
     # TODO if wilson is empty , you get lucky
+
+def recall_lda(user_id, limit):
+    pass
+
+
+def recall_kmeans(user_id, limit):
+    pass
+
+
+def recall_hotnews(user_id, limit):
+    pass
 
 
 if __name__ == '__main__':
