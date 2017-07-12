@@ -28,10 +28,9 @@ def update_user_ranking_recommend(user_id, recommend_sorted_list):
 
     # rtype类型:0 普通、1 热点、2 推送、3 广告、4 专题、5 图片新闻、6 视频、7 本地
     update_news_feed_list = [x for x in news_feed_list if x['rtype'] != 0]
-    for item in recommend_sorted_list:
+    for item,i in zip(recommend_sorted_list, range(len(recommend_sorted_list))):
         News.format_news(item)
-        if random.choice([True, False]):  # need rtype more then one class
-            item['rtype'] = 1
+        item['rtype'] = i % 2
     update_news_feed_list.extend(recommend_sorted_list)
 
     json_str = json.dumps(recommend_sorted_list,ensure_ascii=False)
@@ -71,7 +70,7 @@ def predict(time_interval='10 seconds'):
         recommend_items_list = []
         for i in range(len(sorted_list)):
             recommend_items_list.append(wilson_dict[sorted_list[i][0]])
-        update_user_ranking_recommend(user, recommend_items_list[:55])
+        update_user_ranking_recommend(user, recommend_items_list[:200])
 
 
 if __name__ == '__main__':
@@ -82,6 +81,5 @@ if __name__ == '__main__':
 
     while True:
         predict(args.t)
-        break
         time.sleep(60*60)
         print 'Wake up allen, allen wake up.'
