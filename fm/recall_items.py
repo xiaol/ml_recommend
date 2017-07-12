@@ -5,6 +5,7 @@ path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(path)
 
 from util.postgres import postgres_read_only as pg
+from collections import OrderedDict
 
 
 def recall_wilson_news(user_id, limit):
@@ -26,7 +27,7 @@ def recall_wilson_news(user_id, limit):
     sql = sql.format(select=select, tablename=table_name, uid=user_id, readtime=dayWindow1,
                createtime=dayWindow1, condition=condition, limit=limit)
     wilson_rows = pg.query_dict_cursor(sql)
-    wilson_dict = {}
+    wilson_dict = OrderedDict()
     for w in wilson_rows:
         wilson_dict[w['nid']] = dict(w)
         wilson_dict[w['nid']]['ptime'] = str(wilson_dict[w['nid']]['ptime'])

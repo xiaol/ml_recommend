@@ -6,7 +6,7 @@ sys.path.append(path)
 
 from util.postgres import postgres_read_only as pg
 import datetime
-
+from collections import OrderedDict
 
 def get_click_samples(active_users, time_interval):
     nt = datetime.datetime.now()
@@ -49,7 +49,7 @@ def get_read_samples(active_users, time_interval):
 
 
 class SampleExtractor(object):
-    time_dict = dict((i, 0) for i in range(24))
+    time_dict = OrderedDict((i, 0) for i in range(24))
 
     def generate_time_feature(self, timestamp):
         for k, v in self.time_dict.iteritems():

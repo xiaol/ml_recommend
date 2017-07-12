@@ -130,7 +130,7 @@ def get_kmeans(items_list):
 
 
 def load(items_list, topic_num):
-    items_feature_dict = {}
+    items_feature_dict = OrderedDict()
     feature_topic_vector = enumerate_item_topics(topic_num)
 
     for item in items_list:

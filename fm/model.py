@@ -11,6 +11,7 @@ import scipy.sparse as sp
 from memory_profiler import profile
 import gc
 
+from collections import OrderedDict
 
 
 @profile
@@ -89,7 +90,7 @@ def chunks(l, n):
 
 def get_samples_feature(read_samples_list, users_feature_dict, items_feature_dict):
     strategies_dict = etl_item_data.item_extractor.enumerate_recommend_strategy()
-    read_feature_dict = {}
+    read_feature_dict = OrderedDict()
 
     for read_sample in read_samples_list:
         if read_sample[0] not in users_feature_dict:
