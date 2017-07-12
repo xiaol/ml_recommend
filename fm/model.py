@@ -77,7 +77,7 @@ def construct_feature_matrix(topic_num, time_interval='10 seconds'):
     del feature_list
     gc.collect()
 
-    print '-> compressed to matrix'
+    print '-> compressed to matrix:'
     feature_matrix = sp.csc_matrix(cols)
     return feature_matrix, y_samples
 

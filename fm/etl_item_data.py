@@ -96,16 +96,20 @@ def enumerate_article_attribute(attribute_name):
 
 
 def enumerate_kmeans():
-    save()  # save for explanation
+
+    chnl_k_dict = {'财经':20, '股票':10, '故事':20, '互联网':20, '健康':50, '军事':20,
+               '科学':20, '历史':30, '旅游':20, '美食':20, '美文':20, '萌宠':10,
+               '汽车':30, '时尚':10, '探索':10, '外媒':30, '养生':30, '影视':10,
+               '游戏':30, '育儿':20,'体育':20, '娱乐':20, '社会':20,'科技':12,
+               '国际':5, '美女': 1, '搞笑': 1, '趣图':1, '风水玄学':10, '本地':20,
+               '自媒体':80, '奇闻':10}
+
 
 
 def enumerate_item_topics(topic_num):
     topic_feature_vector = [0] * topic_num
     return topic_feature_vector
 
-
-def save():
-    pass
 
 
 def get_item_detail(items_list):

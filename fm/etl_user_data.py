@@ -35,9 +35,6 @@ def recall_candidates(boolean_users=True,  users_para=[33658617]):
     return users_feature_dict, users_detail_dict, users_topic_dict
 
 
-
-
-
 def enumerate_user_os():
     os_type = {'android': 1, 'ios': 0}
     os_feature_dict = OrderedDict((v, 0) for k, v in os_type.iteritems())
@@ -109,7 +106,7 @@ def get_users_topic(users, time_interval='15 days'):
     sql = '''
             SELECT uid, topic_id, probability, model_v, create_time from user_topics_v2
             where create_time > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}'  
-            and uid in ({})
+            and uid in ({}) and model_v = '2017-04-07-10-49-37'
     '''
     rows = pg.query(sql.format(str_now, time_interval, ','.join(str(u) for u in users)))
     return rows

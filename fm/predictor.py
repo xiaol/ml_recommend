@@ -83,7 +83,10 @@ if __name__ == '__main__':
 
     while True:
         st = time.time()
-        predict(args.t)
+        try:
+            predict(args.t)
+        except:
+            print 'Allen , we got a issue.'
         end = time.time()
         elapse = end - st
         print 'Allen Wake, you have ' + str(elapse) + ' seconds to run.'
