@@ -24,8 +24,7 @@ def train(n_iter=1000, time_interval='1 hour',
     als_fm = train_model(X_train, y_train, n_iter, init_stdev=init_stdev, rank=rank, l2_reg_w=l2_reg_w, l2_reg_V=l2_reg_V)
     y_pred = als_fm.predict(X_test)
 
-    print y_pred
-
+    #print y_pred
     print 'mse:', mean_squared_error(y_test, y_pred)
     return als_fm, (X_train, y_train, X_test, y_test)
 
