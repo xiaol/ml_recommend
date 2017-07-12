@@ -404,7 +404,7 @@ def cut_pos_ltp(doc, filter_pos = True, allow_pos = allow_pos_ltp, remove_tags=T
         soup = BeautifulSoup(s, 'lxml')
         s = soup.get_text()
         #s = filter_tags(s)  #去除html标签
-    words = segmentor.segment(s)
+    words = segmentor.segment(s.encode('utf-8'))
 
     words2 = []
     for w in words:
