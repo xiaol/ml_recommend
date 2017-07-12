@@ -33,7 +33,7 @@ def construct_feature_matrix(topic_num, time_interval='10 seconds'):
 
         # uid nid readtime logtype logchid
         read_samples_list_split = etl_sample.get_read_samples(splited_users, '4 hours')
-        click_samples_list_split = etl_sample.get_click_samples(splited_users, '4 hours')
+        click_samples_list_split = etl_sample.get_click_samples(splited_users, '1 day')
         read_samples_list.extend(read_samples_list_split); click_samples_list.extend(click_samples_list_split)
 
         items_list_split = [read_sample[1] for read_sample in read_samples_list]
