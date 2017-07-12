@@ -327,7 +327,7 @@ def generate_subject(sub):
         state_sql = 'select nid from newslist_v2 where nid in ({}) and state=0'
         cursor.execute(state_sql.format(','.join(str(n) for n in sub_nids)))
         rs = cursor.fetchall()
-        sub_nids = list(rs)
+        sub_nids = list(r[0] for r in rs)
         if len(sub_nids) <= 1:
             conn.close()
             return
