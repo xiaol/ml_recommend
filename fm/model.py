@@ -20,28 +20,29 @@ def construct_feature_matrix(topic_num, time_interval='10 seconds'):
     """
     active_users = etl_user_data.get_active_user(time_interval=time_interval)
     etl_user_data.user_extractor.preprocess_users_feature(active_users)
-    print 'users count:' + str(len(active_users))
+    print 'Users count:' + str(len(active_users))
 
     users_feature_dict, users_detail_dict, users_topic_dict = {}, {}, {}
     read_samples_list, click_samples_list, items_list = [], [], []
 
+    print 'step -> ',
     for splited_users in chunks(active_users, 100):
-        print '---------- step ti da --------------'
         users_feature_dict_split, users_detail_dict_split, users_topic_dict_split = etl_user_data.\
             user_extractor.load(splited_users, topic_num, '15 days')
         users_feature_dict.update(users_feature_dict_split); users_detail_dict.update(users_detail_dict_split); users_topic_dict.update(users_topic_dict_split)
 
         # uid nid readtime logtype logchid
-        read_samples_list_split = etl_sample.get_read_samples(splited_users, '1 hour')
+        read_samples_list_split = etl_sample.get_read_samples(splited_users, '30 minutes')
         click_samples_list_split = etl_sample.get_click_samples(splited_users, '12 hours')
         read_samples_list.extend(read_samples_list_split); click_samples_list.extend(click_samples_list_split)
 
         items_list_split = [read_sample[1] for read_sample in read_samples_list]
         items_list_split.extend([click_sample[1] for click_sample in click_samples_list])
         items_list.extend(items_list_split)
+        print str(len(items_list)) + ' ',
 
     items_feature_dict = etl_item_data.load(set(items_list), topic_num)
-    print 'read samples size: '+str(len(read_samples_list)) + ' click samples size:' + str(len(click_samples_list)) + ' items feature size:' + str(len(items_feature_dict))
+    print '<- Read samples size: '+str(len(read_samples_list)) + ' click samples size:' + str(len(click_samples_list)) + ' items feature size:' + str(len(items_feature_dict))
 
     read_samples_feature_dict = get_samples_feature(
                                 read_samples_list, users_feature_dict, items_feature_dict)
