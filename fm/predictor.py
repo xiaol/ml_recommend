@@ -77,7 +77,7 @@ def predict(time_interval='10 seconds'):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Something to explain')
     parser.add_argument('--t', metavar='path', required=True,
-                        help='time interval for retrieve usees')
+                        help='time interval for retrieve uses')
     args = parser.parse_args()
     sleep_time = 60*60
 

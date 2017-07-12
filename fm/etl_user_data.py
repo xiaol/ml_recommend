@@ -7,6 +7,7 @@ sys.path.append(path)
 
 from util.postgres import postgres_read_only as pg
 import datetime
+from collections import OrderedDict
 
 
 # TODO should cover only read  but not click users for cold start
@@ -34,13 +35,12 @@ def recall_candidates(boolean_users=True,  users_para=[33658617]):
     return users_feature_dict, users_detail_dict, users_topic_dict
 
 
-def enumerate_user_brand(active_users):
-    return enumerate_user_attribute('brand', active_users)
+
 
 
 def enumerate_user_os():
     os_type = {'android': 1, 'ios': 0}
-    os_feature_dict = dict((v, 0) for k, v in os_type.iteritems())
+    os_feature_dict = OrderedDict((v, 0) for k, v in os_type.iteritems())
     return os_feature_dict
 
 
@@ -90,7 +90,7 @@ def enumerate_user_attribute(attribute_name, active_users):
                       where uid in ({})
                       '''
     rows = pg.query(user_device_sql.format(attribute_name, ','.join(str(u) for u in active_users)))
-    feature_dict = dict((r[0], 0) for r in rows)
+    feature_dict = OrderedDict((r[0], 0) for r in rows)
     return feature_dict
 
 
@@ -123,14 +123,19 @@ class UserExtractor(object):
 
     feature_brand_dict = {}
 
+    def enumerate_user_brand(self, active_users):
+        if not self.feature_brand_dict:
+            self.feature_brand_dict = enumerate_user_attribute('brand', active_users)
+        return self.feature_brand_dict
+
     def preprocess_users_feature(self, all_users):
-        self.feature_brand_dict = enumerate_user_brand(all_users)
+        self.feature_brand_dict = self.enumerate_user_brand(all_users)
 
     def load(self, active_users, topic_num, topic_time_interval):
         users_feature_dict = {}
         if not self.feature_brand_dict:
             print 'Warning-----user brand dict init online---'
-            self.feature_brand_dict = enumerate_user_brand(active_users)
+            self.feature_brand_dict = self.enumerate_user_brand(active_users)
         # Many users don't have device features, so need to initialize the feature dicts.
         for user in active_users:
             users_feature_dict[user] = [0]*len(self.feature_brand_dict)

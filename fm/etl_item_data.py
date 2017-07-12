@@ -7,6 +7,7 @@ sys.path.append(path)
 from util.postgres import postgres_read_only as pg
 import datetime
 import recall_items
+from collections import OrderedDict
 
 
 # prepare the items for user recommend
@@ -20,34 +21,40 @@ def recall_candidates(user_id, user_topic_dict):
     """
     nt = datetime.datetime.now()
     str_now = nt.strftime('%Y-%m-%d %H:%M:%S')
-    candidates_list = []
+    strategies_dict = item_extractor.enumerate_recommend_strategy()
+    strategies_keys = strategies_dict.keys()
 
-    wilson_dict = recall_items.recall_wilson_news(user_id, 3000)
-    wilson_keys_list = wilson_dict.keys()
-    candidates_list.extend(wilson_keys_list)
+    # wilson
+    candidates_dict = recall_items.recall_wilson_news(user_id, 3000)
+    candidates_list = candidates_dict.keys()
+    candidates_feature_dict = get_features_by_strategy(strategies_keys.index(0), candidates_list, strategies_dict)
 
-    strategies_dict = enumerate_recommend_strategy()
+    # lda
+    lda_dict = recall_items.recall_lda(user_id, 300)
+    lda_list = lda_dict.keys()
+    lda_feature_dict = get_features_by_strategy(strategies_keys.index(21), lda_list, strategies_dict)
 
-    sql_lda = '''
-    '''
+    candidates_feature_dict.update(lda_feature_dict)
+    candidates_dict.update(lda_dict)
 
-    sql_hotnews = '''
-    '''
+    # kmeans
 
-    sql_bigimg = '''
-    '''
 
-    candidates_feature_dict = load(candidates_list, topic_num=5000)
+    return candidates_feature_dict, candidates_dict
 
-    for candidate_item in candidates_list:
+
+def get_features_by_strategy(strategy_pos, strategy_list, strategies_dict):
+    candidates_feature_dict = load(strategy_list, topic_num=5000)
+
+    for candidate_item in strategy_list:
         copy_strategies_feature = strategies_dict.values()
         copy_strategies_feature.extend(candidates_feature_dict[candidate_item])
         candidates_feature_dict[candidate_item] = copy_strategies_feature
 
-    for wilson_item in wilson_keys_list:
-        candidates_feature_dict[wilson_item][0] = 1
+    for stratege_item in strategy_list:
+        candidates_feature_dict[stratege_item][strategy_pos] = 1
 
-    return candidates_feature_dict, wilson_dict
+    return candidates_feature_dict
 
 
 def enumerate_article_pname():
@@ -64,17 +71,24 @@ def enumerate_article_editor_rank():
     pass
 
 
-def enumerate_recommend_strategy():
-    # strategy = {'hot': 0, 'recommend': 1, 'wilson': 2, 'editor': 3, 'other': 4}
-    logtype = {'wilson': 0, 'topic collection': 4, 'slide image news': 5, 'video': 6,
-               'local news': 7, 'channel hotnews': 13, 'baidu keyword': 11, 'comment news': 12, 'hotnews': 14,
-               'lda': 21, 'kmeans': 22, 'editor chosen hot news': 23, 'editor': 24,
-               'big image news': 25, 'related images':26, 'CF': 27, 'news in comment center': 28,
-               'channel big image news': 29, 'news in topic': 41, 'top rank': 100, }
-    # TODO dismatch logtype
-    strategy_feature_dict = dict((v, 0) for k,v in logtype.iteritems())
+class ItemExtractor(object):
+    strategy_feature_dict = OrderedDict()
 
-    return strategy_feature_dict
+    def enumerate_recommend_strategy(self):
+        if self.strategy_feature_dict:
+            return self.strategy_feature_dict
+        # strategy = {'hot': 0, 'recommend': 1, 'wilson': 2, 'editor': 3, 'other': 4}
+        logtype = {'wilson': 0, 'topic collection': 4, 'slide image news': 5, 'video': 6,
+                   'local news': 7, 'channel hotnews': 13, 'baidu keyword': 11, 'comment news': 12, 'hotnews': 14,
+                   'lda': 21, 'kmeans': 22, 'editor chosen hot news': 23, 'editor': 24,
+                   'big image news': 25, 'related images':26, 'CF': 27, 'news in comment center': 28,
+                   'channel big image news': 29, 'news in topic': 41, 'top rank': 100, }
+        # TODO dismatch logtype
+        self.strategy_feature_dict = OrderedDict((v, 0) for k,v in logtype.iteritems())
+
+        return self.strategy_feature_dict
+
+item_extractor = ItemExtractor()
 
 
 def enumerate_article_attribute(attribute_name):

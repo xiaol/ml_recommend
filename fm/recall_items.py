@@ -33,8 +33,10 @@ def recall_wilson_news(user_id, limit):
     return wilson_dict
     # TODO if wilson is empty , you get lucky
 
+
 def recall_lda(user_id, limit):
-    pass
+    lda_dict = {}
+    return lda_dict
 
 
 def recall_kmeans(user_id, limit):
@@ -44,6 +46,9 @@ def recall_kmeans(user_id, limit):
 def recall_hotnews(user_id, limit):
     pass
 
+
+def recall_bigimg(user_id, limit):
+    pass
 
 if __name__ == '__main__':
     wilson_dict = recall_wilson_news(33658617, 10)

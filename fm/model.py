@@ -12,6 +12,7 @@ from memory_profiler import profile
 import gc
 
 
+
 @profile
 def construct_feature_matrix(topic_num, time_interval='10 seconds'):
     """
@@ -87,7 +88,7 @@ def chunks(l, n):
 
 
 def get_samples_feature(read_samples_list, users_feature_dict, items_feature_dict):
-    strategies_dict = etl_item_data.enumerate_recommend_strategy()
+    strategies_dict = etl_item_data.item_extractor.enumerate_recommend_strategy()
     read_feature_dict = {}
 
     for read_sample in read_samples_list:
@@ -117,7 +118,7 @@ def get_samples_feature(read_samples_list, users_feature_dict, items_feature_dic
 
 def get_positive_sample_feature(click_samples_list, samples_feature_dict,
                                 users_feature_dict, items_feature_dict):
-    strategies_dict = etl_item_data.enumerate_recommend_strategy()
+    strategies_dict = etl_item_data.item_extractor.enumerate_recommend_strategy()
 
     for click_sample in click_samples_list:
         if click_sample[0] not in users_feature_dict:
