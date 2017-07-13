@@ -8,6 +8,7 @@ from util.postgres import postgres_read_only as pg
 import datetime
 from collections import OrderedDict
 
+
 def get_click_samples(active_users, time_interval):
     nt = datetime.datetime.now()
     str_now = nt.strftime('%Y-%m-%d %H:%M:%S')

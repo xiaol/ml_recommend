@@ -11,7 +11,7 @@ from sklearn.cross_validation import train_test_split
 # X_train, X_test, y_train, y_test = train_test_split(
 #  X, y, test_size=0.33, random_state=42)
 
-als_fm, X_Y = train(time_interval='10 minutes', n_iter=100, test_size=0.33, random_state=42,
+als_fm, X_Y, u_extractor, i_extractor = train(time_interval='10 minutes', n_iter=100, test_size=0.33, random_state=42,
                     init_stdev=0.1, l2_reg_w=0.2, l2_reg_V=0.5, rank=2)
 
 n_iter = 5

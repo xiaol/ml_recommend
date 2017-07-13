@@ -11,7 +11,7 @@ from collections import OrderedDict
 
 
 # prepare the items for user recommend
-def recall_candidates(user_id, user_topic_dict):
+def recall_candidates(item_extractor, user_id, user_topic_dict):
     """
     :users_topic_dict: lda
 
@@ -87,8 +87,6 @@ class ItemExtractor(object):
         self.strategy_feature_dict = OrderedDict((v, 0) for k,v in logtype.iteritems())
 
         return self.strategy_feature_dict
-
-item_extractor = ItemExtractor()
 
 
 def enumerate_article_attribute(attribute_name):

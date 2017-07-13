@@ -24,14 +24,15 @@ def get_active_user(time_interval='1 day', click_times=1):
     return a_users
 
 
-def recall_candidates(boolean_users=True,  users_para=[33658617]):
+def recall_candidates(user_extractor, boolean_users=True,  users_para=[33658617]):
     if boolean_users:
         users = users_para
     else:
         users = get_active_user('5 minutes')
 
-    users_feature_dict, users_detail_dict, users_topic_dict = \
-        user_extractor.load(users, 5000, '15 days')
+    users_feature_dict, users_detail_dict, users_topic_dict = user_extractor.load(
+        users, 5000, '15 days')
+
     return users_feature_dict, users_detail_dict, users_topic_dict
 
 
@@ -126,7 +127,7 @@ class UserExtractor(object):
         return self.feature_brand_dict
 
     def preprocess_users_feature(self, all_users):
-        self.feature_brand_dict = self.enumerate_user_brand(all_users)
+        self.feature_brand_dict = enumerate_user_attribute('brand', all_users)
 
     def load(self, active_users, topic_num, topic_time_interval):
         users_feature_dict = {}
@@ -179,8 +180,8 @@ class UserExtractor(object):
         return users_feature_dict, users_detail_dict, users_topic_dict
         # return {1: [1, 0], 2: [0, 1], 3: [1, 0], 4: [0, 1]}   # user_id, user_feature vector
 
-user_extractor = UserExtractor()
 
 if __name__ == '__main__':
     users_test = get_active_user(time_interval='30 minutes')
-    print user_extractor.load(users_test)
+    extractor = user_extractor()
+    print extractor.load(users_test)

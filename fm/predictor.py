@@ -15,8 +15,7 @@ import random
 import datetime
 import time
 import argparse
-
-
+import sys
 feedSuffix = "webapi:news:feed:uid:"
 
 
@@ -29,9 +28,11 @@ def update_user_ranking_recommend(user_id, recommend_sorted_list):
 
     # rtype类型:0 普通、1 热点、2 推送、3 广告、4 专题、5 图片新闻、6 视频、7 本地
     update_news_feed_list = [x for x in news_feed_list if x['rtype'] != 0]
+
     for item,i in zip(recommend_sorted_list, range(len(recommend_sorted_list))):
         News.format_news(item)
         item['rtype'] = i % 2
+
     update_news_feed_list.extend(recommend_sorted_list)
 
     json_str = json.dumps(recommend_sorted_list,ensure_ascii=False)
@@ -39,16 +40,17 @@ def update_user_ranking_recommend(user_id, recommend_sorted_list):
 
 
 def predict(time_interval='10 seconds'):
-    als_fm, X_and_y = als_solver.train(time_interval=time_interval)
+    als_fm, X_and_y, user_extractor, item_extractor = als_solver.train(time_interval=time_interval)
     # recall must behind train
-    users_feature_dict, users_detail_dict, users_topic_dict = \
-        etl_user_data.recall_candidates(boolean_users=True, users_para=[33658617])
+    users_feature_dict, users_detail_dict, users_topic_dict = etl_user_data.recall_candidates(
+        user_extractor, boolean_users=True, users_para=[33658617])
 
     for user, feature in users_feature_dict.iteritems():
         if user not in users_topic_dict:
             pass
         else:
-            item_candidates, wilson_dict = etl_item_data.recall_candidates(user, users_topic_dict[user])
+            item_candidates, wilson_dict = etl_item_data.recall_candidates(
+                item_extractor, user, users_topic_dict[user])
 
         if len(item_candidates) == 0:
             print '------------------wilson is empty-----'
@@ -79,14 +81,14 @@ if __name__ == '__main__':
     parser.add_argument('--t', metavar='path', required=True,
                         help='time interval for retrieve uses')
     args = parser.parse_args()
-    sleep_time = 60*60
+    sleep_time = 1*2
 
     while True:
         st = time.time()
-        try:
-            predict(args.t)
-        except:
-            print 'Allen , we got a issue.'
+        # try:
+        predict(args.t)
+        # except:
+        # print 'Allen , we got a issue->', sys.exc_info()[0]
         end = time.time()
         elapse = end - st
         print 'Allen Wake, you have ' + str(elapse) + ' seconds to run.'
