@@ -19,7 +19,7 @@ def get_active_user(time_interval='1 hour', click_times=1):
             where ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}'  
             group by uid HAVING "count"(*)>={} and "count"(*)<{}
         '''
-    rows = pg.query(sql.format(str_now, time_interval, click_times, 100))
+    rows = pg.query(sql.format(str_now, time_interval, click_times, 20))
     a_users = [r[0] for r in rows]
     return a_users
 
