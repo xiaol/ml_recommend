@@ -20,7 +20,7 @@ def construct_feature_matrix(topic_num, time_interval='10 seconds'):
     :param topic_num:  the number of lda topics
     :return:
     """
-    active_users = etl_user_data.get_active_user(time_interval=time_interval)
+    active_users = etl_user_data.get_sample_user(time_interval=time_interval)
     print 'Users count:' + str(len(active_users))
 
     users_feature_dict, users_detail_dict, users_topic_dict = {}, {}, {}
@@ -44,8 +44,8 @@ def construct_feature_matrix(topic_num, time_interval='10 seconds'):
         users_topic_dict.update(users_topic_dict_split)
 
         # uid nid readtime logtype logchid
-        read_samples_list_split = etl_sample.get_read_samples(splited_users, '45 minutes')
-        click_samples_list_split = etl_sample.get_click_samples(splited_users, '12 hours')
+        read_samples_list_split = etl_sample.get_read_samples(splited_users, '2 days')
+        click_samples_list_split = etl_sample.get_click_samples(splited_users, '7 days')
         read_samples_list.extend(read_samples_list_split)
         click_samples_list.extend(click_samples_list_split)
 
@@ -173,5 +173,5 @@ def get_positive_sample_feature(click_samples_list, samples_feature_dict,
 
 
 if __name__ == '__main__':
-    X, y, user_extractor, item_extractor = construct_feature_matrix(5000, '10 seconds')
+    X, y, user_extractor, item_extractor = construct_feature_matrix(5000, '6 hours')
     print "hold"

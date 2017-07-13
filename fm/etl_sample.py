@@ -27,9 +27,13 @@ def get_read_samples_by_pos(active_users, pos, time_interval):
     sql = '''
         select uid, nid, readtime, logtype, logchid from newsrecommendread_{} 
             where readtime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}'  
-                      and uid in ({})
+                      and uid in ({}) and uid not in (select uid from (select uid, count(1) as sc from newsrecommendread_{} 
+                      where readtime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}' 
+                      and uid in ({}) group by uid ) as tb where sc > 1000)
     '''
-    rows = pg.query(sql.format(pos, str_now, time_interval, ','.join(str(u) for u in active_users)))
+    sql = sql.format(pos, str_now, time_interval, ','.join(str(u) for u in active_users),
+                               pos, str_now, time_interval, ','.join(str(u) for u in active_users))
+    rows = pg.query(sql)
     return rows
 
 

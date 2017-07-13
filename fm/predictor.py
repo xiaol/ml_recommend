@@ -35,7 +35,7 @@ def update_user_ranking_recommend(user_id, recommend_sorted_list):
 
     update_news_feed_list.extend(recommend_sorted_list)
 
-    json_str = json.dumps(recommend_sorted_list,ensure_ascii=False)
+    json_str = json.dumps(recommend_sorted_list, ensure_ascii=False)
     redis_ali.set(feedSuffix + str(user_id), json_str, ex=60*30)
 
 
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     parser.add_argument('--t', metavar='path', required=True,
                         help='time interval for retrieve uses')
     args = parser.parse_args()
-    sleep_time = 1*2
+    sleep_time = 60*60
 
     while True:
         st = time.time()
