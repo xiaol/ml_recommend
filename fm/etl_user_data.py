@@ -10,16 +10,16 @@ import datetime
 from collections import OrderedDict
 
 
-# TODO should cover only read  but not click users for cold start
+# TODO should cover only read  but not click users for cold start,
 def get_active_user(time_interval='1 hour', click_times=1):
     nt = datetime.datetime.now()
     str_now = nt.strftime('%Y-%m-%d %H:%M:%S')
     sql = '''
             select uid from newsrecommendclick 
             where ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}'  
-            group by uid HAVING "count"(*)>={} and "count"(*)<{}
+            group by uid HAVING "count"(*)>={} 
         '''
-    rows = pg.query(sql.format(str_now, time_interval, click_times, 20))
+    rows = pg.query(sql.format(str_now, time_interval, click_times))
     a_users = [r[0] for r in rows]
     return a_users
 
