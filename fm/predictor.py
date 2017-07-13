@@ -45,6 +45,7 @@ def predict(time_interval='10 seconds'):
     users_feature_dict, users_detail_dict, users_topic_dict = etl_user_data.recall_candidates(
         user_extractor, boolean_users=True, users_para=[33658617, 8553995, 7054063, 33446693])
     # me , laite, xinyong, liulei
+    # TODO don't have the brand feature may cause crash
 
     for user, feature in users_feature_dict.iteritems():
         if user not in users_topic_dict:
@@ -59,10 +60,11 @@ def predict(time_interval='10 seconds'):
 
         nt = datetime.datetime.now()
         feature.extend(etl_sample.sampleExtractor.generate_time_feature(nt))
-
+        item_cols = item_candidates.values()
         user_cols = [feature] * len(item_candidates)
 
-        cols = np.hstack((user_cols, item_candidates.values()))
+        cols = np.hstack((user_cols, item_cols))
+        print 'the shape of the recall cols:', cols.shape, 'user cols:', len(feature), 'item cols:', len(item_cols)
         feature_matrix = sp.csc_matrix(cols)
 
         recommend_list = als_fm.predict(feature_matrix)

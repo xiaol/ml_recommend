@@ -28,7 +28,7 @@ def recall_candidates(item_extractor, user_id, user_topic_dict):
     candidates_dict = recall_items.recall_wilson_news(user_id, 3000)
     candidates_list = candidates_dict.keys()
     candidates_feature_dict = get_features_by_strategy(
-        strategies_keys, candidates_dict, candidates_list, strategies_dict)
+        strategies_keys, candidates_dict, candidates_list, strategies_dict, item_extractor)
 
     # lda kmeans cf
     '''
@@ -44,8 +44,9 @@ def recall_candidates(item_extractor, user_id, user_topic_dict):
     return candidates_feature_dict, candidates_dict
 
 
-def get_features_by_strategy(strategies_keys, candidates_dict, strategy_list, strategies_dict):
-    candidates_feature_dict = load(strategy_list, topic_num=5000)
+def get_features_by_strategy(strategies_keys, candidates_dict, strategy_list, strategies_dict, item_extractor):
+
+    candidates_feature_dict = load(strategy_list, 5000, item_extractor)
 
     for candidate_item in strategy_list:
         copy_strategies_feature = strategies_dict.values()
@@ -76,6 +77,7 @@ def enumerate_article_editor_rank():
 class ItemExtractor(object):
     strategy_feature_dict = OrderedDict()
     kmeans_feature_dict = OrderedDict()
+    channel_feature_dict = OrderedDict()
 
     def enumerate_recommend_strategy(self):
         if self.strategy_feature_dict:
@@ -100,6 +102,13 @@ class ItemExtractor(object):
                        '自媒体': 80, '奇闻': 10}
         for k,v in chnl_k_dict.iteritems():
             self.kmeans_feature_dict[k] = [0] * v
+
+    def enumerate_channel(self):
+        if self.channel_feature_dict:
+            return self.channel_feature_dict
+        self.channel_feature_dict = get_channel_list()
+        return self.channel_feature_dict
+
 
 
 def enumerate_article_attribute(attribute_name):
@@ -128,11 +137,16 @@ def get_item_topic(items_list, model_v='2017-04-07-10-49-37'):
     return rows
 
 
-def get_kmeans(items_list):
-    pass
+def get_item_channel_and_kmeans(items_list, model_v='2017-06-27-14-59-59'):
+    sql = '''
+        select nid, model_v, ch_name, cluster_id, chid, ctime from news_kmeans 
+        where model_v= '{}' and nid in ({})
+    '''
+    rows = pg.query_dict_cursor(sql.format(model_v, ','.join(str(i) for i in items_list)))
+    return rows
 
 
-def get_channel():
+def get_channel_list():
     channel_dict = OrderedDict()
     sql = "select id, cname from channellist_v2"
     rows = pg.query_dict_cursor(sql)
@@ -141,20 +155,29 @@ def get_channel():
     return channel_dict
 
 
-def load(items_list, topic_num):
+def load(items_list, topic_num, item_extractor):
     items_feature_dict = OrderedDict()
 
     # add topic feature
     feature_topic_vector = enumerate_item_topics(topic_num)
+    topic_offset = len(feature_topic_vector)
+
+    channel_feature_dict = item_extractor.enumerate_channel()
+    channel_offest = len(channel_feature_dict)
+
     for item in items_list:
-        items_feature_dict[item] = [0]*len(feature_topic_vector)
+        items_feature_dict[item] = [0]*(topic_offset + channel_offest)
 
     items_topic = get_item_topic(items_list)
     for item_topic in items_topic:
         items_feature_dict[item_topic[0]][item_topic[1]] = 1  # item_topic[2]
 
     # add kmeans feature
-
+    # add channel feature
+    items_channel_kmeans = get_item_channel_and_kmeans(items_list)
+    channel_feature_list = channel_feature_dict.keys()
+    for item_ck in items_channel_kmeans:
+        items_feature_dict[item_ck['nid']][topic_offset + channel_feature_list.index(item_ck['ch_name'])]
 
     return items_feature_dict  # item id, feature vector pair.
 

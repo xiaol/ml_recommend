@@ -54,7 +54,7 @@ def construct_feature_matrix(topic_num, time_interval='10 seconds'):
         items_list.extend(items_list_split)
         print str(len(items_list)) + ' ',
 
-    items_feature_dict = etl_item_data.load(set(items_list), topic_num)
+    items_feature_dict = etl_item_data.load(set(items_list), topic_num, item_extractor)
     print '<- Read samples size: '+str(len(read_samples_list)) + ' click samples size:' + str(len(click_samples_list)) + ' items feature size:' + str(len(items_feature_dict))
 
     read_samples_feature_dict = get_samples_feature(
@@ -88,6 +88,7 @@ def construct_feature_matrix(topic_num, time_interval='10 seconds'):
     del active_users
 
     cols = np.array(feature_list, copy=False)
+    print 'The shape of the train cols:', cols.shape, 'user cols:', 'item cols:'
     del feature_list
     gc.collect()
 
