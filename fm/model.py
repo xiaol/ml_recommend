@@ -121,8 +121,9 @@ def get_samples_feature(read_samples_list,
         strategies_dict[read_sample[3]] = 1
 
         feature_list = list(users_feature_dict[read_sample[0]])
+        #add strategy feature
         feature_list.extend(strategies_dict.values())
-
+        # add time feature
         feature_list.extend(etl_sample.sampleExtractor.generate_time_feature(read_sample[2]))
 
         # join the user, strategies and item features horizontally

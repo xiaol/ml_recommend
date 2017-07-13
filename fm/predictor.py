@@ -43,13 +43,14 @@ def predict(time_interval='10 seconds'):
     als_fm, X_and_y, user_extractor, item_extractor = als_solver.train(time_interval=time_interval)
     # recall must behind train
     users_feature_dict, users_detail_dict, users_topic_dict = etl_user_data.recall_candidates(
-        user_extractor, boolean_users=True, users_para=[33658617])
+        user_extractor, boolean_users=True, users_para=[33658617, 8553995, 7054063, 33446693])
+    # me , laite, xinyong, liulei
 
     for user, feature in users_feature_dict.iteritems():
         if user not in users_topic_dict:
             pass
         else:
-            item_candidates, wilson_dict = etl_item_data.recall_candidates(
+            item_candidates, candidates_dict = etl_item_data.recall_candidates(
                 item_extractor, user, users_topic_dict[user])
 
         if len(item_candidates) == 0:
@@ -72,8 +73,9 @@ def predict(time_interval='10 seconds'):
 
         recommend_items_list = []
         for i in range(len(sorted_list)):
-            recommend_items_list.append(wilson_dict[sorted_list[i][0]])
+            recommend_items_list.append(candidates_dict[sorted_list[i][0]])
         update_user_ranking_recommend(user, recommend_items_list[:200])
+        print 'Allen ' + str(user) + ' , your turn.'
 
 
 if __name__ == '__main__':

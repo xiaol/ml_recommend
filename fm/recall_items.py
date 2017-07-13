@@ -6,14 +6,13 @@ sys.path.append(path)
 
 from util.postgres import postgres_read_only as pg
 from collections import OrderedDict
-
+condition = " and nv.chid != 28 and nv.state=0 and (nv.rtype is null  or nv.rtype=0) "
+select = "nv.nid, nv.docid, nv.title, nv.pname, nv.ptime, nv.purl, nv.chid, nv.collect, nv.concern, nv.un_concern, nv.comment, nv.style, nv.imgs,  nv.icon, nv.videourl, nv.duration, nv.thumbnail, nv.clicktimes, nv.tags"
+dayWindow1 = " now()-interval'1 day' "
 
 def recall_wilson_news(user_id, limit):
-    dayWindow1 = " now()-interval'1 day' "
     dayWindow3 = " now()-interval'3 day' "
     table_name = "newsrecommendread_" + str(user_id % 100)
-    condition = " and nv.chid != 28 and nv.state=0 and (nv.rtype is null  or nv.rtype=0) "
-    select = "nv.nid, nv.docid, nv.title, nv.pname, nv.ptime, nv.purl, nv.chid, nv.collect, nv.concern, nv.un_concern, nv.comment, nv.style, nv.imgs,  nv.icon, nv.videourl, nv.duration, nv.thumbnail, nv.clicktimes, nv.tags"
 
     sql = '''
       select {select}, 0 as rtype, 0 as logtype
@@ -25,7 +24,7 @@ def recall_wilson_news(user_id, limit):
       limit {limit}
     '''
     sql = sql.format(select=select, tablename=table_name, uid=user_id, readtime=dayWindow1,
-               createtime=dayWindow1, condition=condition, limit=limit)
+                     createtime=dayWindow1, condition=condition, limit=limit)
     wilson_rows = pg.query_dict_cursor(sql)
     wilson_dict = OrderedDict()
     for w in wilson_rows:
@@ -35,13 +34,34 @@ def recall_wilson_news(user_id, limit):
     # TODO if wilson is empty , you get lucky
 
 
-def recall_lda(user_id, limit):
-    lda_dict = {}
-    return lda_dict
+def recall_lda_kmeans_cf(user_id, limit):
+    tablename1 = "newsrecommendread_" + str(user_id % 100)
+    tablename2 = "newsrecommendforuser_" + str(user_id % 10)
 
+    sql = '''select * from ( select {select} , 21 as rtype, 21 as logtype from newslist_v2 nv 
+           where  not exists (select 1 from {tablename1} nr where nv.nid=nr.nid and nr.uid={uid}
+           and nr.readtime>{dayWindow1}) and nv.nid in (select nid from {tablename2} where uid={uid} 
+           and ctime>{dayWindow1} and sourcetype=1) and nv.ctime>{dayWindow1} {condition} limit {limitalgorithm})lda 
+           union all select * from (select {select} , 21 as rtype, 22 as logtype from newslist_v2 nv 
+           where  not exists (select 1 from {tablename1} nr where nv.nid=nr.nid 
+           and nr.uid={uid} and nr.readtime>{dayWindow1}) and nv.nid in 
+           (select nid from {tablename2} where uid={uid} and ctime>{dayWindow1} and sourcetype=2)
+            and nv.ctime>{dayWindow1} {condition} limit {limitalgorithm})kmeans 
+            union all select * from (select {select} , 21 as rtype, 27 as logtype from newslist_v2 nv 
+            where  not exists (select 1 from {tablename1} nr where nv.nid=nr.nid and nr.uid={uid}
+            and nr.readtime>{dayWindow1}) and nv.nid in (select nid from {tablename2} where uid={uid}
+            and ctime>{dayWindow1} and sourcetype=3) 
+            and nv.ctime>{dayWindow1} {condition} limit {limitalgorithm})cf '''
 
-def recall_kmeans(user_id, limit):
-    pass
+    sql = sql.format(select=select, tablename1=tablename1,
+                     tablename2=tablename2, uid=user_id, dayWindow1=dayWindow1,
+                     limitalgorithm=limit, condition=condition)
+    lkc_rows = pg.query_dict_cursor(sql)
+    lkc_dict = OrderedDict()
+    for lkc in lkc_rows:
+        lkc_dict[lkc['nid']] = dict(lkc)
+        lkc_dict[lkc['nid']]['ptime'] = str(lkc_dict[lkc['nid']]['ptime'])
+    return lkc_dict
 
 
 def recall_hotnews(user_id, limit):

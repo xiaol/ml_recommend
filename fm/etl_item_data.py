@@ -27,23 +27,22 @@ def recall_candidates(item_extractor, user_id, user_topic_dict):
     # wilson
     candidates_dict = recall_items.recall_wilson_news(user_id, 3000)
     candidates_list = candidates_dict.keys()
-    candidates_feature_dict = get_features_by_strategy(strategies_keys.index(0), candidates_list, strategies_dict)
+    candidates_feature_dict = get_features_by_strategy(
+        strategies_keys, candidates_dict, candidates_list, strategies_dict)
 
-    # lda
-    lda_dict = recall_items.recall_lda(user_id, 300)
-    lda_list = lda_dict.keys()
-    lda_feature_dict = get_features_by_strategy(strategies_keys.index(21), lda_list, strategies_dict)
+    # lda kmeans cf
+    lkc_dict = recall_items.recall_lda_kmeans_cf(user_id, 500)
+    lkc_list = lkc_dict.keys()
+    lkc_feature_dict = get_features_by_strategy(
+        strategies_keys, lkc_dict, lkc_list, strategies_dict)
 
-    candidates_feature_dict.update(lda_feature_dict)
-    candidates_dict.update(lda_dict)
-
-    # kmeans
-
+    candidates_feature_dict.update(lkc_feature_dict)
+    candidates_dict.update(lkc_dict)
 
     return candidates_feature_dict, candidates_dict
 
 
-def get_features_by_strategy(strategy_pos, strategy_list, strategies_dict):
+def get_features_by_strategy(strategies_keys, candidates_dict, strategy_list, strategies_dict):
     candidates_feature_dict = load(strategy_list, topic_num=5000)
 
     for candidate_item in strategy_list:
@@ -52,6 +51,7 @@ def get_features_by_strategy(strategy_pos, strategy_list, strategies_dict):
         candidates_feature_dict[candidate_item] = copy_strategies_feature
 
     for stratege_item in strategy_list:
+        strategy_pos = strategies_keys.index(candidates_dict[stratege_item]['logtype'])
         candidates_feature_dict[stratege_item][strategy_pos] = 1
 
     return candidates_feature_dict
@@ -103,11 +103,9 @@ def enumerate_kmeans():
                '自媒体':80, '奇闻':10}
 
 
-
 def enumerate_item_topics(topic_num):
     topic_feature_vector = [0] * topic_num
     return topic_feature_vector
-
 
 
 def get_item_detail(items_list):
@@ -133,14 +131,18 @@ def get_kmeans(items_list):
 
 def load(items_list, topic_num):
     items_feature_dict = OrderedDict()
-    feature_topic_vector = enumerate_item_topics(topic_num)
 
+    # add topic feature
+    feature_topic_vector = enumerate_item_topics(topic_num)
     for item in items_list:
         items_feature_dict[item] = [0]*len(feature_topic_vector)
 
     items_topic = get_item_topic(items_list)
     for item_topic in items_topic:
         items_feature_dict[item_topic[0]][item_topic[1]] = 1  # item_topic[2]
+
+    # add kmeans feature
+
 
     return items_feature_dict  # item id, feature vector pair.
 
