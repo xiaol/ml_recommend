@@ -44,7 +44,7 @@ def construct_feature_matrix(topic_num, time_interval='10 seconds'):
         users_topic_dict.update(users_topic_dict_split)
 
         # uid nid readtime logtype logchid
-        read_samples_list_split = etl_sample.get_read_samples(splited_users, '2 days')
+        read_samples_list_split = etl_sample.get_read_samples(splited_users, '1 second')
         click_samples_list_split = etl_sample.get_click_samples(splited_users, '7 days')
         read_samples_list.extend(read_samples_list_split)
         click_samples_list.extend(click_samples_list_split)

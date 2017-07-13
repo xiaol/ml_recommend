@@ -75,6 +75,7 @@ def enumerate_article_editor_rank():
 
 class ItemExtractor(object):
     strategy_feature_dict = OrderedDict()
+    kmeans_feature_dict = OrderedDict()
 
     def enumerate_recommend_strategy(self):
         if self.strategy_feature_dict:
@@ -90,19 +91,19 @@ class ItemExtractor(object):
 
         return self.strategy_feature_dict
 
+    def enumerate_kmeans(self):
+        chnl_k_dict = {'财经': 20, '股票': 10, '故事': 20, '互联网': 20, '健康': 50, '军事': 20,
+                       '科学': 20, '历史': 30, '旅游': 20, '美食': 20, '美文': 20, '萌宠': 10,
+                       '汽车': 30, '时尚': 10, '探索': 10, '外媒': 30, '养生': 30, '影视': 10,
+                       '游戏': 30, '育儿': 20, '体育': 20, '娱乐': 20, '社会': 20, '科技': 12,
+                       '国际': 5, '美女': 1, '搞笑': 1, '趣图': 1, '风水玄学': 10, '本地': 20,
+                       '自媒体': 80, '奇闻': 10}
+        for k,v in chnl_k_dict.iteritems():
+            self.kmeans_feature_dict[k] = [0] * v
+
 
 def enumerate_article_attribute(attribute_name):
     pass
-
-
-def enumerate_kmeans():
-
-    chnl_k_dict = {'财经':20, '股票':10, '故事':20, '互联网':20, '健康':50, '军事':20,
-               '科学':20, '历史':30, '旅游':20, '美食':20, '美文':20, '萌宠':10,
-               '汽车':30, '时尚':10, '探索':10, '外媒':30, '养生':30, '影视':10,
-               '游戏':30, '育儿':20,'体育':20, '娱乐':20, '社会':20,'科技':12,
-               '国际':5, '美女': 1, '搞笑': 1, '趣图':1, '风水玄学':10, '本地':20,
-               '自媒体':80, '奇闻':10}
 
 
 def enumerate_item_topics(topic_num):
@@ -129,6 +130,15 @@ def get_item_topic(items_list, model_v='2017-04-07-10-49-37'):
 
 def get_kmeans(items_list):
     pass
+
+
+def get_channel():
+    channel_dict = OrderedDict()
+    sql = "select id, cname from channellist_v2"
+    rows = pg.query_dict_cursor(sql)
+    for r in rows:
+        channel_dict[r[1]] = r[0]
+    return channel_dict
 
 
 def load(items_list, topic_num):
