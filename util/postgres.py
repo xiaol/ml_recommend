@@ -79,6 +79,7 @@ class Postgres(object):
 if DEBUG:
     postgres_read_only = Postgres()
 else:
-    postgres_read_only = Postgres(db_host='10.47.54.175')
+    # postgres_read_only = Postgres(db_host='10.47.54.175')
+    postgres_read_only = Postgres(db_host='10.47.54.32')
 
 # postgres_write_only = Postgres(db_host="120.27.163.25")

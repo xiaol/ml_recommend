@@ -24,6 +24,19 @@ def get_active_user(time_interval='1 day', click_times=1):
     return a_users
 
 
+def get_sample_user(time_interval='1 day', click_times=1):
+    nt = datetime.datetime.now()
+    str_now = nt.strftime('%Y-%m-%d %H:%M:%S')
+    sql = '''
+            select uid from newsrecommendclick as n left join user_device as u on n.uid = u.uid
+            where n.ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}' and u.ctime  
+            group by n.uid HAVING "count"(*)>={}
+        '''
+    rows = pg.query(sql.format(str_now, time_interval, click_times))
+    a_users = [r[0] for r in rows]
+    return a_users
+
+
 def recall_candidates(user_extractor, boolean_users=True,  users_para=[33658617]):
     if boolean_users:
         users = users_para
@@ -183,5 +196,5 @@ class UserExtractor(object):
 
 if __name__ == '__main__':
     users_test = get_active_user(time_interval='30 minutes')
-    extractor = user_extractor()
+    extractor = UserExtractor()
     print extractor.load(users_test)
