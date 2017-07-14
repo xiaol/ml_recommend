@@ -28,11 +28,9 @@ def update_user_ranking_recommend(user_id, recommend_sorted_list):
 
     # rtype类型:0 普通、1 热点、2 推送、3 广告、4 专题、5 图片新闻、6 视频、7 本地
     update_news_feed_list = [x for x in news_feed_list if x['rtype'] != 0]
-    '''
     for item,i in zip(recommend_sorted_list, range(len(recommend_sorted_list))):
         News.format_news(item)
-        item['rtype'] = i % 2
-    '''
+        # item['rtype'] = i % 2
 
     update_news_feed_list.extend(recommend_sorted_list)
 
