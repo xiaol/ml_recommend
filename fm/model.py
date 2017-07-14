@@ -48,7 +48,7 @@ def construct_feature_matrix(topic_num, time_interval='10 seconds'):
         pos_samples_list = etl_sample.get_positive_samples(splited_users, '7 days')
 
         items_list_split = [nag[1] for nag in nag_samples_list]
-        items_list_split.extend([pos[1] for pos in positive_samples_list])
+        items_list_split.extend([pos[1] for pos in pos_samples_list])
         items_list.extend(items_list_split)
 
         negative_samples_list.extend(nag_samples_list)
