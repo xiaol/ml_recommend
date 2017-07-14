@@ -9,12 +9,14 @@ import datetime
 from collections import OrderedDict
 
 
-def get_click_samples(active_users, time_interval):
+def get_positive_samples(active_users, time_interval):
     nt = datetime.datetime.now()
     str_now = nt.strftime('%Y-%m-%d %H:%M:%S')
+    # logtype 4 is topic channel
     sql = '''
         select  uid, nid, ctime, stime, logtype, logchid from newsrecommendclick 
-            where ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}'  
+            where ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}' 
+            and logtype not in (4) and uid not in (0) and nid not in (0)
                       and uid in ({})
     '''
     rows = pg.query(sql.format(str_now, time_interval, ','.join(str(u) for u in active_users)))
@@ -37,7 +39,7 @@ def get_read_samples_by_pos(active_users, pos, time_interval):
     return rows
 
 
-def get_read_samples(active_users, time_interval):
+def get_negative_samples(active_users, time_interval):
     users_dict = {}
     for user in active_users:
         pos = user % 100

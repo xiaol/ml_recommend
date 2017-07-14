@@ -20,7 +20,7 @@ def construct_feature_matrix(topic_num, time_interval='10 seconds'):
     :param topic_num:  the number of lda topics
     :return:
     """
-    active_users = etl_user_data.get_sample_user(time_interval=time_interval)
+    active_users = etl_user_data.get_active_user(time_interval=time_interval)
     print 'Users count:' + str(len(active_users))
 
     users_feature_dict, users_detail_dict, users_topic_dict = {}, {}, {}
@@ -44,10 +44,11 @@ def construct_feature_matrix(topic_num, time_interval='10 seconds'):
         users_topic_dict.update(users_topic_dict_split)
 
         # uid nid readtime logtype logchid
-        read_samples_list_split = etl_sample.get_read_samples(splited_users, '1 second')
-        click_samples_list_split = etl_sample.get_click_samples(splited_users, '7 days')
-        read_samples_list.extend(read_samples_list_split)
-        click_samples_list.extend(click_samples_list_split)
+        nag_samples_list = etl_sample.get_negative_samples(splited_users, '1 second')
+        pos_samples_list = etl_sample.get_positive_samples(splited_users, '1 day')
+
+        read_samples_list.extend(nag_samples_list)
+        click_samples_list.extend(pos_samples_list)
 
         items_list_split = [read_sample[1] for read_sample in read_samples_list]
         items_list_split.extend([click_sample[1] for click_sample in click_samples_list])
@@ -57,12 +58,12 @@ def construct_feature_matrix(topic_num, time_interval='10 seconds'):
     items_feature_dict = etl_item_data.load(set(items_list), topic_num, item_extractor)
     print '<- Read samples size: '+str(len(read_samples_list)) + ' click samples size:' + str(len(click_samples_list)) + ' items feature size:' + str(len(items_feature_dict))
 
-    read_samples_feature_dict = get_samples_feature(
+    all_samples_feature_dict = get_samples_feature(
                                 read_samples_list, users_feature_dict,
                                 items_feature_dict, strategies_dict)
 
-    features_dict = get_positive_sample_feature(
-                        click_samples_list, read_samples_feature_dict,
+    features_dict = update_positive_sample_feature(
+                        click_samples_list, all_samples_feature_dict,
                         users_feature_dict, items_feature_dict,
                         strategies_dict)
 
@@ -74,7 +75,7 @@ def construct_feature_matrix(topic_num, time_interval='10 seconds'):
     # objgraph.show_refs([feature_list], filename='ref_topo.png')
 
     del items_feature_dict
-    del read_samples_feature_dict
+    del all_samples_feature_dict
     del features_dict
     del read_samples_list
     del click_samples_list
@@ -140,9 +141,9 @@ def get_samples_feature(read_samples_list,
     return read_feature_dict
 
 
-def get_positive_sample_feature(click_samples_list, samples_feature_dict,
-                                users_feature_dict, items_feature_dict,
-                                strategies_dict):
+def update_positive_sample_feature(click_samples_list, samples_feature_dict,
+                                   users_feature_dict, items_feature_dict,
+                                   strategies_dict):
 
     light = 0
     for click_sample in click_samples_list:
