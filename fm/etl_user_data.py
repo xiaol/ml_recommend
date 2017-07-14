@@ -7,40 +7,52 @@ sys.path.append(path)
 
 from util.postgres import postgres_read_only as pg
 import datetime
+from collections import OrderedDict
 
 
-# TODO should cover only read  but not click users for cold start
-def get_active_user(time_interval='1 day', click_times=1):
+# TODO should cover only read  but not click users for cold start,
+def get_active_user(time_interval='1 hour', click_times=1):
     nt = datetime.datetime.now()
     str_now = nt.strftime('%Y-%m-%d %H:%M:%S')
     sql = '''
             select uid from newsrecommendclick 
-            where ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}'  
-            group by uid HAVING "count"(*)>={}
+            where ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}' and uid not in (0)
+            group by uid HAVING "count"(*)>={} 
         '''
     rows = pg.query(sql.format(str_now, time_interval, click_times))
     a_users = [r[0] for r in rows]
     return a_users
 
 
-def recall_candidates(boolean_users=True,  users_para=[33658617]):
+def get_sample_user(time_interval='6 hours', click_times=1):
+    nt = datetime.datetime.now()
+    str_now = nt.strftime('%Y-%m-%d %H:%M:%S')
+    sql = '''
+            select n.uid from newsrecommendclick as n left join user_device as u on n.uid = u.uid
+            where n.ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}' and 
+            u.ctime < to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '1 day' and n.uid not in (0)
+            group by n.uid HAVING "count"(*)>={} 
+        '''
+    rows = pg.query(sql.format(str_now, time_interval, str_now, click_times))
+    a_users = [r[0] for r in rows]
+    return a_users
+
+
+def recall_candidates(user_extractor, boolean_users=True,  users_para=[33658617]):
     if boolean_users:
         users = users_para
     else:
         users = get_active_user('5 minutes')
 
-    users_feature_dict, users_detail_dict, users_topic_dict = \
-        user_extractor.load(users, 5000, '15 days')
+    users_feature_dict, users_detail_dict, users_topic_dict = user_extractor.load(
+        users, 5000, '15 days')
+
     return users_feature_dict, users_detail_dict, users_topic_dict
-
-
-def enumerate_user_brand(active_users):
-    return enumerate_user_attribute('brand', active_users)
 
 
 def enumerate_user_os():
     os_type = {'android': 1, 'ios': 0}
-    os_feature_dict = dict((v, 0) for k, v in os_type.iteritems())
+    os_feature_dict = OrderedDict((v, 0) for k, v in os_type.iteritems())
     return os_feature_dict
 
 
@@ -90,7 +102,7 @@ def enumerate_user_attribute(attribute_name, active_users):
                       where uid in ({})
                       '''
     rows = pg.query(user_device_sql.format(attribute_name, ','.join(str(u) for u in active_users)))
-    feature_dict = dict((r[0], 0) for r in rows)
+    feature_dict = OrderedDict((r[0], 0) for r in rows)
     return feature_dict
 
 
@@ -109,7 +121,7 @@ def get_users_topic(users, time_interval='15 days'):
     sql = '''
             SELECT uid, topic_id, probability, model_v, create_time from user_topics_v2
             where create_time > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}'  
-            and uid in ({})
+            and uid in ({}) and model_v = '2017-04-07-10-49-37'
     '''
     rows = pg.query(sql.format(str_now, time_interval, ','.join(str(u) for u in users)))
     return rows
@@ -121,16 +133,21 @@ def get_user_kmeans(users):
 
 class UserExtractor(object):
 
-    feature_brand_dict = {}
+    feature_brand_dict = OrderedDict()
+
+    def enumerate_user_brand(self, active_users):
+        if not self.feature_brand_dict:
+            self.feature_brand_dict = enumerate_user_attribute('brand', active_users)
+        return self.feature_brand_dict
 
     def preprocess_users_feature(self, all_users):
-        self.feature_brand_dict = enumerate_user_brand(all_users)
+        self.feature_brand_dict = enumerate_user_attribute('brand', all_users)
 
     def load(self, active_users, topic_num, topic_time_interval):
         users_feature_dict = {}
         if not self.feature_brand_dict:
             print 'Warning-----user brand dict init online---'
-            self.feature_brand_dict = enumerate_user_brand(active_users)
+            self.feature_brand_dict = self.enumerate_user_brand(active_users)
         # Many users don't have device features, so need to initialize the feature dicts.
         for user in active_users:
             users_feature_dict[user] = [0]*len(self.feature_brand_dict)
@@ -146,6 +163,10 @@ class UserExtractor(object):
 
             if not user_detail:
                 users_feature_dict[user_detail[0]] = self.feature_brand_dict.values()
+                continue
+
+            # TODO add default key -1 to brand dict
+            if user_detail[1] not in self.feature_brand_dict:
                 continue
 
             self.feature_brand_dict[user_detail[1]] = 1
@@ -177,8 +198,11 @@ class UserExtractor(object):
         return users_feature_dict, users_detail_dict, users_topic_dict
         # return {1: [1, 0], 2: [0, 1], 3: [1, 0], 4: [0, 1]}   # user_id, user_feature vector
 
-user_extractor = UserExtractor()
 
 if __name__ == '__main__':
     users_test = get_active_user(time_interval='30 minutes')
-    print user_extractor.load(users_test)
+    sample_users = get_sample_user()
+    print len(sample_users)
+
+    extractor = UserExtractor()
+    print extractor.load(users_test)

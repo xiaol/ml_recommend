@@ -6,14 +6,17 @@ sys.path.append(path)
 
 from util.postgres import postgres_read_only as pg
 import datetime
+from collections import OrderedDict
 
 
-def get_click_samples(active_users, time_interval):
+def get_positive_samples(active_users, time_interval):
     nt = datetime.datetime.now()
     str_now = nt.strftime('%Y-%m-%d %H:%M:%S')
+    # logtype 4 is topic channel
     sql = '''
         select  uid, nid, ctime, stime, logtype, logchid from newsrecommendclick 
-            where ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}'  
+            where ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}' 
+            and logtype not in (4) and uid not in (0) and nid not in (0)
                       and uid in ({})
     '''
     rows = pg.query(sql.format(str_now, time_interval, ','.join(str(u) for u in active_users)))
@@ -26,13 +29,17 @@ def get_read_samples_by_pos(active_users, pos, time_interval):
     sql = '''
         select uid, nid, readtime, logtype, logchid from newsrecommendread_{} 
             where readtime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}'  
-                      and uid in ({})
+                      and uid in ({}) and uid not in (select uid from (select uid, count(1) as sc from newsrecommendread_{} 
+                      where readtime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}' 
+                      and uid in ({}) group by uid ) as tb where sc > 1000)
     '''
-    rows = pg.query(sql.format(pos, str_now, time_interval, ','.join(str(u) for u in active_users)))
+    sql = sql.format(pos, str_now, time_interval, ','.join(str(u) for u in active_users),
+                               pos, str_now, time_interval, ','.join(str(u) for u in active_users))
+    rows = pg.query(sql)
     return rows
 
 
-def get_read_samples(active_users, time_interval):
+def get_negative_samples(active_users, time_interval):
     users_dict = {}
     for user in active_users:
         pos = user % 100
@@ -49,7 +56,7 @@ def get_read_samples(active_users, time_interval):
 
 
 class SampleExtractor(object):
-    time_dict = dict((i, 0) for i in range(24))
+    time_dict = OrderedDict((i, 0) for i in range(24))
 
     def generate_time_feature(self, timestamp):
         for k, v in self.time_dict.iteritems():

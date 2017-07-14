@@ -23,7 +23,7 @@ rmse_train = []
 rmse_test = []
 r2_score_train = []
 r2_score_test = []
-X, y = construct_feature_matrix(5000, time_interval='20 minutes')
+X, y, user_extractor, item_extractor  = construct_feature_matrix(5000, time_interval='20 minutes')
 X_samples, X_validation, y_samples, y_validation = train_test_split(X, y, train_size=0.8, random_state=42)
 
 for i in range(1, n_iter):
