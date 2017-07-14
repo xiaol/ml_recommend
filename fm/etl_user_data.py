@@ -16,7 +16,7 @@ def get_active_user(time_interval='1 hour', click_times=1):
     str_now = nt.strftime('%Y-%m-%d %H:%M:%S')
     sql = '''
             select uid from newsrecommendclick 
-            where ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}' and uid not in (0) 
+            where ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}' and uid not in (0)
             group by uid HAVING "count"(*)>={} 
         '''
     rows = pg.query(sql.format(str_now, time_interval, click_times))
@@ -30,8 +30,8 @@ def get_sample_user(time_interval='6 hours', click_times=1):
     sql = '''
             select n.uid from newsrecommendclick as n left join user_device as u on n.uid = u.uid
             where n.ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}' and 
-            u.ctime < to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '1 day' and uid not in(0)
-            group by n.uid HAVING "count"(*)>={}
+            u.ctime < to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '1 day' and n.uid not in (0)
+            group by n.uid HAVING "count"(*)>={} 
         '''
     rows = pg.query(sql.format(str_now, time_interval, str_now, click_times))
     a_users = [r[0] for r in rows]
