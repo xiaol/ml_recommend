@@ -79,6 +79,13 @@ class ItemExtractor(object):
     kmeans_feature_dict = OrderedDict()
     channel_feature_dict = OrderedDict()
 
+    chnl_k_dict = OrderedDict({'财经': 20, '股票': 10, '故事': 20, '互联网': 20, '健康': 50, '军事': 20,
+                       '科学': 20, '历史': 30, '旅游': 20, '美食': 20, '美文': 20, '萌宠': 10,
+                       '汽车': 30, '时尚': 10, '探索': 10, '外媒': 30, '养生': 30, '影视': 10,
+                       '游戏': 30, '育儿': 20, '体育': 20, '娱乐': 20, '社会': 20, '科技': 12,
+                       '国际': 5, '美女': 1, '搞笑': 1, '趣图': 1, '风水玄学': 10, '本地': 20,
+                       '自媒体': 80, '奇闻': 10})
+
     def enumerate_recommend_strategy(self):
         if self.strategy_feature_dict:
             return self.strategy_feature_dict
@@ -94,13 +101,8 @@ class ItemExtractor(object):
         return self.strategy_feature_dict
 
     def enumerate_kmeans(self):
-        chnl_k_dict = {'财经': 20, '股票': 10, '故事': 20, '互联网': 20, '健康': 50, '军事': 20,
-                       '科学': 20, '历史': 30, '旅游': 20, '美食': 20, '美文': 20, '萌宠': 10,
-                       '汽车': 30, '时尚': 10, '探索': 10, '外媒': 30, '养生': 30, '影视': 10,
-                       '游戏': 30, '育儿': 20, '体育': 20, '娱乐': 20, '社会': 20, '科技': 12,
-                       '国际': 5, '美女': 1, '搞笑': 1, '趣图': 1, '风水玄学': 10, '本地': 20,
-                       '自媒体': 80, '奇闻': 10}
-        for k,v in chnl_k_dict.iteritems():
+
+        for k,v in self.chnl_k_dict.iteritems():
             self.kmeans_feature_dict[k] = [0] * v
 
     def enumerate_channel(self):
@@ -108,7 +110,6 @@ class ItemExtractor(object):
             return self.channel_feature_dict
         self.channel_feature_dict = get_channel_list()
         return self.channel_feature_dict
-
 
 
 def enumerate_article_attribute(attribute_name):
@@ -177,7 +178,7 @@ def load(items_list, topic_num, item_extractor):
     items_channel_kmeans = get_item_channel_and_kmeans(items_list)
     channel_feature_list = channel_feature_dict.keys()
     for item_ck in items_channel_kmeans:
-        items_feature_dict[item_ck['nid']][topic_offset + channel_feature_list.index(item_ck['ch_name'])]=1
+        items_feature_dict[item_ck['nid']][topic_offset + channel_feature_list.index(item_ck['ch_name'])]= 1
 
     return items_feature_dict  # item id, feature vector pair.
 
