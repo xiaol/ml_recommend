@@ -84,6 +84,7 @@ class ItemExtractor(object):
                        '游戏': 30, '育儿': 20, '体育': 20, '娱乐': 20, '社会': 20, '科技': 12,
                        '国际': 5, '美女': 1, '搞笑': 1, '趣图': 1, '风水玄学': 10, '本地': 20,
                        '自媒体': 80, '奇闻': 10})
+    kmeans_size = 0
 
     def enumerate_recommend_strategy(self):
         if self.strategy_feature_dict:
@@ -100,9 +101,13 @@ class ItemExtractor(object):
         return self.strategy_feature_dict
 
     def enumerate_kmeans(self):
+        if self.kmeans_feature_dict:
+            return self.kmeans_feature_dict, self.kmeans_size
 
         for k,v in self.chnl_k_dict.iteritems():
-            self.kmeans_feature_dict[k] = [0] * v
+            self.kmeans_feature_dict[k] = v
+            self.kmeans_size += v
+        return self.kmeans_feature_dict, self.kmeans_size
 
     def enumerate_channel(self):
         if self.channel_feature_dict:
@@ -165,8 +170,10 @@ def load(items_list, topic_num, item_extractor):
     channel_feature_dict = item_extractor.enumerate_channel()
     channel_offest = len(channel_feature_dict)
 
+    kmeans_feature_dict, kmeans_offset = item_extractor.enumerate_kmeans()
+
     for item in items_list:
-        items_feature_dict[item] = [0]*(topic_offset + channel_offest)
+        items_feature_dict[item] = [0]*(topic_offset + channel_offest + kmeans_offset)
 
     items_topic = get_item_topic(items_list)
     for item_topic in items_topic:
@@ -178,6 +185,17 @@ def load(items_list, topic_num, item_extractor):
     channel_feature_list = channel_feature_dict.keys()
     for item_ck in items_channel_kmeans:
         items_feature_dict[item_ck['nid']][topic_offset + channel_feature_list.index(item_ck['ch_name'])]= 1
+
+    for item_ck in items_channel_kmeans:
+        kmeans_pos = 0
+        for k,v in kmeans_feature_dict.iteritems():
+            if item_ck['ch_name'] != k:
+                kmeans_pos += kmeans_feature_dict[k]
+            else:
+                kmeans_pos += item_ck['cluster_id']
+                break
+
+        items_feature_dict[item_ck['nid']][topic_offset + channel_offest + kmeans_pos]= 1
 
     return items_feature_dict  # item id, feature vector pair.
 

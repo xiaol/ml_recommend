@@ -20,7 +20,7 @@ def construct_feature_matrix(topic_num, time_interval='10 seconds'):
     :param topic_num:  the number of lda topics
     :return:
     """
-    active_users = etl_user_data.get_active_user(time_interval=time_interval)
+    active_users = etl_user_data.get_sample_user(time_interval=time_interval)
     print 'Users count:' + str(len(active_users))
 
     users_feature_dict, users_detail_dict, users_topic_dict = {}, {}, {}
@@ -44,7 +44,7 @@ def construct_feature_matrix(topic_num, time_interval='10 seconds'):
         users_topic_dict.update(users_topic_dict_split)
 
         # uid nid readtime logtype logchid
-        nag_samples_list = etl_sample.get_negative_samples(splited_users, '1 second')
+        nag_samples_list = etl_sample.get_negative_samples(splited_users, '0 second')
         positive_samples_list = etl_sample.get_positive_samples(splited_users, '7 days')
 
         items_list_split = [nag[1] for nag in nag_samples_list]
