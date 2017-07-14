@@ -45,19 +45,20 @@ def construct_feature_matrix(topic_num, time_interval='10 seconds'):
 
         # uid nid readtime logtype logchid
         nag_samples_list = etl_sample.get_negative_samples(splited_users, '0 second')
-        positive_samples_list = etl_sample.get_positive_samples(splited_users, '7 days')
+        pos_samples_list = etl_sample.get_positive_samples(splited_users, '7 days')
 
         items_list_split = [nag[1] for nag in nag_samples_list]
         items_list_split.extend([pos[1] for pos in positive_samples_list])
         items_list.extend(items_list_split)
 
         negative_samples_list.extend(nag_samples_list)
-        positive_samples_list.extend(positive_samples_list)
+        positive_samples_list.extend(pos_samples_list)
 
         print str(len(items_list)) + ' ',
 
     items_feature_dict = etl_item_data.load(set(items_list), topic_num, item_extractor)
-    print '<- Read samples size: '+str(len(negative_samples_list)) + ' click samples size:' + str(len(positive_samples_list)) + ' items feature size:' + str(len(items_feature_dict))
+    print '<- Read samples size: '+str(len(negative_samples_list)) + ' click samples size:' \
+          + str(len(positive_samples_list)) + ' items feature size:' + str(len(items_feature_dict))
 
     all_samples_feature_dict = get_samples_feature(
                                 negative_samples_list, users_feature_dict,
