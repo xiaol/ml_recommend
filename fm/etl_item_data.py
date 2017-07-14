@@ -177,7 +177,7 @@ def load(items_list, topic_num, item_extractor):
     items_channel_kmeans = get_item_channel_and_kmeans(items_list)
     channel_feature_list = channel_feature_dict.keys()
     for item_ck in items_channel_kmeans:
-        items_feature_dict[item_ck['nid']][topic_offset + channel_feature_list.index(item_ck['ch_name'])]
+        items_feature_dict[item_ck['nid']][topic_offset + channel_feature_list.index(item_ck['ch_name'])]=1
 
     return items_feature_dict  # item id, feature vector pair.
 

@@ -165,6 +165,10 @@ class UserExtractor(object):
                 users_feature_dict[user_detail[0]] = self.feature_brand_dict.values()
                 continue
 
+            # TODO add default key -1 to brand dict
+            if user_detail[1] not in self.feature_brand_dict:
+                continue
+
             self.feature_brand_dict[user_detail[1]] = 1
             users_feature_dict[user_detail[0]] = self.feature_brand_dict.values()
 
