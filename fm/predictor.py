@@ -42,7 +42,7 @@ def predict(time_interval='10 seconds'):
     als_fm, X_and_y, user_extractor, item_extractor = als_solver.train(time_interval=time_interval)
     # recall must behind train
     users_feature_dict, users_detail_dict, users_topic_dict = etl_user_data.recall_candidates(
-        user_extractor, boolean_users=True, users_para=[33658617, 40189301, 7054063, 33446693])
+        user_extractor, boolean_users=True, users_para=[33658617]) # , 40189301, 7054063, 33446693])
     # me , laite, xinyong, liulei
     # TODO don't have the brand feature may cause crash
 
