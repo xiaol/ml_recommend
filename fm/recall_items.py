@@ -77,7 +77,7 @@ def recall_bigimg_video(user_id, limit):
           nv.tags as tags, 999 as rtype, 25 as logtype from newslist_v2 nv 
           inner join newsrecommendlist nr on nv.nid=nr.nid where  not exists (select 1 from {tablename} nr 
           where nv.nid=nr.nid and nr.uid={uid} and nr.readtime>{dayWindow3})  and nv.ctime>{dayWindow3} \
-          and nr.rtime>{dayWindow3} and nr.status=1 and nr.chid=1 order by level desc, style desc, 
+          and nr.rtime>{dayWindow3} and nr.status=1 order by level desc, style desc, 
           rtime desc limit {limit})bigimage union all select * from (select {select} , 6 as rtype, 6 as logtype 
           from blanknews_sortinglist bs inner join  newslist_v2  nv on nv.nid = bs.nid 
           where  not exists (select 1 from {tablename} nr where nv.nid=nr.nid and nr.uid={uid} 
