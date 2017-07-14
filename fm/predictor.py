@@ -39,14 +39,15 @@ def update_user_ranking_recommend(user_id, recommend_sorted_list):
 
 
 def predict(time_interval='10 seconds'):
-    als_fm, X_and_y, user_extractor, item_extractor = als_solver.train(time_interval=time_interval)
-    # recall must behind train
-    users_feature_dict, users_detail_dict, users_topic_dict = etl_user_data.recall_candidates(
-        user_extractor, boolean_users=True, users_para=[33658617 , 40189301, 7054063, 33446693, 27210952])
-    # me , laite, xinyong, liulei, hanxiao
-    # TODO don't have the brand feature may cause crash
+    candidate_users = [33658617, 40189301, 7054063, 33446693, 27210952]
+    for user in candidate_users:
+        als_fm, X_and_y, user_extractor, item_extractor = als_solver.train(user=[user], time_interval=time_interval)
+        # recall must behind train
+        users_feature_dict, users_detail_dict, users_topic_dict = etl_user_data.recall_candidates(
+            user_extractor, boolean_users=True, users_para=[user])
+        # me , laite, xinyong, liulei, hanxiao
+        # TODO don't have the brand feature may cause crash
 
-    for user, feature in users_feature_dict.iteritems():
         if user not in users_topic_dict:
             pass
         else:
@@ -57,6 +58,7 @@ def predict(time_interval='10 seconds'):
             print '------------------wilson is empty-----'
             continue
 
+        feature = users_feature_dict[user]
         nt = datetime.datetime.now()
         feature.extend(etl_sample.sampleExtractor.generate_time_feature(nt))
         item_cols = item_candidates.values()

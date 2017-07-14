@@ -15,10 +15,10 @@ def train_model(x_train, y_train, n_iter,
     return fm
 
 
-def train(n_iter=1000, time_interval='1 hour',
+def train(n_iter=1000, time_interval='1 hour', user=[],
           init_stdev=0.1, rank=2, l2_reg_w=0.1, l2_reg_V=0.5,
           test_size=0.33, random_state=42):
-    X, y, user_extractor, item_extractor = construct_feature_matrix(5000, time_interval=time_interval)
+    X, y, user_extractor, item_extractor = construct_feature_matrix(5000,user=user, time_interval=time_interval)
     x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
 
     als_fm = train_model(x_train, y_train, n_iter, init_stdev=init_stdev, rank=rank, l2_reg_w=l2_reg_w, l2_reg_V=l2_reg_V)

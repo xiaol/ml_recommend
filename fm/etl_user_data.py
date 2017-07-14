@@ -133,7 +133,8 @@ def get_user_kmeans(users):
 
 class UserExtractor(object):
 
-    feature_brand_dict = OrderedDict()
+    def __init__(self):
+        self.feature_brand_dict = OrderedDict()
 
     def enumerate_user_brand(self, active_users):
         if not self.feature_brand_dict:
