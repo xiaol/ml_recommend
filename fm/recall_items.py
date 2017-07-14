@@ -9,9 +9,9 @@ from collections import OrderedDict
 condition = " and nv.chid != 28 and nv.state=0 and (nv.rtype is null  or nv.rtype=0) "
 select = "nv.nid, nv.docid, nv.title, nv.pname, nv.ptime, nv.purl, nv.chid, nv.collect, nv.concern, nv.un_concern, nv.comment, nv.style, nv.imgs,  nv.icon, nv.videourl, nv.duration, nv.thumbnail, nv.clicktimes, nv.tags"
 dayWindow1 = " now()-interval'1 day' "
+dayWindow3 = " now()-interval'3 day' "
 
 def recall_wilson_news(user_id, limit):
-    dayWindow3 = " now()-interval'3 day' "
     table_name = "newsrecommendread_" + str(user_id % 100)
 
     sql = '''
@@ -69,22 +69,30 @@ def recall_hotnews(user_id, limit):
 
 
 def recall_bigimg_video(user_id, limit):
-    tablename = "newsrecommendread_" + user_id % 100
+    tablename = "newsrecommendread_" + str(user_id % 100)
     sql =''' select * from (select nv.nid, nv.docid, nv.title, nv.pname, nv.ptime, nv.purl, 
           nv.chid, nv.collect, nv.concern, nv.un_concern, nv.comment, case when nr.bigimg>0 
-          then (10+nr.bigimg) else nv.style end as style, array_to_string(nv.imgs, ',') as imgs,  
+          then (10+nr.bigimg) else nv.style end as style, nv.imgs as imgs,  
           nv.icon, nv.videourl, nv.duration, nv.thumbnail, nv.clicktimes, 
-          array_to_string(nv.tags, ',') as tags, 999 as rtype, 25 as logtype from newslist_v2 nv 
-          inner join newsrecommendlist nr on nv.nid=nr.nid where  not exists (select 1 from #$tablename nr 
-          where nv.nid=nr.nid and nr.uid=$uid and nr.readtime>#$dayWindow3)  and nv.ctime>#$dayWindow3 \
-          and nr.rtime>#$dayWindow3 and nr.status=1 and nr.chid=1 order by level desc, style desc, 
-          rtime desc limit $limit)bigimage union all select * from (#$select , 6 as rtype, 6 as logtype 
+          nv.tags as tags, 999 as rtype, 25 as logtype from newslist_v2 nv 
+          inner join newsrecommendlist nr on nv.nid=nr.nid where  not exists (select 1 from {tablename} nr 
+          where nv.nid=nr.nid and nr.uid={uid} and nr.readtime>{dayWindow3})  and nv.ctime>{dayWindow3} \
+          and nr.rtime>{dayWindow3} and nr.status=1 and nr.chid=1 order by level desc, style desc, 
+          rtime desc limit {limit})bigimage union all select * from (select {select} , 6 as rtype, 6 as logtype 
           from blanknews_sortinglist bs inner join  newslist_v2  nv on nv.nid = bs.nid 
-          where  not exists (select 1 from #$tablename nr where nv.nid=nr.nid and nr.uid=$uid 
-          and nr.readtime> #$dayWindow1) and nv.ctime> #$dayWindow1  and bs.chid =44 
-          order by bs.score desc  limit #$limit ) video'''
+          where  not exists (select 1 from {tablename} nr where nv.nid=nr.nid and nr.uid={uid} 
+          and nr.readtime> {dayWindow1}) and nv.ctime> {dayWindow1}  and bs.chid =44 
+          order by bs.score desc  limit {limit} ) video'''
 
+    sql = sql.format(select=select, uid=user_id, dayWindow1=dayWindow1, dayWindow3=dayWindow3,
+                     tablename=tablename, limit=limit)
 
+    rows = pg.query_dict_cursor(sql)
+    bv_dict = OrderedDict()
+    for r in rows:
+        bv_dict[r['nid']] = dict(r)
+        bv_dict[r['nid']]['ptime'] = str(bv_dict[r['nid']]['ptime'])
+    return bv_dict
 
 if __name__ == '__main__':
     wilson_dict = recall_wilson_news(33658617, 10)
