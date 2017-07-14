@@ -24,7 +24,7 @@ def construct_feature_matrix(topic_num, time_interval='10 seconds'):
     print 'Users count:' + str(len(active_users))
 
     users_feature_dict, users_detail_dict, users_topic_dict = {}, {}, {}
-    read_samples_list, click_samples_list, items_list = [], [], []
+    negative_samples_list, positive_samples_list, items_list = [], [], []
 
     # init item and user extractor
     item_extractor = etl_item_data.ItemExtractor()
@@ -45,25 +45,26 @@ def construct_feature_matrix(topic_num, time_interval='10 seconds'):
 
         # uid nid readtime logtype logchid
         nag_samples_list = etl_sample.get_negative_samples(splited_users, '1 second')
-        pos_samples_list = etl_sample.get_positive_samples(splited_users, '1 day')
+        positive_samples_list = etl_sample.get_positive_samples(splited_users, '1 day')
 
-        read_samples_list.extend(nag_samples_list)
-        click_samples_list.extend(pos_samples_list)
-
-        items_list_split = [read_sample[1] for read_sample in read_samples_list]
-        items_list_split.extend([click_sample[1] for click_sample in click_samples_list])
+        items_list_split = [nag[1] for nag in nag_samples_list]
+        items_list_split.extend([pos[1] for pos in positive_samples_list])
         items_list.extend(items_list_split)
+
+        negative_samples_list.extend(nag_samples_list)
+        positive_samples_list.extend(positive_samples_list)
+
         print str(len(items_list)) + ' ',
 
     items_feature_dict = etl_item_data.load(set(items_list), topic_num, item_extractor)
-    print '<- Read samples size: '+str(len(read_samples_list)) + ' click samples size:' + str(len(click_samples_list)) + ' items feature size:' + str(len(items_feature_dict))
+    print '<- Read samples size: '+str(len(negative_samples_list)) + ' click samples size:' + str(len(positive_samples_list)) + ' items feature size:' + str(len(items_feature_dict))
 
     all_samples_feature_dict = get_samples_feature(
-                                read_samples_list, users_feature_dict,
+                                negative_samples_list, users_feature_dict,
                                 items_feature_dict, strategies_dict)
 
     features_dict = update_positive_sample_feature(
-                        click_samples_list, all_samples_feature_dict,
+                        positive_samples_list, all_samples_feature_dict,
                         users_feature_dict, items_feature_dict,
                         strategies_dict)
 
@@ -77,8 +78,8 @@ def construct_feature_matrix(topic_num, time_interval='10 seconds'):
     del items_feature_dict
     del all_samples_feature_dict
     del features_dict
-    del read_samples_list
-    del click_samples_list
+    del negative_samples_list
+    del positive_samples_list
     del items_list
     del users_feature_dict_split
     del users_detail_dict_split
