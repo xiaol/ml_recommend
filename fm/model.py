@@ -20,7 +20,7 @@ def construct_feature_matrix(topic_num, time_interval='10 seconds'):
     :param topic_num:  the number of lda topics
     :return:
     """
-    active_users = etl_user_data.get_active_user(time_interval=time_interval, click_times=5)
+    active_users = etl_user_data.get_sample_user(time_interval=time_interval, click_times=5)
     print 'Users count:' + str(len(active_users))
 
     users_feature_dict, users_detail_dict, users_topic_dict = {}, {}, {}
