@@ -11,15 +11,17 @@ from collections import OrderedDict
 
 
 # TODO should cover only read  but not click users for cold start,
-def get_active_user(time_interval='1 hour', click_times=1):
+def get_active_user(time_interval='7 days', time_active='1 hour',click_times=1):
     nt = datetime.datetime.now()
     str_now = nt.strftime('%Y-%m-%d %H:%M:%S')
     sql = '''
             select uid from newsrecommendclick 
-            where ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}' and uid not in (0)
+            where ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}' and uid not in (0) 
+            and uid in (select uid from newsrecommendclick
+            where ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}')
             group by uid HAVING "count"(*)>={} 
         '''
-    rows = pg.query(sql.format(str_now, time_interval, click_times))
+    rows = pg.query(sql.format(str_now, time_interval, str_now, time_active, click_times))
     a_users = [r[0] for r in rows]
     return a_users
 
@@ -42,7 +44,7 @@ def recall_candidates(user_extractor, boolean_users=True,  users_para=[33658617]
     if boolean_users:
         users = users_para
     else:
-        users = get_active_user('5 minutes')
+        users = get_active_user(time_active='5 minutes')
 
     users_feature_dict, users_detail_dict, users_topic_dict = user_extractor.load(
         users, 5000, '15 days')
@@ -147,6 +149,7 @@ class UserExtractor(object):
     def load(self, active_users, topic_num, topic_time_interval):
         users_feature_dict = {}
         if not self.feature_brand_dict:
+            # if user do not have user device info may cause this warning
             print 'Warning-----user brand dict init online---'
             self.feature_brand_dict = self.enumerate_user_brand(active_users)
         # Many users don't have device features, so need to initialize the feature dicts.
