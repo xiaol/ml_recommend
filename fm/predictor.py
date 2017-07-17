@@ -43,6 +43,7 @@ def predict(time_interval='10 seconds'):
     # candidate_users = [33658617, 40189301, 7054063, 33446693, 27210952]
     candidate_users = etl_user_data.get_active_user('2 hour', click_times=3)
     for user in candidate_users:
+        print 'Allen ' + str(user) + ' , your turn.'
         als_fm, X_and_y, user_extractor, item_extractor = als_solver.train(user=[user], time_interval=time_interval)
         # recall must behind train
         users_feature_dict, users_detail_dict, users_topic_dict = etl_user_data.recall_candidates(
@@ -80,7 +81,6 @@ def predict(time_interval='10 seconds'):
         for i in range(len(sorted_list)):
             recommend_items_list.append(candidates_dict[sorted_list[i][0]])
         update_user_ranking_recommend(user, recommend_items_list[:200])
-        print 'Allen ' + str(user) + ' , your turn.'
 
 
 if __name__ == '__main__':

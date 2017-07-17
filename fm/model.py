@@ -14,7 +14,7 @@ import gc
 from collections import OrderedDict
 
 
-@profile
+# @profile
 def construct_feature_matrix(topic_num, user= [], time_interval='10 seconds'):
     """
     :param topic_num:  the number of lda topics
