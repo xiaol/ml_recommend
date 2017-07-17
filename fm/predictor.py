@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 
 
 import als_solver
@@ -39,46 +39,45 @@ def update_user_ranking_recommend(user_id, recommend_sorted_list):
     redis_ali.set(feedSuffix + str(user_id), json_str, ex=60*60)
 
 
-def predict(time_interval='10 seconds', candidate_users=[]):
-    for user in candidate_users:
-        print 'Allen ' + str(user) + ' , your turn.'
-        als_fm, X_and_y, user_extractor, item_extractor = als_solver.train(user=[user], time_interval=time_interval)
-        # recall must behind train
-        users_feature_dict, users_detail_dict, users_topic_dict = etl_user_data.recall_candidates(
-            user_extractor, boolean_users=True, users_para=[user])
-        # me , laite, xinyong, liulei, hanxiao
-        # TODO don't have the brand feature may cause crash
+def predict(time_interval='10 seconds', user=-1):
+    print 'Allen ' + str(user) + ' , your turn.'
+    als_fm, X_and_y, user_extractor, item_extractor = als_solver.train(user=[user], time_interval=time_interval)
+    # recall must behind train
+    users_feature_dict, users_detail_dict, users_topic_dict = etl_user_data.recall_candidates(
+        user_extractor, boolean_users=True, users_para=[user])
+    # me , laite, xinyong, liulei, hanxiao
+    # TODO don't have the brand feature may cause crash
 
-        if user not in users_topic_dict:
-            pass
-        else:
-            item_candidates, candidates_dict = etl_item_data.recall_candidates(
-                item_extractor, user, users_topic_dict[user])
+    if user not in users_topic_dict:
+        pass
+    else:
+        item_candidates, candidates_dict = etl_item_data.recall_candidates(
+            item_extractor, user, users_topic_dict[user])
 
-        if len(item_candidates) == 0:
-            print '------------------wilson is empty-----'
-            continue
+    if len(item_candidates) == 0:
+        print '------------------wilson is empty-----'
+        return
 
-        feature = users_feature_dict[user]
-        nt = datetime.datetime.now()
-        feature.extend(etl_sample.sampleExtractor.generate_time_feature(nt))
-        item_cols = item_candidates.values()
-        user_cols = [feature] * len(item_candidates)
+    feature = users_feature_dict[user]
+    nt = datetime.datetime.now()
+    feature.extend(etl_sample.sampleExtractor.generate_time_feature(nt))
+    item_cols = item_candidates.values()
+    user_cols = [feature] * len(item_candidates)
 
-        cols = np.hstack((user_cols, item_cols))
-        print 'the shape of the recall cols:', cols.shape, 'user cols:', len(feature), 'item cols:', len(item_cols)
-        feature_matrix = sp.csc_matrix(cols)
+    cols = np.hstack((user_cols, item_cols))
+    print 'the shape of the recall cols:', cols.shape, 'user cols:', len(feature), 'item cols:', len(item_cols)
+    feature_matrix = sp.csc_matrix(cols)
 
-        recommend_list = als_fm.predict(feature_matrix)
-        # TODO sort but keep nid...
-        # should not change the item_candidates' order
-        recommend_dict = dict(zip(item_candidates.keys(), recommend_list))
-        sorted_list = sorted(recommend_dict.items(), key=operator.itemgetter(1), reverse=True)
+    recommend_list = als_fm.predict(feature_matrix)
+    # TODO sort but keep nid...
+    # should not change the item_candidates' order
+    recommend_dict = dict(zip(item_candidates.keys(), recommend_list))
+    sorted_list = sorted(recommend_dict.items(), key=operator.itemgetter(1), reverse=True)
 
-        recommend_items_list = []
-        for i in range(len(sorted_list)):
-            recommend_items_list.append(candidates_dict[sorted_list[i][0]])
-        update_user_ranking_recommend(user, recommend_items_list[:200])
+    recommend_items_list = []
+    for i in range(len(sorted_list)):
+        recommend_items_list.append(candidates_dict[sorted_list[i][0]])
+    update_user_ranking_recommend(user, recommend_items_list[:200])
 
 
 if __name__ == '__main__':
@@ -91,14 +90,16 @@ if __name__ == '__main__':
     while True:
         st = time.time()
         try:
-            candidate_users = etl_user_data.get_active_user('2 hour', click_times=3)
+            # candidate_users = etl_user_data.get_active_user('2 hour', click_times=3)
+            candidate_users = [37245708]
         except:
             print "Can't find candidates-> ", sys.exc_info()
         # candidate_users = [33658617, 40189301, 7054063, 33446693, 27210952]
-        try:
-            predict(args.t, candidate_users)
-        except:
-            print 'Allen , we got a issue->', sys.exc_info()[0]
+        for c_user in candidate_users:
+            try:
+                predict(args.t, c_user)
+            except:
+                print 'Allen , we got a issue->', sys.exc_info()[0]
         end = time.time()
         elapse = end - st
         print 'Allen Wake, you have ' + str(elapse) + ' seconds to run.'
