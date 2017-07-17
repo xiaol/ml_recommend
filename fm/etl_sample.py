@@ -29,7 +29,8 @@ def get_read_samples_by_pos(active_users, pos, time_interval):
     sql = '''
         select uid, nid, readtime, logtype, logchid from newsrecommendread_{} 
             where readtime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}'  
-                      and uid in ({}) and uid not in (select uid from (select uid, count(1) as sc from newsrecommendread_{} 
+                      and uid in ({}) '''
+    condition = '''and uid not in (select uid from (select uid, count(1) as sc from newsrecommendread_{} 
                       where readtime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}' 
                       and uid in ({}) group by uid ) as tb where sc > 1000)
     '''
