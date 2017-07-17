@@ -28,9 +28,10 @@ def update_user_ranking_recommend(user_id, recommend_sorted_list):
 
     # rtype类型:0 普通、1 热点、2 推送、3 广告、4 专题、5 图片新闻、6 视频、7 本地
     update_news_feed_list = [x for x in news_feed_list if x['rtype'] != 0]
-    for item,i in zip(recommend_sorted_list, range(len(recommend_sorted_list))):
+    for item, i in zip(recommend_sorted_list, range(len(recommend_sorted_list))):
         News.format_news(item)
-        # item['rtype'] = i % 2
+        if item['rtype'] == 0:
+            item['rtype'] = i % 2  # TODO only one rtype happens
 
     update_news_feed_list.extend(recommend_sorted_list)
 
@@ -39,7 +40,7 @@ def update_user_ranking_recommend(user_id, recommend_sorted_list):
 
 
 def predict(time_interval='10 seconds'):
-    candidate_users = [33658617] # , 40189301, 7054063, 33446693, 27210952]
+    candidate_users = [33658617]  # , 40189301, 7054063, 33446693, 27210952]
     for user in candidate_users:
         als_fm, X_and_y, user_extractor, item_extractor = als_solver.train(user=[user], time_interval=time_interval)
         # recall must behind train
