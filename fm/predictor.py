@@ -90,8 +90,8 @@ if __name__ == '__main__':
     while True:
         st = time.time()
         try:
-            # candidate_users = etl_user_data.get_active_user('2 hour', click_times=3)
-            candidate_users = [37245708]
+            candidate_users = etl_user_data.get_active_user('2 hour', click_times=3)
+            #candidate_users = [37245708]
         except:
             print "Can't find candidates-> ", sys.exc_info()
         # candidate_users = [33658617, 40189301, 7054063, 33446693, 27210952]
