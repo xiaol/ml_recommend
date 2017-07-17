@@ -39,7 +39,7 @@ def update_user_ranking_recommend(user_id, recommend_sorted_list):
 
 
 def predict(time_interval='10 seconds'):
-    candidate_users = [33658617, 40189301, 7054063, 33446693, 27210952]
+    candidate_users = [33658617] # , 40189301, 7054063, 33446693, 27210952]
     for user in candidate_users:
         als_fm, X_and_y, user_extractor, item_extractor = als_solver.train(user=[user], time_interval=time_interval)
         # recall must behind train
