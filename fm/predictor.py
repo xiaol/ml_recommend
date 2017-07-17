@@ -27,7 +27,7 @@ def update_user_ranking_recommend(user_id, recommend_sorted_list):
         news_feed_list = json.loads(news_feed_json)
 
     # rtype类型:0 普通、1 热点、2 推送、3 广告、4 专题、5 图片新闻、6 视频、7 本地
-    update_news_feed_list = [x for x in news_feed_list if x['rtype'] != 0]
+    update_news_feed_list = [x for x in news_feed_list if x['rtype'] == 4]
     for item, i in zip(recommend_sorted_list, range(len(recommend_sorted_list))):
         News.format_news(item)
         if item['rtype'] == 0:
@@ -35,12 +35,13 @@ def update_user_ranking_recommend(user_id, recommend_sorted_list):
 
     update_news_feed_list.extend(recommend_sorted_list)
 
-    json_str = json.dumps(recommend_sorted_list, ensure_ascii=False)
-    redis_ali.set(feedSuffix + str(user_id), json_str, ex=60*30)
+    json_str = json.dumps(update_news_feed_list, ensure_ascii=False)
+    redis_ali.set(feedSuffix + str(user_id), json_str, ex=60*60)
 
 
 def predict(time_interval='10 seconds'):
-    candidate_users = [33658617, 40189301, 7054063, 33446693, 27210952]
+    # candidate_users = [33658617, 40189301, 7054063, 33446693, 27210952]
+    candidate_users = etl_user_data.get_active_user('2 hour', click_times=3)
     for user in candidate_users:
         als_fm, X_and_y, user_extractor, item_extractor = als_solver.train(user=[user], time_interval=time_interval)
         # recall must behind train
@@ -87,7 +88,7 @@ if __name__ == '__main__':
     parser.add_argument('--t', metavar='path', required=True,
                         help='time interval for retrieve uses')
     args = parser.parse_args()
-    sleep_time = 30*60
+    sleep_time = 60*60
 
     while True:
         st = time.time()
