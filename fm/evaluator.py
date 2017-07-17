@@ -2,7 +2,7 @@
 
 from fastFM import als
 from fastFM.datasets import make_user_item_regression
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import mean_squared_error, r2_score, classification_report
 import numpy as np
 from als_solver import train
 
@@ -35,6 +35,9 @@ for i in range(1, n_iter):
 
     r2_score_train.append(r2_score(als_fm.predict(X_Y[0]), X_Y[1]))
     r2_score_test.append(r2_score(als_fm.predict(X_Y[2]), X_Y[3]))
+
+    # print("FFM:\n%s\n" % (
+    #       classification_report(X_Y[3], als_fm.predict(X_Y[2]))))
 
 
 from matplotlib import pyplot as plt
