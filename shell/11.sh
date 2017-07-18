@@ -1,4 +1,4 @@
-sh!/usr/bin/expect
+#!/usr/bin/expect
 set timeout 10
 spawn ssh root@120.55.88.11
 expect {

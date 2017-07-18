@@ -22,3 +22,6 @@
     方法类型:GET方法
     用途说明:用于新闻入库后的处理,目前提供广告去除和主题模型服务。 服务会将nid放入redis队列,不会阻塞
 
+superviosrd 重启服务
+supervisorctl reread
+supervisorctl update
