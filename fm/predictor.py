@@ -100,7 +100,7 @@ if __name__ == '__main__':
             print "Can't find candidates-> ", sys.exc_info()
             continue
         # candidate_users = [33658617, 40189301, 7054063, 33446693, 27210952]
-        pool = Pool(6)
+        pool = Pool(10)
         for c_user in candidate_users:
             try:
                 pool.apply_async(predict, args=(args.t, c_user))
