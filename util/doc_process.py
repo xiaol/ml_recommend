@@ -454,7 +454,7 @@ def get_idf(docs, save_path):
 #      single:是否保留词频。
 #@output: 返回词列表
 ################################################################################
-def extract_keywords(idf_path, docs, topK=20, max_percent=1., single=False):
+def extract_keywords(idf_path, docs, topK=100000, max_percent=1., single=False):
     if not os.path.isfile(idf_path):
         raise Exception("extract_keywords: idf file does not exit: " + idf_path)
     f = open(idf_path, 'r')
@@ -653,8 +653,8 @@ def coll_cut_chnal(chname, num, save_dir, cut_save_file):
 def coll_cut_extract_multiprocess(chnl_num_dict,
                                   save_dir,
                                   idf_save_path,
-                                  topK=100,
-                                  max_percent=0.3,
+                                  topK=100000,
+                                  max_percent=1.0,
                                   to_csv_file=True):
     from multiprocessing import Pool
     pool = Pool(30)
