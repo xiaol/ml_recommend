@@ -36,7 +36,7 @@ def get_read_samples_by_pos(active_users, pos, time_interval):
     '''
     # TODO only support few user
     sql = sql.format(pos, str_now, time_interval, ','.join(str(u) for u in active_users),
-                     len(active_users)*1000*12)
+                     len(active_users)*700*12)
     rows = pg.query(sql)
     return rows
 
