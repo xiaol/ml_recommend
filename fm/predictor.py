@@ -86,20 +86,21 @@ if __name__ == '__main__':
     parser.add_argument('--t', metavar='path', required=True,
                         help='time interval for retrieve uses')
     args = parser.parse_args()
-    sleep_time = 60*1
+    sleep_time = 60*2
 
     # Allen 31482429 , your turn.
     while True:
         st = time.time()
         try:
-            candidate_users = etl_user_data.get_active_user(time_active='1 minute', click_times=20)
+            candidate_users = etl_user_data.get_active_user(time_active='2 minutes', click_times=20)
             # candidate_users = [33658617]  # , 40189301, 7054063, 33446693, 27210952]
             # candidate_users = [24432393]
             print "Candidate Number: ", len(candidate_users)
         except:
             print "Can't find candidates-> ", sys.exc_info()
+            continue
         # candidate_users = [33658617, 40189301, 7054063, 33446693, 27210952]
-        pool = Pool(4)
+        pool = Pool(6)
         for c_user in candidate_users:
             try:
                 pool.apply_async(predict, args=(args.t, c_user))
