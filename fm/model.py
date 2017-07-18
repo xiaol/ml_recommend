@@ -129,7 +129,7 @@ def get_samples_feature(read_samples_list,
         strategies_dict[read_sample[3]] = 1
 
         feature_list = list(users_feature_dict[read_sample[0]])
-        #add strategy feature
+        # add strategy feature
         feature_list.extend(strategies_dict.values())
         # add time feature
         feature_list.extend(etl_sample.sampleExtractor.generate_time_feature(read_sample[2]))
@@ -176,7 +176,11 @@ def update_positive_sample_feature(click_samples_list, samples_feature_dict,
             print '===========>  allen ,where are you?'
 
         feature_key = tuple(feature_list)
-        samples_feature_dict[feature_key] = 1
+        if click_sample[3] != 0 and click_sample[3] < 200:
+            score = min(click_sample[3], 20)/20 * 5
+            samples_feature_dict[feature_key] = score
+        else:
+            samples_feature_dict[feature_key] = 1
 
     return samples_feature_dict
 
