@@ -65,8 +65,8 @@ class EmptyApp(tornado.web.Application):
 
 if __name__ == '__main__':
     port = int(sys.argv[1])
-    if port == 9100:
-        http_server = tornado.httpserver.HTTPServer(Application())  #包含训练新模型及测试新模型
+    if port == 9100: #包含训练新模型及测试新模型
+        http_server = tornado.httpserver.HTTPServer(Application())
         http_server.listen(port) #同时提供手工处理端口
     elif port == 9981:  #click 入队列
         from graphlab_kmeans.timed_task import get_clicks_5m, period
