@@ -36,7 +36,7 @@ def update_user_ranking_recommend(user_id, recommend_sorted_list):
     update_news_feed_list.extend(recommend_sorted_list)
 
     json_str = json.dumps(update_news_feed_list, ensure_ascii=False)
-    redis_ali.set(feedSuffix + str(user_id), json_str, ex=60*60)
+    redis_ali.set(feedSuffix + str(user_id), json_str, ex=60*60*4)
 
 
 def predict(time_interval='10 seconds', user=-1):
@@ -90,7 +90,9 @@ if __name__ == '__main__':
     while True:
         st = time.time()
         try:
-            candidate_users = etl_user_data.get_active_user(time_active='1 hour', click_times=20)
+            # candidate_users = etl_user_data.get_active_user(time_active='1 hour', click_times=20)
+            candidate_users = [33658617]  # , 40189301, 7054063, 33446693, 27210952]
+            print "Candidate Number: ", len(candidate_users)
             #candidate_users = [37245708]
         except:
             print "Can't find candidates-> ", sys.exc_info()
