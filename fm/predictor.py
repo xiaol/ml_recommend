@@ -16,6 +16,7 @@ import datetime
 import time
 import argparse
 import sys
+from multiprocessing import Pool
 feedSuffix = "webapi:news:feed:uid:"
 
 
@@ -98,11 +99,15 @@ if __name__ == '__main__':
         except:
             print "Can't find candidates-> ", sys.exc_info()
         # candidate_users = [33658617, 40189301, 7054063, 33446693, 27210952]
+        pool = Pool(4)
         for c_user in candidate_users:
             try:
-                predict(args.t, c_user)
+                pool.apply_async(predict, args=(args.t, c_user))
+                # predict(args.t, c_user)
             except:
                 print 'Allen , we got a issue->', sys.exc_info()[0]
+        pool.close()
+        pool.join()
         end = time.time()
         elapse = end - st
         print 'Allen Wake, you have ' + str(elapse) + ' seconds to run.'
