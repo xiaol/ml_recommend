@@ -61,7 +61,7 @@ def create_kmeans_core(chname, docs, model_save_dir):
         traceback.print_exc()
 
 
-#创建新版本的模型
+#创建新版本的模型. 包含收集新闻数据、分频道创建模型、保存模型的过程
 def create_new_kmeans_model():
     try:
         t0 = datetime.datetime.now()
@@ -76,6 +76,7 @@ def create_new_kmeans_model():
         if not os.path.exists(data_dir_v):
             os.mkdir(data_dir_v)
 
+        #采集新闻
         from util.doc_process import coll_cut_extract_multiprocess
         #coll_cut_extract(chnl_newsnum_dict, data_dir_v, os.path.join(data_dir_v, 'idf.txt'))
         coll_cut_extract_multiprocess(chnl_newsnum_dict, data_dir_v, os.path.join(data_dir_v, 'idf.txt'))
@@ -89,7 +90,7 @@ def create_new_kmeans_model():
             if chnls[i] not in chnl_doc_dict:
                 chnl_doc_dict[chnls[i]] = []
             chnl_doc_dict[chnls[i]].append(docs[i])
-        #单进程训练
+        #分频道训练并保存模型
         for item in chnl_doc_dict.items():
             create_kmeans_core(item[0], gl.SArray(item[1]), model_v)
         t1 = datetime.datetime.now()
