@@ -68,15 +68,12 @@ if __name__ == '__main__':
     if port == 9100:
         http_server = tornado.httpserver.HTTPServer(Application())  #包含训练新模型及测试新模型
         http_server.listen(port) #同时提供手工处理端口
-    elif port == 9980: #废弃 2017.06.23
-        from graphlab_kmeans import kmeans
-        kmeans.updateModel()
     elif port == 9981:  #click 入队列
         from graphlab_kmeans.timed_task import get_clicks_5m, period
         ioloop.PeriodicCallback(get_clicks_5m, period * 1000).start() #定时从点击表中取
         http_server = tornado.httpserver.HTTPServer(EmptyApp())
         http_server.listen(port) #同时提供手工处理端口
-    elif port == 9979: #消费nid
+    elif port == 9979: #消费nid,预测新闻
         http_server = tornado.httpserver.HTTPServer(tornado.web.Application())
         http_server.listen(port) #同时提供手工处理端口
         from redis_process import nid_queue
