@@ -78,7 +78,7 @@ def predict(time_interval='10 seconds', user=-1):
     recommend_items_list = []
     for i in range(len(sorted_list)):
         recommend_items_list.append(candidates_dict[sorted_list[i][0]])
-    update_user_ranking_recommend(user, recommend_items_list[:400])
+    update_user_ranking_recommend(user, recommend_items_list[:220])
 
 
 if __name__ == '__main__':
@@ -86,13 +86,13 @@ if __name__ == '__main__':
     parser.add_argument('--t', metavar='path', required=True,
                         help='time interval for retrieve uses')
     args = parser.parse_args()
-    sleep_time = 60*30
+    sleep_time = 60*1
 
     # Allen 31482429 , your turn.
     while True:
         st = time.time()
         try:
-            candidate_users = etl_user_data.get_active_user(time_active='30 minutes', click_times=20)
+            candidate_users = etl_user_data.get_active_user(time_active='1 minute', click_times=20)
             # candidate_users = [33658617]  # , 40189301, 7054063, 33446693, 27210952]
             # candidate_users = [24432393]
             print "Candidate Number: ", len(candidate_users)
