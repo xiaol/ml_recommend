@@ -90,8 +90,8 @@ if __name__ == '__main__':
     while True:
         st = time.time()
         try:
-            # candidate_users = etl_user_data.get_active_user(time_active='30 minutes', click_times=20)
-            candidate_users = [33658617]  # , 40189301, 7054063, 33446693, 27210952]
+            candidate_users = etl_user_data.get_active_user(time_active='30 minutes', click_times=20)
+            # candidate_users = [33658617]  # , 40189301, 7054063, 33446693, 27210952]
             print "Candidate Number: ", len(candidate_users)
             #candidate_users = [37245708]
         except:
