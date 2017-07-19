@@ -16,6 +16,7 @@ import datetime
 import time
 import argparse
 import sys
+from multiprocessing import Pool
 feedSuffix = "webapi:news:feed:uid:"
 
 
@@ -36,7 +37,7 @@ def update_user_ranking_recommend(user_id, recommend_sorted_list):
     update_news_feed_list.extend(recommend_sorted_list)
 
     json_str = json.dumps(update_news_feed_list, ensure_ascii=False)
-    redis_ali.set(feedSuffix + str(user_id), json_str, ex=60*60*9)
+    redis_ali.set(feedSuffix + str(user_id), json_str, ex=60*60*4)
 
 
 def predict(time_interval='10 seconds', user=-1):
@@ -77,7 +78,7 @@ def predict(time_interval='10 seconds', user=-1):
     recommend_items_list = []
     for i in range(len(sorted_list)):
         recommend_items_list.append(candidates_dict[sorted_list[i][0]])
-    update_user_ranking_recommend(user, recommend_items_list[:200])
+    update_user_ranking_recommend(user, recommend_items_list[:220])
 
 
 if __name__ == '__main__':
@@ -85,24 +86,29 @@ if __name__ == '__main__':
     parser.add_argument('--t', metavar='path', required=True,
                         help='time interval for retrieve uses')
     args = parser.parse_args()
-    sleep_time = 60*30
+    sleep_time = 60*2
 
     # Allen 31482429 , your turn.
     while True:
         st = time.time()
         try:
-            candidate_users = etl_user_data.get_active_user(time_active='30 minutes', click_times=20)
-            # candidate_users = [33658617]  # , 40189301, 7054063, 33446693, 27210952]
+            candidate_users = etl_user_data.get_active_user(time_active='2 minutes', click_times=20)
+            #candidate_users = [33658617]  # , 40189301, 7054063, 33446693, 27210952]
+            #candidate_users = [10223096]
             print "Candidate Number: ", len(candidate_users)
-            #candidate_users = [37245708]
         except:
             print "Can't find candidates-> ", sys.exc_info()
+            continue
         # candidate_users = [33658617, 40189301, 7054063, 33446693, 27210952]
+        pool = Pool(5)
         for c_user in candidate_users:
             try:
-                predict(args.t, c_user)
+                pool.apply_async(predict, args=(args.t, c_user))
+                # predict(args.t, c_user)
             except:
                 print 'Allen , we got a issue->', sys.exc_info()[0]
+        pool.close()
+        pool.join()
         end = time.time()
         elapse = end - st
         print 'Allen Wake, you have ' + str(elapse) + ' seconds to run.'

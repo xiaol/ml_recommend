@@ -49,9 +49,10 @@ def construct_feature_matrix(topic_num, user= [], time_interval='10 seconds'):
         # uid nid readtime logtype logchid
         # TODO use RBM to score sample or find the negative sample
         pos_samples_list = etl_sample.get_positive_samples(splited_users, '12 days')
-        nag_samples_list = etl_sample.get_negative_samples(splited_users, '12 days')
+        nag_samples_list = []  # etl_sample.get_negative_samples(splited_users, '2 days')
+        nag_samples_list = etl_sample.get_hate_samples(splited_users)
 
-        items_list_split = [nag[1] for nag in nag_samples_list]
+        items_list_split = [nag['nid'] for nag in nag_samples_list]
         items_list_split.extend([pos[1] for pos in pos_samples_list])
         items_list.extend(items_list_split)
 
@@ -61,7 +62,7 @@ def construct_feature_matrix(topic_num, user= [], time_interval='10 seconds'):
         print str(len(items_list)) + ' ',
 
     items_feature_dict = etl_item_data.load(set(items_list), topic_num, item_extractor)
-    print '<- Read samples size: '+str(len(negative_samples_list)) + ' click samples size:' \
+    print '<- Negative samples size: '+str(len(negative_samples_list)) + ' Positive samples size:' \
           + str(len(positive_samples_list)) + ' items feature size:' + str(len(items_feature_dict))
 
     all_samples_feature_dict = get_samples_feature(
@@ -110,39 +111,40 @@ def chunks(l, n):
         yield l[i:i + n]
 
 
-def get_samples_feature(read_samples_list,
+def get_samples_feature(negative_samples_list,
                         users_feature_dict,
                         items_feature_dict,
                         strategies_dict):
     read_feature_dict = OrderedDict()
 
     light = 0
-    for read_sample in read_samples_list:
-        if read_sample[0] not in users_feature_dict:
+    for neg_sample in negative_samples_list:
+        if neg_sample['uid'] not in users_feature_dict:
             continue  # TODO something bad happened, very very bad
         for k, v in strategies_dict.iteritems():
             strategies_dict[k] = 0
 
-        if read_sample[3] not in strategies_dict:
-            print 'Unknown logtype: ', read_sample[3],
-            continue
-        strategies_dict[read_sample[3]] = 1
+        if 'logtype' in neg_sample:
+            if neg_sample['logtype'] not in strategies_dict:
+                print 'Unknown logtype: ', neg_sample[3],
+                continue
+            strategies_dict[neg_sample['logtype']] = 1
 
-        feature_list = list(users_feature_dict[read_sample[0]])
+        feature_list = list(users_feature_dict[neg_sample['uid']])
         # add strategy feature
         feature_list.extend(strategies_dict.values())
         # add time feature
-        feature_list.extend(etl_sample.sampleExtractor.generate_time_feature(read_sample[2]))
+        feature_list.extend(etl_sample.sampleExtractor.generate_time_feature(neg_sample['ctime']))
 
         # join the user, strategies and item features horizontally
-        feature_list.extend(items_feature_dict[read_sample[1]])
+        feature_list.extend(items_feature_dict[neg_sample['nid']])
         if light == 0:
             light = len(feature_list)
         elif light != len(feature_list):
             print '===========>  allen ,where are you?'
 
         feature_key = tuple(feature_list)
-        read_feature_dict[feature_key] = 0
+        read_feature_dict[feature_key] = -1
 
     return read_feature_dict
 
