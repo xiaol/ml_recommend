@@ -656,6 +656,16 @@ def coll_cut_extract_multiprocess(chnl_num_dict,
                                   topK=100000,
                                   max_percent=1.0,
                                   to_csv_file=True):
+    '''
+        按照频道收集新闻，执行分词、去停用词、词性过滤、计算idf、提取关键词的工作
+    :param chnl_num_dict: 频道及频道新闻数量的字典： {channel1：num1, channel2:num2...}
+    :param save_dir: 文件保存目录
+    :param idf_save_path:idf文件路径
+    :param topK:提取关键词数量
+    :param max_percent:关键词占全文比例
+    :param to_csv_file:是否写入csv文件
+    :return: 最后生成输出文件cut_extract.csv文件
+    '''
     from multiprocessing import Pool
     pool = Pool(30)
     chnl_cut_file = []
@@ -669,11 +679,14 @@ def coll_cut_extract_multiprocess(chnl_num_dict,
     pool.close()
     pool.join()
 
+    '''将所有频道的分词后的文件合成一个文件'''
     data_cut_path = os.path.join(save_dir, 'data_cut.csv')
     join_csv(chnl_cut_file, data_cut_path, columns=('chnl', 'nid', 'doc'))
+
     cut_df = pd.read_csv(data_cut_path)
     cut_df = cut_df.dropna()
     cut_docs = cut_df['doc']
+    '''计算idf并保存, 然后依据tf-idf取关键词'''
     get_idf_file(cut_docs, idf_save_path, 5000000)
     extract_docs = extract_keywords(idf_save_path, cut_docs.tolist(), topK, max_percent)
     cut_df['doc'] = extract_docs
