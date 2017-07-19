@@ -37,7 +37,7 @@ def update_user_ranking_recommend(user_id, recommend_sorted_list):
     update_news_feed_list.extend(recommend_sorted_list)
 
     json_str = json.dumps(update_news_feed_list, ensure_ascii=False)
-    redis_ali.set(feedSuffix + str(user_id), json_str, ex=60*60*4)
+    redis_ali.set(feedSuffix + str(user_id), json_str, ex=60*60)
 
 
 def predict(time_interval='10 seconds', user=-1):
