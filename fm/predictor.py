@@ -78,7 +78,7 @@ def predict(time_interval='10 seconds', user=-1):
     recommend_items_list = []
     for i in range(len(sorted_list)):
         recommend_items_list.append(candidates_dict[sorted_list[i][0]])
-    update_user_ranking_recommend(user, recommend_items_list[:220])
+    update_user_ranking_recommend(user, recommend_items_list[:77])
 
 
 if __name__ == '__main__':
