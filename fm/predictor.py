@@ -93,7 +93,7 @@ if __name__ == '__main__':
     while True:
         st = time.time()
         try:
-            if elapse == 0:
+            if elapse <= sleep_time:
                 candidate_users = etl_user_data.get_active_user(time_active='2 minutes', click_times=20)
             else:
                 time_seconds = str(elapse + 1) + ' seconds'
