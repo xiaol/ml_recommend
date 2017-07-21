@@ -124,6 +124,7 @@ external (active)
     4 ossfs for-hpc /tmp/ossfs -ourl=http://oss-cn-shanghai.aliyuncs.com
 
 
-
+九 supervisor事宜
+   1. 修改config文件后，supervisorctl reread; supervisorctl update
 
 
