@@ -49,8 +49,9 @@ def construct_feature_matrix(topic_num, user= [], time_interval='10 seconds'):
         # uid nid readtime logtype logchid
         # TODO use RBM to score sample or find the negative sample
         pos_samples_list = etl_sample.get_positive_samples(splited_users, '12 days')
-        nag_samples_list = []  # etl_sample.get_negative_samples(splited_users, '2 days')
+        short_memory_nag_samples_list = etl_sample.get_read_samples(splited_users, '1 minute')
         nag_samples_list = etl_sample.get_hate_samples(splited_users)
+        nag_samples_list.extend(short_memory_nag_samples_list)
 
         items_list_split = [nag['nid'] for nag in nag_samples_list]
         items_list_split.extend([pos[1] for pos in pos_samples_list])
@@ -126,7 +127,7 @@ def get_samples_feature(negative_samples_list,
 
         if 'logtype' in neg_sample:
             if neg_sample['logtype'] not in strategies_dict:
-                print 'Unknown logtype: ', neg_sample[3],
+                print 'Unknown logtype: ', neg_sample['logtype'],
                 continue
             strategies_dict[neg_sample['logtype']] = 1
 
@@ -134,7 +135,10 @@ def get_samples_feature(negative_samples_list,
         # add strategy feature
         feature_list.extend(strategies_dict.values())
         # add time feature
-        feature_list.extend(etl_sample.sampleExtractor.generate_time_feature(neg_sample['ctime']))
+        if 'ctime' in neg_sample:
+            feature_list.extend(etl_sample.sampleExtractor.generate_time_feature(neg_sample['ctime']))
+        else:
+            feature_list.extend(etl_sample.sampleExtractor.generate_time_feature(neg_sample['readtime']))
 
         # join the user, strategies and item features horizontally
         feature_list.extend(items_feature_dict[neg_sample['nid']])

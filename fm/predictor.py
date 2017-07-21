@@ -86,14 +86,14 @@ if __name__ == '__main__':
     parser.add_argument('--t', metavar='path', required=True,
                         help='time interval for retrieve uses')
     args = parser.parse_args()
-    sleep_time = 60*2
+    # sleep_time = 60*2
 
     # Allen 31482429 , your turn.
     elapse = 0
     while True:
         st = time.time()
         try:
-            if elapse <= sleep_time:
+            if elapse <= 0:
                 candidate_users = etl_user_data.get_active_user(time_active='2 minutes', click_times=20)
             else:
                 time_seconds = str(elapse + 1) + ' seconds'
@@ -116,10 +116,12 @@ if __name__ == '__main__':
         pool.join()
         end = time.time()
         elapse = end - st
-        print 'Allen Wake, you have ' + str(elapse) + ' seconds to run.'
+        print 'Allen Wake, you have ' + str(elapse) + ' seconds to write.'
+        '''
         if elapse > sleep_time:
             print 'allen, you have a long dream. Wake up.'
             continue
         else:
             time.sleep(sleep_time - elapse)
             print 'Wake up allen, allen wake up.'
+        '''
