@@ -92,18 +92,14 @@ if __name__ == '__main__':
     elapse = 0
     while True:
         st = time.time()
-        try:
-            if elapse <= 0:
-                candidate_users = etl_user_data.get_active_user(time_active='2 minutes', click_times=20)
-            else:
-                time_seconds = str(elapse + 1) + ' seconds'
-                candidate_users = etl_user_data.get_active_user(time_active=time_seconds, click_times=20)
-            #candidate_users = [33658617]  # , 40189301, 7054063, 33446693, 27210952]
-            #candidate_users = [10223096]
-            print "Candidate Number: ", len(candidate_users)
-        except:
-            print "Can't find candidates-> ", sys.exc_info()
-            continue
+        if elapse <= 0:
+            candidate_users = etl_user_data.get_active_user(time_active='2 minutes', click_times=20)
+        else:
+            time_seconds = str(elapse + 1) + ' seconds'
+            candidate_users = etl_user_data.get_active_user(time_active=time_seconds, click_times=20)
+        #candidate_users = [33658617]  # , 40189301, 7054063, 33446693, 27210952]
+        #candidate_users = [10223096]
+        print "Candidate Number: ", len(candidate_users)
         # candidate_users = [33658617, 40189301, 7054063, 33446693, 27210952]
         pool = Pool(5)
         for c_user in candidate_users:
