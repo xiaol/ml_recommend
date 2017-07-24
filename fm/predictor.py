@@ -37,7 +37,7 @@ def update_user_ranking_recommend(user_id, recommend_sorted_list):
     update_news_feed_list.extend(recommend_sorted_list)
 
     json_str = json.dumps(update_news_feed_list, ensure_ascii=False)
-    redis_ali.set(feedSuffix + str(user_id), json_str, ex=60*60*4)
+    redis_ali.set(feedSuffix + str(user_id), json_str, ex=60*60)
 
 
 def predict(time_interval='10 seconds', user=-1):
@@ -78,7 +78,7 @@ def predict(time_interval='10 seconds', user=-1):
     recommend_items_list = []
     for i in range(len(sorted_list)):
         recommend_items_list.append(candidates_dict[sorted_list[i][0]])
-    update_user_ranking_recommend(user, recommend_items_list[:220])
+    update_user_ranking_recommend(user, recommend_items_list[:77])
 
 
 if __name__ == '__main__':
@@ -86,19 +86,20 @@ if __name__ == '__main__':
     parser.add_argument('--t', metavar='path', required=True,
                         help='time interval for retrieve uses')
     args = parser.parse_args()
-    sleep_time = 60*2
+    # sleep_time = 60*2
 
     # Allen 31482429 , your turn.
+    elapse = 0
     while True:
         st = time.time()
-        try:
+        if elapse <= 0:
             candidate_users = etl_user_data.get_active_user(time_active='2 minutes', click_times=20)
-            #candidate_users = [33658617]  # , 40189301, 7054063, 33446693, 27210952]
-            #candidate_users = [10223096]
-            print "Candidate Number: ", len(candidate_users)
-        except:
-            print "Can't find candidates-> ", sys.exc_info()
-            continue
+        else:
+            time_seconds = str(elapse + 1) + ' seconds'
+            candidate_users = etl_user_data.get_active_user(time_active=time_seconds, click_times=20)
+        #candidate_users = [33658617]  # , 40189301, 7054063, 33446693, 27210952]
+        #candidate_users = [10223096]
+        print "Candidate Number: ", len(candidate_users)
         # candidate_users = [33658617, 40189301, 7054063, 33446693, 27210952]
         pool = Pool(5)
         for c_user in candidate_users:
@@ -111,10 +112,12 @@ if __name__ == '__main__':
         pool.join()
         end = time.time()
         elapse = end - st
-        print 'Allen Wake, you have ' + str(elapse) + ' seconds to run.'
+        print 'Allen Wake, you have ' + str(elapse) + ' seconds to write.'
+        '''
         if elapse > sleep_time:
             print 'allen, you have a long dream. Wake up.'
             continue
         else:
             time.sleep(sleep_time - elapse)
             print 'Wake up allen, allen wake up.'
+        '''

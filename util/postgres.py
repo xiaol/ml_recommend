@@ -20,7 +20,7 @@ class Postgres(object):
     max_connections = 5
 
     def __init__(self, db_host= "120.27.162.201"):
-        self.pool = pool.SimpleConnectionPool(
+        self.pool = pool.ThreadedConnectionPool(
             minconn=self.min_connections,
             maxconn=self.max_connections,
             database=self.db_name,
@@ -40,9 +40,13 @@ class Postgres(object):
             cursor.execute(sql)
             rows = cursor.fetchall()
         except Exception, e:
+            print e.message
             connection.rollback()
         finally:
-            self.pool.putconn(connection)
+            # TODO SSL error: decryption failed or bad record mac
+            # why need to close
+            connection.close()
+            self.pool.putconn(connection, close=True)
         return rows
 
     def query_dict_cursor(self, sql):
@@ -53,9 +57,11 @@ class Postgres(object):
             cursor.execute(sql)
             rows = cursor.fetchall()
         except Exception, e:
+            print e.message
             connection.rollback()
         finally:
-            self.pool.putconn(connection)
+            connection.close()
+            self.pool.putconn(connection, close=True)
         return rows
 
     def insert(self, sql):
@@ -67,9 +73,11 @@ class Postgres(object):
             connection.commit()
             ret = True
         except Exception, e:
+            print e.message
             connection.rollback()
         finally:
-            self.pool.putconn(connection)
+            connection.close()
+            self.pool.putconn(connection, close=True)
             return ret
 
     def get_cur(self):

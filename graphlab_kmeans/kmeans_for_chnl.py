@@ -43,11 +43,13 @@ def predict_chnl_news(chnl_name, num_limit=None):
         kmeans_predict(nids, logger_chnl)
     else:
         n = 0
-        while (n + 1000) < len(nids):
+        while (n + 1000) < l:
             kmeans_predict(nids[n:n + 1000], logger_chnl)
             n += 1000
             logger_chnl.info('{} of {} finished!'.format(n, l))
-        kmeans_predict(nids[n - 1000:len(nids)], logger_chnl)
+        kmeans_predict(nids[n:l], logger_chnl)
+
+    logger_chnl.info('predict {} finished!'.format(chnl_name))
 
     cursor.close()
     conn.close()
