@@ -186,7 +186,7 @@ def update_positive_sample_feature(click_samples_list, samples_feature_dict,
             score = min(click_sample[3], 30)/30.0 * 1
             samples_feature_dict[feature_key] = score
         else:
-            samples_feature_dict[feature_key] = 1
+            samples_feature_dict[feature_key] = 0.4
 
     return samples_feature_dict
 
