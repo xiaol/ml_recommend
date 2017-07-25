@@ -11,7 +11,7 @@ from collections import OrderedDict
 
 
 # TODO should cover only read  but not click users for cold start,
-def get_active_user(time_interval='12 days', time_active='1 hour',click_times=1):
+def get_active_user(time_interval='7 days', time_active='1 hour',click_times=1):
     nt = datetime.datetime.now()
     str_now = nt.strftime('%Y-%m-%d %H:%M:%S')
     sql = '''
