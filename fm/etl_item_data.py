@@ -177,6 +177,9 @@ def get_channel_list():
 def load(items_list, topic_num, item_extractor):
     items_feature_dict = OrderedDict()
 
+    if not items_list:
+        return items_feature_dict
+
     # add topic feature
     feature_topic_vector = enumerate_item_topics(topic_num)
     topic_offset = len(feature_topic_vector)
