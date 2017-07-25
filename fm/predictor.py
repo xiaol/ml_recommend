@@ -49,11 +49,7 @@ def predict(time_interval='10 seconds', user=-1):
     # me , laite, xinyong, liulei, hanxiao
     # TODO don't have the brand feature may cause crash
 
-    if user not in users_topic_dict:
-        pass
-    else:
-        item_candidates, candidates_dict = etl_item_data.recall_candidates(
-            item_extractor, user, users_topic_dict[user])
+    item_candidates, candidates_dict = etl_item_data.recall_candidates(item_extractor, user)
 
     if len(item_candidates) == 0:
         print '------------------wilson is empty-----'

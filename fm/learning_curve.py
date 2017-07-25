@@ -23,7 +23,9 @@ rmse_train = []
 rmse_test = []
 r2_score_train = []
 r2_score_test = []
-X, y, user_extractor, item_extractor  = construct_feature_matrix(5000, time_interval='20 minutes')
+
+candidate_users = [33658617]  # , 40189301, 7054063, 33446693, 27210952]
+X, y, user_extractor, item_extractor  = construct_feature_matrix(5000, time_interval='20 minutes', user=candidate_users)
 X_samples, X_validation, y_samples, y_validation = train_test_split(X, y, train_size=0.8, random_state=42)
 
 for i in range(1, n_iter):
@@ -31,7 +33,7 @@ for i in range(1, n_iter):
     X_Y = (X_train, y_train, X_test, y_test)
     print 'training sample size:' + str(X_train.get_shape())
 
-    als_fm = train_model(X_train, y_train, n_iter=1000, init_stdev=0.1, rank=2, l2_reg_w=0.2, l2_reg_V=0.5)
+    als_fm = train_model(X_train, y_train, n_iter=1000, init_stdev=0.1, rank=1, l2_reg_w=1, l2_reg_V=2)
 
     rmse_train.append(mean_squared_error(als_fm.predict(X_Y[0]), X_Y[1]))
     rmse_test.append(mean_squared_error(als_fm.predict(X_validation), y_validation))

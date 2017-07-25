@@ -10,7 +10,7 @@ from model import construct_feature_matrix
 
 def train_model(x_train, y_train, n_iter,
                 init_stdev=0.1, rank=2, l2_reg_w=0.1, l2_reg_V=0.5):
-    fm = als.FMRegression(n_iter=n_iter, init_stdev=init_stdev, rank=rank, l2_reg_w=l2_reg_w, l2_reg_V=l2_reg_V)
+    fm = als.FMRegression(n_iter=n_iter, init_stdev=init_stdev, rank=1, l2_reg_w=1, l2_reg_V=2)
     fm.fit(x_train, y_train)
     return fm
 

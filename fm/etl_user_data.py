@@ -11,7 +11,7 @@ from collections import OrderedDict
 
 
 # TODO should cover only read  but not click users for cold start,
-def get_active_user(time_interval='7 days', time_active='1 hour',click_times=1):
+def get_active_user(time_interval='30 days', time_active='1 hour',click_times=1):
     nt = datetime.datetime.now()
     str_now = nt.strftime('%Y-%m-%d %H:%M:%S')
     sql = '''
@@ -146,18 +146,28 @@ class UserExtractor(object):
     def preprocess_users_feature(self, all_users):
         self.feature_brand_dict = enumerate_user_attribute('brand', all_users)
 
-    def load(self, active_users, topic_num, topic_time_interval):
+    def load(self, active_users, topic_num, topic_time_interval, one=True):
         users_feature_dict = {}
         if not self.feature_brand_dict:
             # if user do not have user device info may cause this warning
             print 'Warning-----user brand dict init online---'
             self.feature_brand_dict = self.enumerate_user_brand(active_users)
-        # Many users don't have device features, so need to initialize the feature dicts.
-        for user in active_users:
-            users_feature_dict[user] = [0]*len(self.feature_brand_dict)
 
         users_detail = get_users_detail(active_users)
         users_detail_dict = {}
+        for user_detail in users_detail:
+            if user_detail:
+                users_detail_dict[user_detail[0]] = user_detail[1:]
+
+        if one:
+            for user in active_users:
+                users_feature_dict[user] = []
+            users_topic_dict = {}
+            return users_feature_dict, users_detail_dict, users_topic_dict
+
+        # Many users don't have device features, so need to initialize the feature dicts.
+        for user in active_users:
+            users_feature_dict[user] = [0]*len(self.feature_brand_dict)  # TODO memory leak
 
         for user_detail in users_detail:
             # feature vector: brand platform, os, os_version,
@@ -176,17 +186,19 @@ class UserExtractor(object):
             self.feature_brand_dict[user_detail[1]] = 1
             users_feature_dict[user_detail[0]] = self.feature_brand_dict.values()
 
-            users_detail_dict[user_detail[0]] = user_detail[1:]
         '''
         ---------------------------------------------------------------------------------Ugly line
         '''
-        topic_feature_offset = len(self.feature_brand_dict)
+
+        topic_feature_offset = 0  # len(self.feature_brand_dict)
         feature_topic_vector = enumerate_user_topic(topic_num)
         users_topic_dict = {}
 
         for user in active_users:
             copy_feature_topic_vector = list(feature_topic_vector)
             users_feature_dict[user].extend(copy_feature_topic_vector)
+            # WARNING : Just discard branch feature
+            # users_feature_dict[user] = copy_feature_topic_vector
 
         users_topic = get_users_topic(active_users, topic_time_interval)
         for user_topic in users_topic:

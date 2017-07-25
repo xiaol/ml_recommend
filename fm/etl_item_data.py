@@ -11,7 +11,7 @@ from collections import OrderedDict
 
 
 # prepare the items for user recommend
-def recall_candidates(item_extractor, user_id, user_topic_dict):
+def recall_candidates(item_extractor, user_id):
     """
     :users_topic_dict: lda
 

@@ -48,7 +48,7 @@ def construct_feature_matrix(topic_num, user= [], time_interval='10 seconds'):
 
         # uid nid readtime logtype logchid
         # TODO use RBM to score sample or find the negative sample
-        pos_samples_list = etl_sample.get_positive_samples(splited_users, '12 days')
+        pos_samples_list = etl_sample.get_positive_samples(splited_users, '30 days')
         short_memory_nag_samples_list = etl_sample.get_read_samples(splited_users, '1 minute')
         nag_samples_list = etl_sample.get_hate_samples(splited_users)
         nag_samples_list.extend(short_memory_nag_samples_list)
@@ -148,7 +148,7 @@ def get_samples_feature(negative_samples_list,
             print '===========>  allen ,where are you?'
 
         feature_key = tuple(feature_list)
-        read_feature_dict[feature_key] = -1
+        read_feature_dict[feature_key] = 0
 
     return read_feature_dict
 
@@ -182,8 +182,8 @@ def update_positive_sample_feature(click_samples_list, samples_feature_dict,
             print '===========>  allen ,where are you?'
 
         feature_key = tuple(feature_list)
-        if click_sample[3] != 0 and click_sample[3] < 200:
-            score = min(click_sample[3], 30)/30.0 * 10
+        if click_sample[3] != 0:
+            score = min(click_sample[3], 30)/30.0 * 1
             samples_feature_dict[feature_key] = score
         else:
             samples_feature_dict[feature_key] = 1
