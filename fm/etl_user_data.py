@@ -19,7 +19,7 @@ def get_active_user(time_interval='30 days', time_active='1 hour',click_times=1)
             where ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}' and uid not in (0) 
             and uid in (select uid from newsrecommendclick
             where ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}')
-            group by uid HAVING "count"(*)>={} 
+            group by uid HAVING "count"(*)>={} and "count"(*) <= 2000
         '''
     rows = pg.query(sql.format(str_now, time_interval, str_now, time_active, click_times))
     a_users = [r[0] for r in rows]
