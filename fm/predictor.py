@@ -106,6 +106,8 @@ if __name__ == '__main__':
                 print 'Allen , we got a issue->', sys.exc_info()[0]
         pool.close()
         pool.join()
+        if len(candidate_users) == 0:
+            time.sleep(60*2)
         end = time.time()
         elapse = end - st
         print 'Allen Wake, you have ' + str(elapse) + ' seconds to write.'
