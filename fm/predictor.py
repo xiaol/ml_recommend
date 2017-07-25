@@ -88,11 +88,17 @@ if __name__ == '__main__':
     elapse = 0
     while True:
         st = time.time()
-        if elapse <= 0:
-            candidate_users = etl_user_data.get_active_user(time_active='2 minutes', click_times=20)
-        else:
-            time_seconds = str(elapse + 1) + ' seconds'
-            candidate_users = etl_user_data.get_active_user(time_active=time_seconds, click_times=20)
+        try:
+            if elapse <= 0:
+                candidate_users = etl_user_data.get_active_user(time_active='2 minutes', click_times=20)
+            else:
+                time_seconds = str(elapse + 1) + ' seconds'
+                candidate_users = etl_user_data.get_active_user(time_active=time_seconds, click_times=20)
+        except:
+            print 'PG is down ->', sys.exc_info()[0]
+            time.sleep(60*30)
+            continue
+
         #candidate_users = [33658617]  # , 40189301, 7054063, 33446693, 27210952]
         #candidate_users = [10223096]
         print "Candidate Number: ", len(candidate_users)
