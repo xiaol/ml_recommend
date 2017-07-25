@@ -113,7 +113,7 @@ if __name__ == '__main__':
         pool.close()
         pool.join()
         if len(candidate_users) == 0:
-            time.sleep(60*2)
+            time.sleep(5)
         end = time.time()
         elapse = end - st
         print 'Allen Wake, you have ' + str(elapse) + ' seconds to write.'
