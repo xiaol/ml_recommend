@@ -17,7 +17,7 @@ def get_positive_samples(active_users, time_interval):
         select  uid, nid, ctime, stime, logtype, logchid from newsrecommendclick 
             where ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}' 
             and logtype not in (4) and uid not in (0) and nid not in (0)
-                      and uid in ({}) and limit 2000
+                      and uid in ({}) limit 4000
     '''
     rows = pg.query(sql.format(str_now, time_interval, ','.join(str(u) for u in active_users)))
     return rows
