@@ -203,7 +203,7 @@ def load(items_list, topic_num, item_extractor):
 
     items_topic = get_item_topic(items_list)
     for item_topic in items_topic:
-        items_feature_dict[item_topic[0]][item_topic[1]] = item_topic[2]
+        items_feature_dict[item_topic[0]][item_topic[1]] = item_topic[2]*2
 
     # add kmeans feature
     # add channel feature
