@@ -48,6 +48,15 @@ def recall_candidates(item_extractor, user_id):
     candidates_feature_dict.update(bv_feature_dict)
     candidates_dict.update(bv_dict)
 
+    # hot news
+    hn_dict = recall_items.recall_hot_news(user_id, 300)
+    hn_list = hn_dict.keys()
+    hn_feature_dict = get_features_by_strategy(
+        strategies_keys, hn_dict, hn_list, strategies_dict, item_extractor)
+
+    candidates_feature_dict.update(hn_feature_dict)
+    candidates_dict.update(hn_dict)
+
     return candidates_feature_dict, candidates_dict
 
 

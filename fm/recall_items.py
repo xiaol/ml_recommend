@@ -10,6 +10,7 @@ condition = " and nv.chid != 28 and nv.state=0 and (nv.rtype is null  or nv.rtyp
 select = "nv.nid, nv.docid, nv.title, nv.pname, nv.ptime, nv.purl, nv.chid, nv.collect, nv.concern, nv.un_concern, nv.comment, nv.style, nv.imgs,  nv.icon, nv.videourl, nv.duration, nv.thumbnail, nv.clicktimes, nv.tags"
 dayWindow1 = " now()-interval'1 day' "
 dayWindow3 = " now()-interval'3 day' "
+hourWindow24 = " now()-interval'24 hour' "
 
 def recall_wilson_news(user_id, limit):
     table_name = "newsrecommendread_" + str(user_id % 100)
@@ -64,10 +65,6 @@ def recall_lda_kmeans_cf(user_id, limit):
     return lkc_dict
 
 
-def recall_hotnews(user_id, limit):
-    pass
-
-
 def recall_bigimg_video(user_id, limit):
     tablename = "newsrecommendread_" + str(user_id % 100)
     sql =''' select * from (select nv.nid, nv.docid, nv.title, nv.pname, nv.ptime, nv.purl, 
@@ -93,6 +90,27 @@ def recall_bigimg_video(user_id, limit):
         bv_dict[r['nid']] = dict(r)
         bv_dict[r['nid']]['ptime'] = str(bv_dict[r['nid']]['ptime'])
     return bv_dict
+
+
+def recall_hot_news(user_id, limit):
+    tablename = "newsrecommendread_" + str(user_id % 100)
+    sql= '''select nv.nid, nv.docid, nv.title, nv.pname,nv.ptime, nv.purl, 
+          nv.chid, nv.collect, nv.concern, nv.un_concern, nv.comment, nv.style, nv.imgs as imgs,
+            nv.icon, nv.videourl, nv.duration, nv.thumbnail, nv.clicktimes, nv.tags as tags ,
+             1 as rtype , 13 as logtype from newslist_v2 nv inner join newsrecommendhot nrh 
+             on nv.nid=nrh.nid where  not exists (select 1 from {tablename} nr where nv.nid=nr.nid 
+             and nr.uid={uid} and nr.readtime>{dayWindow3})  and nv.ctime>{dayWindow3}
+             and nrh.ctime>{hourWindow24} and nrh.status=2  
+             {condition} limit {limit} '''
+    sql = sql.format(tablename=tablename, uid=user_id, dayWindow3=dayWindow3, hourWindow24=hourWindow24,
+                     condition=condition, limit=limit)
+    rows = pg.query_dict_cursor(sql)
+    hn_dict = OrderedDict()
+    for r in rows:
+        hn_dict[r['nid']] = dict(r)
+        hn_dict[r['nid']]['ptime'] = str(hn_dict[r['nid']]['ptime'])
+    return hn_dict
+
 
 if __name__ == '__main__':
     wilson_dict = recall_wilson_news(33658617, 10)
