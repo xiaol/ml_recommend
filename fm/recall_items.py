@@ -9,6 +9,7 @@ from collections import OrderedDict
 condition = " and nv.chid != 28 and nv.state=0 and (nv.rtype is null  or nv.rtype=0) "
 select = "nv.nid, nv.docid, nv.title, nv.pname, nv.ptime, nv.purl, nv.chid, nv.collect, nv.concern, nv.un_concern, nv.comment, nv.style, nv.imgs,  nv.icon, nv.videourl, nv.duration, nv.thumbnail, nv.clicktimes, nv.tags"
 dayWindow1 = " now()-interval'1 day' "
+dayWindow2 = " now()-interval'2 day' "
 dayWindow3 = " now()-interval'3 day' "
 hourWindow24 = " now()-interval'24 hour' "
 
@@ -55,7 +56,7 @@ def recall_lda_kmeans_cf(user_id, limit):
             and nv.ctime>{dayWindow1} {condition} limit {limitalgorithm})cf '''
 
     sql = sql.format(select=select, tablename1=tablename1,
-                     tablename2=tablename2, uid=user_id, dayWindow1=dayWindow1,
+                     tablename2=tablename2, uid=user_id, dayWindow1=dayWindow3,
                      limitalgorithm=limit, condition=condition)
     lkc_rows = pg.query_dict_cursor(sql)
     lkc_dict = OrderedDict()
