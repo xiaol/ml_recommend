@@ -25,7 +25,7 @@ def recall_candidates(item_extractor, user_id):
     strategies_keys = strategies_dict.keys()
 
     # wilson
-    candidates_dict = recall_items.recall_wilson_news(user_id, 2000)
+    candidates_dict = recall_items.recall_wilson_news(user_id, 1000)
     candidates_list = candidates_dict.keys()
     candidates_feature_dict = get_features_by_strategy(
         strategies_keys, candidates_dict, candidates_list, strategies_dict, item_extractor)

@@ -31,8 +31,8 @@ def update_user_ranking_recommend(user_id, recommend_sorted_list):
     update_news_feed_list = [x for x in news_feed_list if x['rtype'] == 4]
     for item, i in zip(recommend_sorted_list, range(len(recommend_sorted_list))):
         News.format_news(item)
-        if item['rtype'] == 0:
-            item['rtype'] = i % 2  # TODO only one rtype happens
+        # if item['rtype'] == 0:
+            # item['rtype'] = i % 2  # TODO only one rtype happens
 
     update_news_feed_list.extend(recommend_sorted_list)
 
@@ -74,7 +74,7 @@ def predict(time_interval='10 seconds', user=-1):
     recommend_items_list = []
     for i in range(len(sorted_list)):
         recommend_items_list.append(candidates_dict[sorted_list[i][0]])
-    update_user_ranking_recommend(user, recommend_items_list[:77])
+    update_user_ranking_recommend(user, recommend_items_list[:200])
 
 
 if __name__ == '__main__':
