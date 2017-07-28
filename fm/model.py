@@ -139,6 +139,8 @@ def get_samples_feature(negative_samples_list,
             feature_list.extend(etl_sample.sampleExtractor.generate_time_feature(neg_sample['ctime']))
         else:
             feature_list.extend(etl_sample.sampleExtractor.generate_time_feature(neg_sample['readtime']))
+        # add read page
+        feature_list.extend([1])
 
         # join the user, strategies and item features horizontally
         feature_list.extend(items_feature_dict[neg_sample['nid']])
@@ -159,12 +161,12 @@ def update_positive_sample_feature(click_samples_list, samples_feature_dict,
 
     light = 0
     for click_sample in click_samples_list:
-        if click_sample[0] not in users_feature_dict:
+        if click_sample['uid'] not in users_feature_dict:
             continue  # TODO something bad happened, very very bad
         for k, v in strategies_dict.iteritems():
             strategies_dict[k] = 0
 
-        if click_sample[4] not in strategies_dict:
+        if click_sample['logtype'] not in strategies_dict:
             print 'Unknown logtype ', click_sample[4],
             continue
         strategies_dict[click_sample[4]] = 3
@@ -176,14 +178,19 @@ def update_positive_sample_feature(click_samples_list, samples_feature_dict,
 
         feature_list.extend(etl_sample.sampleExtractor.generate_time_feature(click_sample[2]))
 
+        if click_sample['logchid'] == click_sample['chid']:
+            feature_list.extend([1])
+        else:
+            feature_list.extend([0])
+
         if light == 0:
             light = len(feature_list)
         elif light != len(feature_list):
             print '===========>  allen ,where are you?'
 
         feature_key = tuple(feature_list)
-        if click_sample[3] != 0 and click_sample[3] < 300:
-            score = min(click_sample[3], 30)/30.0 * 5 
+        if click_sample['stime'] != 0 and click_sample['stime'] < 300:
+            score = min(click_sample['stime'], 30)/30.0 * 5
             samples_feature_dict[feature_key] = score
         else:
             samples_feature_dict[feature_key] = 0.5

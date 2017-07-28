@@ -14,12 +14,12 @@ def get_positive_samples(active_users, time_interval):
     str_now = nt.strftime('%Y-%m-%d %H:%M:%S')
     # logtype 4 is topic channel
     sql = '''
-        select  uid, nid, ctime, stime, logtype, logchid from newsrecommendclick 
+        select  uid, nid, ctime, stime, logtype, logchid, chid from newsrecommendclick 
             where ctime > to_timestamp('{}', 'yyyy-mm-dd hh24:mi:ss') - interval '{}' 
             and logtype not in (4) and uid not in (0) and nid not in (0)
                       and uid in ({}) limit 4000
     '''
-    rows = pg.query(sql.format(str_now, time_interval, ','.join(str(u) for u in active_users)))
+    rows = pg.query_dict_cursor(sql.format(str_now, time_interval, ','.join(str(u) for u in active_users)))
     return rows
 
 
