@@ -183,10 +183,10 @@ def update_positive_sample_feature(click_samples_list, samples_feature_dict,
 
         feature_key = tuple(feature_list)
         if click_sample['stime'] != 0 and click_sample['stime'] < 300:
-            score = min(click_sample['stime'], 30)/30.0 * 5
+            score = min(click_sample['stime'], 300)/300.0 * 10
             samples_feature_dict[feature_key] = score
         else:
-            samples_feature_dict[feature_key] = 0.5
+            samples_feature_dict[feature_key] = 0.2
 
     return samples_feature_dict
 
