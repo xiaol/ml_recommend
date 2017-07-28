@@ -75,8 +75,8 @@ class SampleExtractor(object):
     def generate_time_feature(self, timestamp):
         for k, v in self.time_dict.iteritems():
             self.time_dict[k] = 0
-        self.time_dict[timestamp.hour] = 0.7
-        self.time_dict[timestamp.today().weekday() + 24] = 0.5
+        self.time_dict[timestamp.hour] = 0.1
+        self.time_dict[timestamp.today().weekday() + 24] = 0.1
         return self.time_dict.values()
 
 sampleExtractor = SampleExtractor()
