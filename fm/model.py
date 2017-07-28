@@ -139,8 +139,6 @@ def get_samples_feature(negative_samples_list,
             feature_list.extend(etl_sample.sampleExtractor.generate_time_feature(neg_sample['ctime']))
         else:
             feature_list.extend(etl_sample.sampleExtractor.generate_time_feature(neg_sample['readtime']))
-        # add read page
-        feature_list.extend([1])
 
         # join the user, strategies and item features horizontally
         feature_list.extend(items_feature_dict[neg_sample['nid']])
@@ -177,11 +175,6 @@ def update_positive_sample_feature(click_samples_list, samples_feature_dict,
         feature_list.extend(items_feature_dict[click_sample[1]])
 
         feature_list.extend(etl_sample.sampleExtractor.generate_time_feature(click_sample[2]))
-
-        if click_sample['logchid'] == click_sample['chid']:
-            feature_list.extend([1])
-        else:
-            feature_list.extend([0])
 
         if light == 0:
             light = len(feature_list)
