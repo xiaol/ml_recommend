@@ -25,7 +25,7 @@ def recall_candidates(item_extractor, user_id):
     strategies_keys = strategies_dict.keys()
 
     # wilson
-    candidates_dict = recall_items.recall_wilson_news(user_id, 10)
+    candidates_dict = recall_items.recall_wilson_news(user_id, 1)
     candidates_list = candidates_dict.keys()
     candidates_feature_dict = get_features_by_strategy(
         strategies_keys, candidates_dict, candidates_list, strategies_dict, item_extractor)
@@ -40,7 +40,7 @@ def recall_candidates(item_extractor, user_id):
     candidates_dict.update(lkc_dict)
 
     # big img and video
-    bv_dict = recall_items.recall_bigimg_video(user_id, 600)
+    bv_dict = recall_items.recall_bigimg_video(user_id, 1)
     bv_list = bv_dict.keys()
     bv_feature_dict = get_features_by_strategy(
         strategies_keys, bv_dict, bv_list, strategies_dict, item_extractor)
@@ -49,7 +49,7 @@ def recall_candidates(item_extractor, user_id):
     candidates_dict.update(bv_dict)
 
     # hot news
-    hn_dict = recall_items.recall_hot_news(user_id, 500)
+    hn_dict = recall_items.recall_hot_news(user_id, 1)
     hn_list = hn_dict.keys()
     hn_feature_dict = get_features_by_strategy(
         strategies_keys, hn_dict, hn_list, strategies_dict, item_extractor)
