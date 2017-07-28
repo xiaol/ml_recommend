@@ -167,7 +167,7 @@ def update_positive_sample_feature(click_samples_list, samples_feature_dict,
         if click_sample['logtype'] not in strategies_dict:
             print 'Unknown logtype ', click_sample[4],
             continue
-        strategies_dict[click_sample[4]] = 3
+        strategies_dict[click_sample[4]] = 4
 
         feature_list = list(users_feature_dict[click_sample[0]])
         feature_list.extend(strategies_dict.values())
