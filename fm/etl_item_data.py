@@ -203,14 +203,14 @@ def load(items_list, topic_num, item_extractor):
 
     items_topic = get_item_topic(items_list)
     for item_topic in items_topic:
-        items_feature_dict[item_topic[0]][item_topic[1]] = item_topic[2]*2
+        items_feature_dict[item_topic[0]][item_topic[1]] = item_topic[2]*3
 
     # add kmeans feature
     # add channel feature
     items_channel_kmeans = get_item_channel_and_kmeans(items_list)
     channel_feature_list = channel_feature_dict.keys()
     for item_ck in items_channel_kmeans:
-        items_feature_dict[item_ck['nid']][topic_offset + channel_feature_list.index(item_ck['ch_name'])]= 1
+        items_feature_dict[item_ck['nid']][topic_offset + channel_feature_list.index(item_ck['ch_name'])] = 2
 
     for item_ck in items_channel_kmeans:
         kmeans_pos = 0
@@ -221,7 +221,7 @@ def load(items_list, topic_num, item_extractor):
                 kmeans_pos += item_ck['cluster_id']
                 break
 
-        items_feature_dict[item_ck['nid']][topic_offset + channel_offest + kmeans_pos]= 1
+        items_feature_dict[item_ck['nid']][topic_offset + channel_offest + kmeans_pos] = 1.5
 
     return items_feature_dict  # item id, feature vector pair.
 

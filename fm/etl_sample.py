@@ -70,12 +70,13 @@ def get_hate_samples(users, time_interval='15 days'):
 
 
 class SampleExtractor(object):
-    time_dict = OrderedDict((i, 0) for i in range(24))
+    time_dict = OrderedDict((i, 0) for i in range(31))
 
     def generate_time_feature(self, timestamp):
         for k, v in self.time_dict.iteritems():
             self.time_dict[k] = 0
         self.time_dict[timestamp.hour] = 1
+        self.time_dict[timestamp.today().weekday() + 24] = 1
         return self.time_dict.values()
 
 sampleExtractor = SampleExtractor()
