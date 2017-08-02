@@ -90,10 +90,10 @@ if __name__ == '__main__':
         st = time.time()
         try:
             if elapse <= 0:
-                candidate_users = etl_user_data.get_active_user(time_active='2 minutes', click_times=5)
+                candidate_users = etl_user_data.get_active_user(time_active='2 minutes', click_times=3)
             else:
                 time_seconds = str(elapse + 1) + ' seconds'
-                candidate_users = etl_user_data.get_active_user(time_active=time_seconds, click_times=5)
+                candidate_users = etl_user_data.get_active_user(time_active=time_seconds, click_times=3)
         except:
             print 'PG is down ->', sys.exc_info()[0]
             time.sleep(60*30)

@@ -31,7 +31,7 @@ def recall_candidates(item_extractor, user_id):
         strategies_keys, candidates_dict, candidates_list, strategies_dict, item_extractor)
 
     # lda kmeans cf
-    lkc_dict = recall_items.recall_lda_kmeans_cf(user_id, 700)
+    lkc_dict = recall_items.recall_lda_kmeans_cf(user_id, 1000)
     lkc_list = lkc_dict.keys()
     lkc_feature_dict = get_features_by_strategy(
         strategies_keys, lkc_dict, lkc_list, strategies_dict,  item_extractor)
