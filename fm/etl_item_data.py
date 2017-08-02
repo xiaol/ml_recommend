@@ -31,7 +31,7 @@ def recall_candidates(item_extractor, user_id):
         strategies_keys, candidates_dict, candidates_list, strategies_dict, item_extractor)
 
     # lda kmeans cf
-    lkc_dict = recall_items.recall_lda_kmeans_cf(user_id, 1000)
+    lkc_dict = recall_items.recall_lda_kmeans_cf(user_id, 700)
     lkc_list = lkc_dict.keys()
     lkc_feature_dict = get_features_by_strategy(
         strategies_keys, lkc_dict, lkc_list, strategies_dict,  item_extractor)
@@ -40,7 +40,7 @@ def recall_candidates(item_extractor, user_id):
     candidates_dict.update(lkc_dict)
 
     # big img and video
-    bv_dict = recall_items.recall_bigimg_video(user_id, 1000)
+    bv_dict = recall_items.recall_bigimg_video(user_id, 600)
     bv_list = bv_dict.keys()
     bv_feature_dict = get_features_by_strategy(
         strategies_keys, bv_dict, bv_list, strategies_dict, item_extractor)
@@ -49,7 +49,7 @@ def recall_candidates(item_extractor, user_id):
     candidates_dict.update(bv_dict)
 
     # hot news
-    hn_dict = recall_items.recall_hot_news(user_id, 1000)
+    hn_dict = recall_items.recall_hot_news(user_id, 600)
     hn_list = hn_dict.keys()
     hn_feature_dict = get_features_by_strategy(
         strategies_keys, hn_dict, hn_list, strategies_dict, item_extractor)
