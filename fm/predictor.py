@@ -90,10 +90,10 @@ if __name__ == '__main__':
         st = time.time()
         try:
             if elapse <= 0:
-                candidate_users = etl_user_data.get_active_user(time_active='2 minutes', click_times=5)
+                candidate_users = etl_user_data.get_active_user(time_active='2 minutes', click_times=7)
             else:
                 time_seconds = str(elapse + 1) + ' seconds'
-                candidate_users = etl_user_data.get_active_user(time_active=time_seconds, click_times=5)
+                candidate_users = etl_user_data.get_active_user(time_active=time_seconds, click_times=7)
         except:
             print 'PG is down ->', sys.exc_info()[0]
             time.sleep(60*30)
@@ -103,7 +103,7 @@ if __name__ == '__main__':
         #candidate_users = [10223096]
         print "Candidate Number: ", len(candidate_users)
         # candidate_users = [33658617, 40189301, 7054063, 33446693, 27210952]
-        pool = Pool(4)
+        pool = Pool(3)
         for c_user in candidate_users:
             try:
                 pool.apply_async(predict, args=(args.t, c_user))
